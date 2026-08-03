@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { CoverageInfo } from "@/components/coverage-info";
 import { ScoreBadges } from "@/components/score-badges";
 import { BlockOption } from "@/data/types";
 import { colors, spacing } from "@/theme";
@@ -40,6 +41,8 @@ export function BlockCard({ block }: { block: BlockOption }) {
       </View>
 
       {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
+
+      <CoverageInfo coverage={block.coverage} />
 
       <ScoreBadges score={block.score} />
 

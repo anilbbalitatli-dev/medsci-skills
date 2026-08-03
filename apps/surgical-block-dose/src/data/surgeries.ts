@@ -1,3 +1,4 @@
+import { COVERAGE } from "./coverage-presets";
 import { Surgery } from "./types";
 
 /**
@@ -7,8 +8,9 @@ import { Surgery } from "./types";
  * Real cases vary by surgical approach, patient factors, coagulation status,
  * and institutional protocol; always confirm independently before clinical use.
  *
- * Safety/convenience scores (1-5) are educational comparison indicators, not
- * validated risk scores — see TechniqueScore in ./types.ts.
+ * Safety/convenience scores (1-5) and dermatome/motor coverage are
+ * educational comparison indicators, not validated risk scores or precise
+ * anatomical maps — see TechniqueScore/Coverage in ./types.ts.
  */
 
 const GENERAL_CONTRAINDICATIONS = ["Hasta reddi", "Enjeksiyon bölgesinde lokal enfeksiyon", "Bilinen lokal anestezik alerjisi"];
@@ -33,11 +35,8 @@ export const SURGERIES: Surgery[] = [
           { drug: "Bupivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [15, 20] },
         ],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
-        score: {
-          safety: 5,
-          convenience: 4,
-          rationale: "Yüzeyel, majör damar/motor sinirden uzak; USG landmark'ı net.",
-        },
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel, majör damar/motor sinirden uzak; USG landmark'ı net." },
+        coverage: COVERAGE.acb,
       },
       {
         id: "tka-ipack",
@@ -46,11 +45,8 @@ export const SURGERIES: Surgery[] = [
         summary: "Posterior diz ağrısını hedefler; ACB'ye eklenerek analjeziyi tamamlar.",
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [10, 15] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Popliteal fossa anatomik varyasyonu/önceki cerrahi"],
-        score: {
-          safety: 4,
-          convenience: 3,
-          rationale: "Popliteal damarlara yakınlık nedeniyle ACB'ye göre biraz daha derin ve dikkat gerektiren teknik.",
-        },
+        score: { safety: 4, convenience: 3, rationale: "Popliteal damarlara yakınlık nedeniyle ACB'ye göre biraz daha derin ve dikkat gerektiren teknik." },
+        coverage: COVERAGE.ipack,
       },
       {
         id: "tka-femoral",
@@ -59,11 +55,8 @@ export const SURGERIES: Surgery[] = [
         summary: "Daha güçlü analjezi sağlar ancak kuadriseps güçsüzlüğü ve düşme riski nedeniyle ACB'ye göre ikinci planda.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
-        score: {
-          safety: 3,
-          convenience: 4,
-          rationale: "Belirgin kuadriseps motor bloğu düşme riskini artırır; damara yakınlık nedeniyle dikkat gerekir.",
-        },
+        score: { safety: 3, convenience: 4, rationale: "Belirgin kuadriseps motor bloğu düşme riskini artırır; damara yakınlık nedeniyle dikkat gerekir." },
+        coverage: COVERAGE.femoral,
       },
       {
         id: "tka-spinal",
@@ -78,11 +71,8 @@ export const SURGERIES: Surgery[] = [
           "Ciddi hipovolemi",
           "Artmış kafa içi basıncı",
         ],
-        score: {
-          safety: 3,
-          convenience: 5,
-          rationale: "Tek enjeksiyonla hızlı ve güvenilir; hipotansiyon, PDPH ve nadir epidural hematom riski taşır.",
-        },
+        score: { safety: 3, convenience: 5, rationale: "Tek enjeksiyonla hızlı ve güvenilir; hipotansiyon, PDPH ve nadir epidural hematom riski taşır." },
+        coverage: COVERAGE.spinalLowerLimb,
       },
     ],
     combinations: [
@@ -91,12 +81,14 @@ export const SURGERIES: Surgery[] = [
         name: "ACB + IPACK",
         blockIds: ["tka-acb", "tka-ipack"],
         summary: "Günümüzde TKA'da en sık tercih edilen kombinasyon; anterior ve posterior diz ağrısını birlikte kapsar, kuadriseps gücünü büyük ölçüde korur.",
-        score: {
-          safety: 4,
-          convenience: 3,
-          rationale: "İki ayrı enjeksiyon gerektirir ve toplam lokal anestezik dozu artar, ancak her iki blok da motor-koruyucu ve yüzeyeldir.",
-        },
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı enjeksiyon gerektirir ve toplam lokal anestezik dozu artar, ancak her iki blok da motor-koruyucu ve yüzeyeldir." },
         doseWarning: "İki bloğun toplam hacmi/dozu tek bir bloğa göre daha yüksektir; toplam dozu ağırlığa göre maksimum sınırla karşılaştırın.",
+        coverage: {
+          dermatomes: "L3–S1 (safen sinir + diz eklem dalları)",
+          motorEffect: "Minimal; kuadriseps korunur, posterior diz bölgesinde olası hafif motor etki.",
+          frontZones: ["thigh-medial", "knee", "lowerleg-anterior"],
+          backZones: ["knee"],
+        },
       },
     ],
   },
@@ -120,6 +112,7 @@ export const SURGERIES: Surgery[] = [
           "Ciddi hipovolemi",
         ],
         score: { safety: 3, convenience: 5, rationale: "Hızlı ve güvenilir; hipotansiyon ve nadir epidural hematom riski." },
+        coverage: COVERAGE.spinalLowerLimb,
       },
       {
         id: "tha-peng",
@@ -129,6 +122,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [20, 25] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 3, rationale: "İliopsoas altında, femoral damarlara yakın; landmarklar deneyim gerektirir." },
+        coverage: COVERAGE.peng,
       },
       {
         id: "tha-fascia-iliaca",
@@ -138,6 +132,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [30, 40] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Geniş, kolay tanınan fasyal düzlem; büyük hacim gerektirir." },
+        coverage: COVERAGE.fasciaIliaca,
       },
     ],
     combinations: [
@@ -147,6 +142,7 @@ export const SURGERIES: Surgery[] = [
         blockIds: ["tha-spinal", "tha-peng"],
         summary: "Spinal anesteziye ek olarak postoperatif analjezi süresini uzatan yaygın kombinasyon.",
         score: { safety: 4, convenience: 3, rationale: "İki ayrı işlem gerektirir ama her ikisi de motor-koruyucu karakterdedir." },
+        coverage: COVERAGE.spinalLowerLimb,
       },
     ],
   },
@@ -165,6 +161,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel, motor-koruyucu; günübirlik cerrahiye uygun." },
+        coverage: COVERAGE.acb,
       },
       {
         id: "acl-femoral",
@@ -174,6 +171,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 3, convenience: 4, rationale: "Kuadriseps güçsüzlüğü erken taburculuğu/yürümeyi geciktirebilir." },
+        coverage: COVERAGE.femoral,
       },
     ],
   },
@@ -192,6 +190,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Majör damarlardan uzak, USG'de net görüntülenen bir bölge." },
+        coverage: COVERAGE.poplitealSciatic,
       },
       {
         id: "ankle-saphenous",
@@ -201,6 +200,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel, saf duyusal sinir; düşük komplikasyon riski." },
+        coverage: COVERAGE.saphenous,
       },
       {
         id: "ankle-ankle-block",
@@ -210,6 +210,22 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Lidokain %1–2", concentrationPercent: 1, volumeMlRange: [12, 18], note: "5 sinire paylaştırılır" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Ayak bileğinde ciddi periferik arter hastalığı (rölatif)"],
         score: { safety: 5, convenience: 3, rationale: "Güvenli ancak 5 ayrı enjeksiyon gerektirdiği için daha zahmetli." },
+        coverage: COVERAGE.ankleBlock,
+      },
+    ],
+    combinations: [
+      {
+        id: "ankle-popliteal-saphenous",
+        name: "Popliteal + Safen Bloğu",
+        blockIds: ["ankle-popliteal", "ankle-saphenous"],
+        summary: "Ayak bileği ve ayağın tamamını (medial şerit dahil) kapsayan standart kombinasyon; popliteal siyatik bloğun tek başına atladığı medial bölgeyi safen tamamlar.",
+        score: { safety: 5, convenience: 3, rationale: "İki ayrı enjeksiyon gerektirir ama her ikisi de düşük riskli, yüzeyel tekniklerdir." },
+        coverage: {
+          dermatomes: "L3–S3 (ayak bileği ve ayağın tamamı)",
+          motorEffect: "Ayak bileği/parmak hareketlerinde belirgin motor blok; safen bileşeni tamamen duyusaldır.",
+          frontZones: ["lowerleg-anterior", "foot-top"],
+          backZones: ["calf", "heel-sole"],
+        },
       },
     ],
   },
@@ -230,6 +246,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Yüzeyel ve net landmark; femoral artere yakınlık dikkat gerektirir." },
+        coverage: COVERAGE.femoral,
       },
       {
         id: "bka-sciatic",
@@ -239,6 +256,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 3, rationale: "Derin bir sinir; subgluteal yaklaşım daha fazla deneyim gerektirir." },
+        coverage: COVERAGE.poplitealSciatic,
       },
       {
         id: "bka-spinal",
@@ -248,6 +266,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2.5, 3.5], note: "≈12.5–17.5 mg intratekal" }],
         contraindications: ["Hasta reddi", "Düzeltilmemiş koagülopati / antikoagülan kullanımı", "Ciddi hipovolemi"],
         score: { safety: 3, convenience: 5, rationale: "Hızlı ve güvenilir ama vasküler hastalarda sık görülen hipotansiyona dikkat gerekir." },
+        coverage: COVERAGE.spinalLowerLimb,
       },
     ],
     combinations: [
@@ -258,6 +277,12 @@ export const SURGERIES: Surgery[] = [
         summary: "Bacağın tüm duyusunu kapsayan, spinal anesteziye ihtiyaç duymadan cerrahiyi mümkün kılan kombinasyon.",
         score: { safety: 4, convenience: 3, rationale: "İki ayrı derin enjeksiyon gerektirir; toplam doz dikkatle hesaplanmalıdır." },
         doseWarning: "İki blok birlikte uygulandığında toplam lokal anestezik dozu hasta ağırlığına göre yeniden kontrol edilmelidir.",
+        coverage: {
+          dermatomes: "L2–S3 (bacağın tamamı)",
+          motorEffect: "Diz ve ayak bileği dahil bacağın tamamında yoğun motor blok.",
+          frontZones: ["thigh-anterior", "knee", "lowerleg-anterior", "foot-top"],
+          backZones: ["thigh-posterior", "calf", "heel-sole"],
+        },
       },
     ],
   },
@@ -278,6 +303,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [30, 40] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 5, rationale: "Yüzeyel, kolay öğrenilen bir teknik; acil serviste bile uygulanabilir." },
+        coverage: COVERAGE.fasciaIliaca,
       },
       {
         id: "hipfx-peng",
@@ -287,6 +313,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [20, 25] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 3, rationale: "Femoral damarlara yakın; deneyim gerektiren bir landmark." },
+        coverage: COVERAGE.peng,
       },
       {
         id: "hipfx-spinal",
@@ -296,6 +323,17 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2, 3], note: "Yaşlı/frail hastada doz genelde azaltılır" }],
         contraindications: ["Hasta reddi", "Düzeltilmemiş koagülopati / antikoagülan kullanımı", "Ciddi hipovolemi"],
         score: { safety: 3, convenience: 4, rationale: "Frail/yaşlı popülasyonda hipotansiyon riski daha belirgindir." },
+        coverage: COVERAGE.spinalLowerLimb,
+      },
+    ],
+    combinations: [
+      {
+        id: "hipfx-fascia-iliaca-spinal",
+        name: "Fasya İliaka + Spinal",
+        blockIds: ["hipfx-fascia-iliaca", "hipfx-spinal"],
+        summary: "Fasya iliaka bloğu preoperatif/erken dönem ağrı kontrolü sağlarken, spinal anestezi cerrahi için kullanılır — sık uygulanan bir kombinasyon.",
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı işlem gerektirir; her ikisi de frail hastalarda genel anesteziye göre daha güvenli kabul edilir." },
+        coverage: COVERAGE.spinalLowerLimb,
       },
     ],
   },
@@ -323,15 +361,37 @@ export const SURGERIES: Surgery[] = [
           "Kontralateral pnömotoraks öyküsü (rölatif)",
         ],
         score: { safety: 3, convenience: 4, rationale: "Standart volümlerde neredeyse her zaman ipsilateral frenik sinir felci yapar; pnömotoraks nadir ama olası." },
+        coverage: COVERAGE.interscalene,
       },
       {
-        id: "shoulder-suprascapular-axillary",
-        name: "Suprascapular + Aksiller Sinir Bloğu",
+        id: "shoulder-suprascapular",
+        name: "Suprascapular Sinir Bloğu",
         role: "alternative",
-        summary: "Frenik sinir tutulumunu azaltmayı hedefleyen, solunum fonksiyonu kısıtlı hastalarda tercih edilebilecek kombinasyon.",
-        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [10, 15] }],
+        summary: "Frenik sinir tutulumu olmayan, omuz eklemi analjezisi için hedefe yönelik blok.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
-        score: { safety: 4, convenience: 3, rationale: "Frenik sinir tutulumu belirgin şekilde azalır; ancak analjezi interskalene göre biraz daha sınırlı olabilir." },
+        score: { safety: 5, convenience: 4, rationale: "Frenik sinirden ve plevradan uzak; düşük komplikasyon riski." },
+        coverage: COVERAGE.suprascapular,
+      },
+      {
+        id: "shoulder-axillary-nerve",
+        name: "Aksiller Sinir Bloğu",
+        role: "alternative",
+        summary: "Suprascapular bloğa eklenerek omuz eklem kapsülünün geri kalanını hedefler.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 3, rationale: "Düşük riskli ancak tek başına yetersiz kalır, genellikle suprascapular ile birlikte uygulanır." },
+        coverage: COVERAGE.axillaryNerve,
+      },
+    ],
+    combinations: [
+      {
+        id: "shoulder-suprascapular-axillary-combo",
+        name: "Suprascapular + Aksiller Sinir Bloğu",
+        blockIds: ["shoulder-suprascapular", "shoulder-axillary-nerve"],
+        summary: "Frenik sinir tutulumunu azaltmayı hedefleyen, solunum fonksiyonu kısıtlı hastalarda interskalene alternatif olarak tercih edilebilecek kombinasyon.",
+        score: { safety: 4, convenience: 3, rationale: "Frenik sinir tutulumu belirgin şekilde azalır; analjezi interskalene göre biraz daha sınırlı olabilir, iki ayrı enjeksiyon gerekir." },
+        coverage: COVERAGE.suprascapularAxillaryCombo,
       },
     ],
   },
@@ -350,6 +410,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 3, rationale: "Supraklaviküler'e göre daha düşük pnömotoraks riski; kompresyon uygulamak biraz daha zordur." },
+        coverage: COVERAGE.infraclavicular,
       },
       {
         id: "elbow-axillary",
@@ -359,6 +420,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Pnömotoraks riski yok; damar yakınlığı nedeniyle kompresyon uygulanabilir." },
+        coverage: COVERAGE.axillaryPlexus,
       },
     ],
   },
@@ -377,6 +439,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Ciddi solunum yetmezliği (pnömotoraks riski nedeniyle dikkatli değerlendirme)"],
         score: { safety: 3, convenience: 4, rationale: "Hızlı ve etkili, ancak plevraya yakınlık nedeniyle pnömotoraks riski taşır." },
+        coverage: COVERAGE.supraclavicular,
       },
       {
         id: "hand-infraclavicular",
@@ -386,6 +449,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 3, rationale: "Daha düşük pnömotoraks riski; kompresyon uygulaması daha zor." },
+        coverage: COVERAGE.infraclavicular,
       },
       {
         id: "hand-ivra",
@@ -395,6 +459,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Lidokain %0.5 (epinefrinsiz)", concentrationPercent: 0.5, volumeMlRange: [40, 50], note: "≈3 mg/kg, epinefrin içermemeli" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Orak hücre hastalığı", "Ciddi periferik vasküler hastalık", "Turnike uygulanamayan ekstremite"],
         score: { safety: 3, convenience: 5, rationale: "Çok hızlı ve basit; turnike erken sönerse/kaçak olursa LAST riski taşır." },
+        coverage: COVERAGE.ivra,
       },
     ],
   },
@@ -419,6 +484,7 @@ export const SURGERIES: Surgery[] = [
           "Ciddi hipovolemi / dekompanse kanama",
         ],
         score: { safety: 4, convenience: 5, rationale: "Yaygın kullanılan, güvenilir teknik; ana risk pozisyonel hipotansiyondur." },
+        coverage: COVERAGE.spinalCesarean,
       },
       {
         id: "cs-tap",
@@ -428,6 +494,17 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [15, 20], note: "her iki tarafa" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel karın duvarı düzlemi; düşük komplikasyon riski." },
+        coverage: COVERAGE.tap,
+      },
+    ],
+    combinations: [
+      {
+        id: "cs-spinal-tap",
+        name: "Spinal + TAP",
+        blockIds: ["cs-spinal", "cs-tap"],
+        summary: "Spinal anesteziye ek olarak, özellikle intratekal opioid verilemeyen durumlarda postoperatif analjeziyi uzatan yaygın kombinasyon.",
+        score: { safety: 4, convenience: 4, rationale: "TAP eklenmesi düşük ek risk taşır; iki ayrı işlem gerektirir." },
+        coverage: COVERAGE.spinalCesarean,
       },
     ],
   },
@@ -446,6 +523,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20], note: "her iki tarafa" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; USG'de kolay tanınır." },
+        coverage: COVERAGE.tap,
       },
       {
         id: "app-rectus-sheath",
@@ -455,6 +533,21 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [10, 15] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel, düşük riskli bir teknik." },
+        coverage: COVERAGE.rectusSheath,
+      },
+    ],
+    combinations: [
+      {
+        id: "app-tap-rectus-sheath",
+        name: "TAP + Rektus Kılıf Bloğu",
+        blockIds: ["app-tap", "app-rectus-sheath"],
+        summary: "Lateral (TAP) ve periumbilikal orta hat (rektus kılıf) port yerlerini birlikte kapsayan, özellikle laparoskopik/orta hat uzantılı kesilerde tercih edilen kombinasyon.",
+        score: { safety: 5, convenience: 3, rationale: "Her iki teknik de yüzeyel ve düşük riskli; iki ayrı bölgeye enjeksiyon gerektirir." },
+        coverage: {
+          dermatomes: "T9–L1",
+          motorEffect: "Yok (yalnızca duyusal).",
+          frontZones: ["abdomen-upper", "abdomen-lower"],
+        },
       },
     ],
   },
@@ -473,6 +566,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [10, 15] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Enjeksiyonun çok medial/derin yapılması durumunda barsak ponksiyonu riski (teknik dikkat gerektirir)"],
         score: { safety: 4, convenience: 4, rationale: "Genelde güvenli; çok derin/medial enjeksiyonda barsak ponksiyonu bildirilmiştir." },
+        coverage: COVERAGE.ilioinguinal,
       },
       {
         id: "hernia-tap",
@@ -482,6 +576,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; düşük komplikasyon riski." },
+        coverage: COVERAGE.tap,
       },
     ],
     combinations: [
@@ -491,6 +586,7 @@ export const SURGERIES: Surgery[] = [
         blockIds: ["hernia-ilioinguinal", "hernia-tap"],
         summary: "Kasık bölgesi ve daha lateral karın duvarını birlikte kapsayan geniş analjezi.",
         score: { safety: 4, convenience: 3, rationale: "İki ayrı enjeksiyon; toplam doz dikkatle hesaplanmalıdır." },
+        coverage: COVERAGE.ilioinguinal,
       },
     ],
   },
@@ -509,6 +605,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Yüzeyel-orta derinlikte düzlem bloğu; pnömotoraks riski düşük ama sıfır değil." },
+        coverage: COVERAGE.pecs2,
       },
       {
         id: "breast-serratus",
@@ -518,6 +615,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Plevradan biraz daha uzak, yüzeyel bir düzlem." },
+        coverage: COVERAGE.serratus,
       },
       {
         id: "breast-paravertebral",
@@ -527,6 +625,21 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [10, 15], note: "seviye başına" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Düzeltilmemiş koagülopati / antikoagülan kullanımı"],
         score: { safety: 3, convenience: 3, rationale: "Plevraya yakınlık nedeniyle pnömotoraks riski diğerlerine göre daha yüksek; teknik olarak daha zor." },
+        coverage: COVERAGE.paravertebralBreast,
+      },
+    ],
+    combinations: [
+      {
+        id: "breast-pecs2-serratus",
+        name: "PECS II + Serratus Anterior Plan Bloğu",
+        blockIds: ["breast-pecs2", "breast-serratus"],
+        summary: "Daha geniş mastektomi/aksiller diseksiyonlarda göğüs duvarının önünü ve yanını birlikte kapsayan kombinasyon.",
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı düzleme enjeksiyon gerektirir; her ikisi de yüzeyel-orta derinlikte teknikler." },
+        coverage: {
+          dermatomes: "T2–T9 (ön ve yan göğüs duvarı, aksilla)",
+          motorEffect: "Pektoral kaslarda hafif güçsüzlük; uzun torasik/torakodorsal etkiyle hafif skapular kas güçsüzlüğü olabilir.",
+          frontZones: ["chest", "shoulder"],
+        },
       },
     ],
     clinicalNote:
@@ -547,6 +660,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [10, 15], note: "her iki tarafa" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 5, rationale: "Çok yüzeyel bir blok; major komplikasyon bildirimi nadirdir, uygulaması kolaydır." },
+        coverage: COVERAGE.scpb,
       },
     ],
     clinicalNote: "Derin servikal pleksus bloğu (frenik sinir felci, vertebral arter enjeksiyonu riskleri nedeniyle) günümüzde yüzeyel bloğa göre çok daha az tercih edilir.",
@@ -566,6 +680,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20], note: "veya seviye başına 3-5 mL" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS, "Düzeltilmemiş koagülopati / antikoagülan kullanımı"],
         score: { safety: 3, convenience: 3, rationale: "Plevraya ve nöraksiyel yapılara yakınlık nedeniyle pnömotoraks/epidural yayılım riski taşır." },
+        coverage: COVERAGE.paravertebralThoracotomy,
       },
       {
         id: "thora-esp",
@@ -575,6 +690,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Kemik yapı (transvers çıkıntı) üzerinde, plevradan uzak; paravertebral'e göre daha güvenli kabul edilir." },
+        coverage: COVERAGE.espThoracotomy,
       },
       {
         id: "thora-intercostal",
@@ -584,6 +700,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [3, 5], note: "seviye başına" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 3, convenience: 4, rationale: "Plevraya yakın; pnömotoraks riski ve çoklu enjeksiyon nedeniyle kümülatif doz artışı." },
+        coverage: COVERAGE.intercostal,
       },
     ],
     combinations: [
@@ -594,6 +711,7 @@ export const SURGERIES: Surgery[] = [
         summary: "ESP'nin geniş kapsamına interkostal bloğun hedefe yönelik etkisini ekleyen kombinasyon.",
         score: { safety: 3, convenience: 3, rationale: "Toplam lokal anestezik dozu belirgin artar; çoklu enjeksiyon süre ve dikkat gerektirir." },
         doseWarning: "Torakotomi bloklarında toplam doz genellikle diğer bölgelere göre daha yüksek hacimlerle uygulanır; ağırlık başına maksimum sınırı mutlaka kontrol edin.",
+        coverage: COVERAGE.espThoracotomy,
       },
     ],
   },
@@ -612,6 +730,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20], note: "her iki tarafa" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; düşük komplikasyon riski." },
+        coverage: COVERAGE.tap,
       },
       {
         id: "gynlap-portsite",
@@ -621,6 +740,17 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5 veya Bupivakain %0.25", concentrationPercent: 0.5, volumeMlRange: [3, 5], note: "port başına" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 5, rationale: "Doğrudan görüş altında, çok yüzeyel; ek ekipman/USG gerektirmez." },
+        coverage: COVERAGE.portSiteInfiltration,
+      },
+    ],
+    combinations: [
+      {
+        id: "gynlap-tap-portsite",
+        name: "TAP + Port Yeri İnfiltrasyonu",
+        blockIds: ["gynlap-tap", "gynlap-portsite"],
+        summary: "TAP bloğunun genel karın duvarı kapsamına, port yerlerine doğrudan infiltrasyonla ek nokta analjezisi eklenir.",
+        score: { safety: 5, convenience: 4, rationale: "Her iki teknik de yüzeyel ve düşük riskli; ek işlem yükü azdır." },
+        coverage: COVERAGE.tap,
       },
     ],
   },
@@ -639,15 +769,22 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 4, rationale: "Yüzeyel, saf duyusal sinir; düşük komplikasyon riski." },
+        coverage: COVERAGE.saphenous,
       },
       {
         id: "varicose-tumescent",
         name: "Tümesan Lokal Anestezi",
         role: "alternative",
         summary: "Endovenöz ablasyon sırasında ven çevresine büyük hacimde seyreltilmiş lokal anestezik infiltrasyonu.",
-        anesthetics: [{ drug: "Lidokain %0.1 (seyreltilmiş, ± epinefrin)", concentrationPercent: 0.1, volumeMlRange: [200, 400], note: "Tümesan teknikte yavaş emilim nedeniyle literatürde standart bolus lidokain sınırlarının üzerinde (kilogram başına daha yüksek) toplam dozlar güvenli kabul edilir; bu uygulamadaki genel maksimum doz hesaplayıcısı tümesan teknik için doğrudan uygulanamaz — teknik özel dozlama kılavuzlarına bakın." }],
+        anesthetics: [{
+          drug: "Lidokain %0.1 (seyreltilmiş, ± epinefrin)",
+          concentrationPercent: 0.1,
+          volumeMlRange: [200, 400],
+          note: "Tümesan teknikte yavaş emilim nedeniyle literatürde standart bolus lidokain sınırlarının üzerinde (kilogram başına daha yüksek) toplam dozlar güvenli kabul edilir; bu uygulamadaki genel maksimum doz hesaplayıcısı tümesan teknik için doğrudan uygulanamaz — teknik özel dozlama kılavuzlarına bakın.",
+        }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Standart teknik; toplam doz teknik özel formüllere (ör. Klein formülü) göre ayrıca hesaplanmalıdır." },
+        coverage: COVERAGE.tumescent,
       },
     ],
   },
@@ -669,6 +806,7 @@ export const SURGERIES: Surgery[] = [
         ],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Basit ve etkili; uç organ (penis) olması nedeniyle epinefrinsiz solüsyon zorunludur." },
+        coverage: COVERAGE.penileBlock,
       },
       {
         id: "circ-caudal",
@@ -683,6 +821,7 @@ export const SURGERIES: Surgery[] = [
           "Sakral anatomik anomali (örn. spina bifida)",
         ],
         score: { safety: 3, convenience: 3, rationale: "Nöraksiyel bir teknik olduğu için penil bloğa göre daha fazla dikkat ve deneyim gerektirir." },
+        coverage: COVERAGE.caudal,
       },
     ],
   },
@@ -701,6 +840,7 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30], note: "seviye başına, iki taraf gerekebilir" }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 4, convenience: 4, rationale: "Kemik yapı üzerinde, nöraksiyel yapılardan ve plevradan uzak; nispeten güvenli kabul edilir." },
+        coverage: COVERAGE.espLumbar,
       },
       {
         id: "spine-wound-infiltration",
@@ -710,6 +850,17 @@ export const SURGERIES: Surgery[] = [
         anesthetics: [{ drug: "Ropivakain %0.5 veya Bupivakain %0.25", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
         contraindications: [...GENERAL_CONTRAINDICATIONS],
         score: { safety: 5, convenience: 5, rationale: "Doğrudan görüş altında, ek ekipman gerektirmeyen en basit yöntem." },
+        coverage: COVERAGE.woundInfiltration,
+      },
+    ],
+    combinations: [
+      {
+        id: "spine-esp-wound-infiltration",
+        name: "ESP + Yara İnfiltrasyonu",
+        blockIds: ["spine-esp", "spine-wound-infiltration"],
+        summary: "ESP'nin daha geniş, seviye bazlı analjezisine cerrahın kapanışta ekleyebileceği basit yara infiltrasyonu eklenir.",
+        score: { safety: 5, convenience: 4, rationale: "Yara infiltrasyonu ek risk taşımaz; ESP zaten nispeten güvenli kabul edilen bir tekniktir." },
+        coverage: COVERAGE.espLumbar,
       },
     ],
   },

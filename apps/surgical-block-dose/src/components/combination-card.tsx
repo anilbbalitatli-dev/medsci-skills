@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { CoverageInfo } from "@/components/coverage-info";
 import { ScoreBadges } from "@/components/score-badges";
 import { BlockCombination, BlockOption } from "@/data/types";
 import { colors, spacing } from "@/theme";
@@ -14,6 +15,7 @@ export function CombinationCard({ combination, blocks }: { combination: BlockCom
       <Text style={styles.name}>{combination.name}</Text>
       {blockNames.length > 0 ? <Text style={styles.blocks}>{blockNames.join(" + ")}</Text> : null}
       <Text style={styles.summary}>{combination.summary}</Text>
+      <CoverageInfo coverage={combination.coverage} />
       <ScoreBadges score={combination.score} />
       {combination.doseWarning ? <Text style={styles.warning}>⚠ {combination.doseWarning}</Text> : null}
     </View>
