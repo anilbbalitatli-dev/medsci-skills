@@ -23,10 +23,18 @@ gözden geçirilmesi önerilir.
 
 ## Teknoloji
 
-- [Expo](https://expo.dev) SDK 57 + [Expo Router](https://docs.expo.dev/router/introduction/) (dosya tabanlı navigasyon)
+- [Expo](https://expo.dev) SDK 54 + [Expo Router](https://docs.expo.dev/router/introduction/) (dosya tabanlı navigasyon)
 - React Native + TypeScript
 - iOS ve Android'de Expo Go veya development build ile çalışır; ek native
   modül gerekmez.
+
+> **Neden SDK 57 değil de 54?** App Store/Play Store'daki Expo Go istemcisi
+> her zaman en yeni SDK'yı desteklemeyebilir (yeni SDK sürümleri mağaza
+> onayını beklerken bir süre yalnızca development build/`eas go` ile
+> çalışır). Bu proje, App Store'daki güncel Expo Go ile QR kod üzerinden
+> doğrudan açılabilsin diye bilinçli olarak SDK 54'te tutuluyor. İleride
+> mağazadaki Expo Go güncellendiğinde `npx expo install expo@latest && npx
+> expo install --fix` ile yükseltilebilir.
 
 ## Proje Yapısı
 
