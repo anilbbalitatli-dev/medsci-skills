@@ -1,0 +1,35 @@
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text } from "react-native";
+
+import { Surgery } from "@/data/types";
+import { colors, spacing } from "@/theme";
+
+export function SurgeryChip({ surgery }: { surgery: Surgery }) {
+  return (
+    <Link href={{ pathname: "/surgery/[id]", params: { id: surgery.id } }} asChild>
+      <Pressable style={({ pressed }) => [styles.chip, pressed && styles.pressed]}>
+        <Text style={styles.text} numberOfLines={1}>
+          {surgery.name}
+        </Text>
+      </Pressable>
+    </Link>
+  );
+}
+
+const styles = StyleSheet.create({
+  chip: {
+    backgroundColor: colors.chip,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
+    maxWidth: 220,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  text: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.text,
+  },
+});

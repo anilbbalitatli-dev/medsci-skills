@@ -6,12 +6,19 @@ import { Surgery } from "./types";
  * Anesthesia) for common presentations of each procedure — not a prescription.
  * Real cases vary by surgical approach, patient factors, coagulation status,
  * and institutional protocol; always confirm independently before clinical use.
+ *
+ * Safety/convenience scores (1-5) are educational comparison indicators, not
+ * validated risk scores — see TechniqueScore in ./types.ts.
  */
+
+const GENERAL_CONTRAINDICATIONS = ["Hasta reddi", "Enjeksiyon bölgesinde lokal enfeksiyon", "Bilinen lokal anestezik alerjisi"];
+
 export const SURGERIES: Surgery[] = [
   {
     id: "tka",
     name: "Total Diz Protezi (TKA)",
     category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
     aliases: ["diz protezi", "diz artroplastisi", "knee replacement"],
     clinicalNote:
       "Motor güç kaybını sınırlamak için kuadriseps-koruyucu yaklaşım (adduktor kanal ± IPACK) günümüzde femoral bloğa göre daha sık tercih edilir.",
@@ -25,6 +32,12 @@ export const SURGERIES: Surgery[] = [
           { drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [15, 20] },
           { drug: "Bupivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [15, 20] },
         ],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: {
+          safety: 5,
+          convenience: 4,
+          rationale: "Yüzeyel, majör damar/motor sinirden uzak; USG landmark'ı net.",
+        },
       },
       {
         id: "tka-ipack",
@@ -32,6 +45,12 @@ export const SURGERIES: Surgery[] = [
         role: "adjunct",
         summary: "Posterior diz ağrısını hedefler; ACB'ye eklenerek analjeziyi tamamlar.",
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [10, 15] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Popliteal fossa anatomik varyasyonu/önceki cerrahi"],
+        score: {
+          safety: 4,
+          convenience: 3,
+          rationale: "Popliteal damarlara yakınlık nedeniyle ACB'ye göre biraz daha derin ve dikkat gerektiren teknik.",
+        },
       },
       {
         id: "tka-femoral",
@@ -39,6 +58,12 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Daha güçlü analjezi sağlar ancak kuadriseps güçsüzlüğü ve düşme riski nedeniyle ACB'ye göre ikinci planda.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: {
+          safety: 3,
+          convenience: 4,
+          rationale: "Belirgin kuadriseps motor bloğu düşme riskini artırır; damara yakınlık nedeniyle dikkat gerekir.",
+        },
       },
       {
         id: "tka-spinal",
@@ -46,6 +71,32 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Nörovasküler blokla birlikte veya tek başına anestezi yöntemi olarak.",
         anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2.5, 3.5], note: "≈12.5–17.5 mg intratekal" }],
+        contraindications: [
+          "Hasta reddi",
+          "Enjeksiyon bölgesinde lokal enfeksiyon",
+          "Düzeltilmemiş koagülopati / antikoagülan kullanımı",
+          "Ciddi hipovolemi",
+          "Artmış kafa içi basıncı",
+        ],
+        score: {
+          safety: 3,
+          convenience: 5,
+          rationale: "Tek enjeksiyonla hızlı ve güvenilir; hipotansiyon, PDPH ve nadir epidural hematom riski taşır.",
+        },
+      },
+    ],
+    combinations: [
+      {
+        id: "tka-acb-ipack",
+        name: "ACB + IPACK",
+        blockIds: ["tka-acb", "tka-ipack"],
+        summary: "Günümüzde TKA'da en sık tercih edilen kombinasyon; anterior ve posterior diz ağrısını birlikte kapsar, kuadriseps gücünü büyük ölçüde korur.",
+        score: {
+          safety: 4,
+          convenience: 3,
+          rationale: "İki ayrı enjeksiyon gerektirir ve toplam lokal anestezik dozu artar, ancak her iki blok da motor-koruyucu ve yüzeyeldir.",
+        },
+        doseWarning: "İki bloğun toplam hacmi/dozu tek bir bloğa göre daha yüksektir; toplam dozu ağırlığa göre maksimum sınırla karşılaştırın.",
       },
     ],
   },
@@ -53,6 +104,7 @@ export const SURGERIES: Surgery[] = [
     id: "tha",
     name: "Total Kalça Protezi (THA)",
     category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
     aliases: ["kalça protezi", "kalça artroplastisi", "hip replacement"],
     blocks: [
       {
@@ -61,6 +113,13 @@ export const SURGERIES: Surgery[] = [
         role: "primary",
         summary: "Kalça cerrahisinde sıklıkla tercih edilen ana anestezi yöntemi.",
         anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2.5, 3.5], note: "≈12.5–17.5 mg intratekal" }],
+        contraindications: [
+          "Hasta reddi",
+          "Enjeksiyon bölgesinde lokal enfeksiyon",
+          "Düzeltilmemiş koagülopati / antikoagülan kullanımı",
+          "Ciddi hipovolemi",
+        ],
+        score: { safety: 3, convenience: 5, rationale: "Hızlı ve güvenilir; hipotansiyon ve nadir epidural hematom riski." },
       },
       {
         id: "tha-peng",
@@ -68,6 +127,8 @@ export const SURGERIES: Surgery[] = [
         role: "adjunct",
         summary: "Motor tutulumu minimal düzeyde tutarak kalça eklem kapsülü ağrısını hedefler.",
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [20, 25] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "İliopsoas altında, femoral damarlara yakın; landmarklar deneyim gerektirir." },
       },
       {
         id: "tha-fascia-iliaca",
@@ -75,6 +136,17 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "PENG'e alternatif, femoral ve lateral femoral kutanöz sinirleri de kapsayan geniş saha bloğu.",
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [30, 40] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Geniş, kolay tanınan fasyal düzlem; büyük hacim gerektirir." },
+      },
+    ],
+    combinations: [
+      {
+        id: "tha-spinal-peng",
+        name: "Spinal + PENG",
+        blockIds: ["tha-spinal", "tha-peng"],
+        summary: "Spinal anesteziye ek olarak postoperatif analjezi süresini uzatan yaygın kombinasyon.",
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı işlem gerektirir ama her ikisi de motor-koruyucu karakterdedir." },
       },
     ],
   },
@@ -82,6 +154,7 @@ export const SURGERIES: Surgery[] = [
     id: "acl",
     name: "ACL Rekonstrüksiyonu (Artroskopik Diz Ligaman Onarımı)",
     category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
     aliases: ["çapraz bağ ameliyatı", "diz artroskopisi"],
     blocks: [
       {
@@ -90,6 +163,8 @@ export const SURGERIES: Surgery[] = [
         role: "primary",
         summary: "Ayaktan/günübirlik cerrahide erken yürümeyi engellemeyen tercih edilen blok.",
         anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel, motor-koruyucu; günübirlik cerrahiye uygun." },
       },
       {
         id: "acl-femoral",
@@ -97,6 +172,8 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Daha yaygın motor blok riski taşır; günübirlik cerrahide daha az tercih edilir.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 3, convenience: 4, rationale: "Kuadriseps güçsüzlüğü erken taburculuğu/yürümeyi geciktirebilir." },
       },
     ],
   },
@@ -104,6 +181,7 @@ export const SURGERIES: Surgery[] = [
     id: "ankle-foot",
     name: "Ayak / Ayak Bileği Cerrahisi",
     category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
     aliases: ["ayak cerrahisi", "ayak bileği cerrahisi", "hallux valgus"],
     blocks: [
       {
@@ -112,6 +190,8 @@ export const SURGERIES: Surgery[] = [
         role: "primary",
         summary: "Ayak bileği turnikesine ve cerrahisine yeterli anestezi/analjezi sağlar.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Majör damarlardan uzak, USG'de net görüntülenen bir bölge." },
       },
       {
         id: "ankle-saphenous",
@@ -119,6 +199,8 @@ export const SURGERIES: Surgery[] = [
         role: "adjunct",
         summary: "Medial ayak bileği/ayak bölgesi için popliteal bloğa eklenir.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel, saf duyusal sinir; düşük komplikasyon riski." },
       },
       {
         id: "ankle-ankle-block",
@@ -126,6 +208,94 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Kısa süreli ön/orta ayak cerrahisinde tek başına yeterli olabilir.",
         anesthetics: [{ drug: "Lidokain %1–2", concentrationPercent: 1, volumeMlRange: [12, 18], note: "5 sinire paylaştırılır" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Ayak bileğinde ciddi periferik arter hastalığı (rölatif)"],
+        score: { safety: 5, convenience: 3, rationale: "Güvenli ancak 5 ayrı enjeksiyon gerektirdiği için daha zahmetli." },
+      },
+    ],
+  },
+  {
+    id: "below-knee-amputation",
+    name: "Diz Altı Amputasyon",
+    category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
+    aliases: ["diz altı amputasyon", "below knee amputation", "BKA"],
+    clinicalNote:
+      "Genellikle vasküler hastalık zemininde uygulanır; ciddi periferik arter hastalığı ve olası koagülopati/antiplatelet kullanımı sık görülür, blok kararı öncesi dikkatle değerlendirilmelidir.",
+    blocks: [
+      {
+        id: "bka-femoral",
+        name: "Femoral Sinir Bloğu",
+        role: "primary",
+        summary: "Anterior/medial bacak bölgesini kapsar; siyatik blokla birlikte tam anestezi/analjezi sağlar.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Yüzeyel ve net landmark; femoral artere yakınlık dikkat gerektirir." },
+      },
+      {
+        id: "bka-sciatic",
+        name: "Siyatik Sinir Bloğu (Subgluteal/Popliteal)",
+        role: "primary",
+        summary: "Posterior bacak ve ampütasyon güdüğünün ana duyusunu sağlar.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "Derin bir sinir; subgluteal yaklaşım daha fazla deneyim gerektirir." },
+      },
+      {
+        id: "bka-spinal",
+        name: "Spinal Anestezi",
+        role: "alternative",
+        summary: "Tek başına cerrahi anestezi için de kullanılabilir.",
+        anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2.5, 3.5], note: "≈12.5–17.5 mg intratekal" }],
+        contraindications: ["Hasta reddi", "Düzeltilmemiş koagülopati / antikoagülan kullanımı", "Ciddi hipovolemi"],
+        score: { safety: 3, convenience: 5, rationale: "Hızlı ve güvenilir ama vasküler hastalarda sık görülen hipotansiyona dikkat gerekir." },
+      },
+    ],
+    combinations: [
+      {
+        id: "bka-femoral-sciatic",
+        name: "Femoral + Siyatik Blok",
+        blockIds: ["bka-femoral", "bka-sciatic"],
+        summary: "Bacağın tüm duyusunu kapsayan, spinal anesteziye ihtiyaç duymadan cerrahiyi mümkün kılan kombinasyon.",
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı derin enjeksiyon gerektirir; toplam doz dikkatle hesaplanmalıdır." },
+        doseWarning: "İki blok birlikte uygulandığında toplam lokal anestezik dozu hasta ağırlığına göre yeniden kontrol edilmelidir.",
+      },
+    ],
+  },
+  {
+    id: "hip-fracture",
+    name: "Kalça Kırığı Cerrahisi (Hemiartroplasti / İnternal Tespit)",
+    category: "Ortopedi — Alt Ekstremite",
+    region: "Alt Ekstremite",
+    aliases: ["kalça kırığı", "hip fracture", "hemiartroplasti"],
+    clinicalNote:
+      "Genellikle ileri yaşta, kardiyak/solunumsal komorbiditesi yüksek hastalarda uygulanır; rejyonel teknikler genel anesteziye kıyasla hemodinamik stabiliteyi koruma açısından sıklıkla tercih edilir.",
+    blocks: [
+      {
+        id: "hipfx-fascia-iliaca",
+        name: "Fasya İliaka Bloğu",
+        role: "primary",
+        summary: "Kırık ağrısını hızlıca azaltmak için acil serviste veya preoperatif dönemde de sıkça uygulanır.",
+        anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [30, 40] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 5, rationale: "Yüzeyel, kolay öğrenilen bir teknik; acil serviste bile uygulanabilir." },
+      },
+      {
+        id: "hipfx-peng",
+        name: "PENG Bloğu",
+        role: "alternative",
+        summary: "Daha seçici kapsül analjezisi; motor tutulumu daha azdır.",
+        anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [20, 25] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "Femoral damarlara yakın; deneyim gerektiren bir landmark." },
+      },
+      {
+        id: "hipfx-spinal",
+        name: "Spinal Anestezi",
+        role: "alternative",
+        summary: "Cerrahi anestezi için tercih edilebilir; hemodinamik toleransa dikkat edilmelidir.",
+        anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [2, 3], note: "Yaşlı/frail hastada doz genelde azaltılır" }],
+        contraindications: ["Hasta reddi", "Düzeltilmemiş koagülopati / antikoagülan kullanımı", "Ciddi hipovolemi"],
+        score: { safety: 3, convenience: 4, rationale: "Frail/yaşlı popülasyonda hipotansiyon riski daha belirgindir." },
       },
     ],
   },
@@ -133,8 +303,10 @@ export const SURGERIES: Surgery[] = [
     id: "shoulder-arthroscopy",
     name: "Omuz Artroskopisi / Rotator Manşet Onarımı",
     category: "Ortopedi — Üst Ekstremite",
+    region: "Üst Ekstremite",
     aliases: ["omuz ameliyatı", "rotator manşet", "shoulder surgery"],
-    clinicalNote: "Frenik sinir bloğu riski nedeniyle solunum rezervi kısıtlı hastalarda düşük volüm veya alternatif bloklar (supraskapular + aksiller) düşünülmelidir.",
+    clinicalNote:
+      "Frenik sinir bloğu riski nedeniyle solunum rezervi kısıtlı hastalarda düşük volüm veya alternatif bloklar (supraskapular + aksiller) düşünülmelidir.",
     blocks: [
       {
         id: "shoulder-interscalene",
@@ -145,6 +317,12 @@ export const SURGERIES: Surgery[] = [
           { drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] },
           { drug: "Bupivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20] },
         ],
+        contraindications: [
+          ...GENERAL_CONTRAINDICATIONS,
+          "Kontralateral frenik sinir felci / ciddi solunum rezervi kısıtlılığı",
+          "Kontralateral pnömotoraks öyküsü (rölatif)",
+        ],
+        score: { safety: 3, convenience: 4, rationale: "Standart volümlerde neredeyse her zaman ipsilateral frenik sinir felci yapar; pnömotoraks nadir ama olası." },
       },
       {
         id: "shoulder-suprascapular-axillary",
@@ -152,6 +330,35 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Frenik sinir tutulumunu azaltmayı hedefleyen, solunum fonksiyonu kısıtlı hastalarda tercih edilebilecek kombinasyon.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [10, 15] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "Frenik sinir tutulumu belirgin şekilde azalır; ancak analjezi interskalene göre biraz daha sınırlı olabilir." },
+      },
+    ],
+  },
+  {
+    id: "elbow-surgery",
+    name: "Dirsek Cerrahisi",
+    category: "Ortopedi — Üst Ekstremite",
+    region: "Üst Ekstremite",
+    aliases: ["dirsek ameliyatı", "olekranon", "elbow surgery"],
+    blocks: [
+      {
+        id: "elbow-infraclavicular",
+        name: "İnfraklaviküler Brakiyal Pleksus Bloğu",
+        role: "primary",
+        summary: "Dirsek ve altı için güvenilir, tam pleksus bloğu.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "Supraklaviküler'e göre daha düşük pnömotoraks riski; kompresyon uygulamak biraz daha zordur." },
+      },
+      {
+        id: "elbow-axillary",
+        name: "Aksiller Brakiyal Pleksus Bloğu",
+        role: "alternative",
+        summary: "Pnömotoraks riski olmayan, yüzeyel ve kompresyona uygun alternatif.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Pnömotoraks riski yok; damar yakınlığı nedeniyle kompresyon uygulanabilir." },
       },
     ],
   },
@@ -159,14 +366,17 @@ export const SURGERIES: Surgery[] = [
     id: "hand-forearm",
     name: "El / Önkol Cerrahisi",
     category: "Ortopedi — Üst Ekstremite",
+    region: "Üst Ekstremite",
     aliases: ["el cerrahisi", "önkol cerrahisi", "karpal tünel"],
     blocks: [
       {
         id: "hand-supraclavicular",
         name: "Supraklaviküler Brakiyal Pleksus Bloğu",
         role: "primary",
-        summary: "\"Brakiyal pleksusun spinali\" — dirsek altı cerrahide hızlı ve güvenilir blok.",
+        summary: '"Brakiyal pleksusun spinali" — dirsek altı cerrahide hızlı ve güvenilir blok.',
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Ciddi solunum yetmezliği (pnömotoraks riski nedeniyle dikkatli değerlendirme)"],
+        score: { safety: 3, convenience: 4, rationale: "Hızlı ve etkili, ancak plevraya yakınlık nedeniyle pnömotoraks riski taşır." },
       },
       {
         id: "hand-infraclavicular",
@@ -174,6 +384,8 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Kateter yerleştirmeye daha uygun anatomik pozisyon.",
         anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 3, rationale: "Daha düşük pnömotoraks riski; kompresyon uygulaması daha zor." },
       },
       {
         id: "hand-ivra",
@@ -181,6 +393,8 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Kısa süreli (<60 dk), turnikeli distal el/önkol cerrahisi için hızlı alternatif.",
         anesthetics: [{ drug: "Lidokain %0.5 (epinefrinsiz)", concentrationPercent: 0.5, volumeMlRange: [40, 50], note: "≈3 mg/kg, epinefrin içermemeli" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Orak hücre hastalığı", "Ciddi periferik vasküler hastalık", "Turnike uygulanamayan ekstremite"],
+        score: { safety: 3, convenience: 5, rationale: "Çok hızlı ve basit; turnike erken sönerse/kaçak olursa LAST riski taşır." },
       },
     ],
   },
@@ -188,6 +402,7 @@ export const SURGERIES: Surgery[] = [
     id: "cesarean",
     name: "Sezaryen (C/S)",
     category: "Obstetrik",
+    region: "Kadın Doğum",
     aliases: ["sezaryen", "c-section", "cesarean section"],
     clinicalNote: "Acil/kombine spinal-epidural gibi durumlarda teknik seçimi klinik senaryoya göre değişir; bu yalnızca elektif/rutin spinal için tipik bir referanstır.",
     blocks: [
@@ -196,9 +411,14 @@ export const SURGERIES: Surgery[] = [
         name: "Spinal Anestezi",
         role: "primary",
         summary: "Elektif sezaryende standart teknik; genellikle intratekal opioid ile kombine edilir.",
-        anesthetics: [
-          { drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [1.6, 2.2], note: "≈8–11 mg intratekal" },
+        anesthetics: [{ drug: "Bupivakain %0.5 (hiperbarik)", concentrationPercent: 0.5, volumeMlRange: [1.6, 2.2], note: "≈8–11 mg intratekal" }],
+        contraindications: [
+          "Hasta reddi",
+          "Enjeksiyon bölgesinde lokal enfeksiyon",
+          "Düzeltilmemiş koagülopati / antikoagülan kullanımı",
+          "Ciddi hipovolemi / dekompanse kanama",
         ],
+        score: { safety: 4, convenience: 5, rationale: "Yaygın kullanılan, güvenilir teknik; ana risk pozisyonel hipotansiyondur." },
       },
       {
         id: "cs-tap",
@@ -206,6 +426,8 @@ export const SURGERIES: Surgery[] = [
         role: "adjunct",
         summary: "İntratekal opioid verilemediğinde veya ek postoperatif analjezi için.",
         anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [15, 20], note: "her iki tarafa" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel karın duvarı düzlemi; düşük komplikasyon riski." },
       },
     ],
   },
@@ -213,6 +435,7 @@ export const SURGERIES: Surgery[] = [
     id: "appendectomy",
     name: "Açık / Laparoskopik Apendektomi",
     category: "Genel Cerrahi",
+    region: "Genel Cerrahi",
     aliases: ["apendektomi", "appendectomy"],
     blocks: [
       {
@@ -221,6 +444,8 @@ export const SURGERIES: Surgery[] = [
         role: "primary",
         summary: "Genel anesteziye ek olarak karın duvarı ağrısını hedefleyen postoperatif analjezi bloğu.",
         anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20], note: "her iki tarafa" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; USG'de kolay tanınır." },
       },
       {
         id: "app-rectus-sheath",
@@ -228,6 +453,8 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "Orta hat/periumbilikal port yerlerinde ek analjezi için.",
         anesthetics: [{ drug: "Ropivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [10, 15] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel, düşük riskli bir teknik." },
       },
     ],
   },
@@ -235,6 +462,7 @@ export const SURGERIES: Surgery[] = [
     id: "inguinal-hernia",
     name: "İnguinal Herni Onarımı",
     category: "Genel Cerrahi",
+    region: "Genel Cerrahi",
     aliases: ["kasık fıtığı", "inguinal herni", "hernia repair"],
     blocks: [
       {
@@ -243,6 +471,8 @@ export const SURGERIES: Surgery[] = [
         role: "primary",
         summary: "Kasık bölgesi cerrahisi için hedefe yönelik saha bloğu; cerrah tarafından intraoperatif de uygulanabilir.",
         anesthetics: [{ drug: "Ropivakain %0.25", concentrationPercent: 0.25, volumeMlRange: [10, 15] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Enjeksiyonun çok medial/derin yapılması durumunda barsak ponksiyonu riski (teknik dikkat gerektirir)"],
+        score: { safety: 4, convenience: 4, rationale: "Genelde güvenli; çok derin/medial enjeksiyonda barsak ponksiyonu bildirilmiştir." },
       },
       {
         id: "hernia-tap",
@@ -250,6 +480,236 @@ export const SURGERIES: Surgery[] = [
         role: "alternative",
         summary: "İlioinguinal bloğa alternatif veya ek olarak.",
         anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; düşük komplikasyon riski." },
+      },
+    ],
+    combinations: [
+      {
+        id: "hernia-ilioinguinal-tap",
+        name: "İlioinguinal + TAP",
+        blockIds: ["hernia-ilioinguinal", "hernia-tap"],
+        summary: "Kasık bölgesi ve daha lateral karın duvarını birlikte kapsayan geniş analjezi.",
+        score: { safety: 4, convenience: 3, rationale: "İki ayrı enjeksiyon; toplam doz dikkatle hesaplanmalıdır." },
+      },
+    ],
+  },
+  {
+    id: "breast-surgery",
+    name: "Meme Cerrahisi (Mastektomi / Meme Koruyucu Cerrahi)",
+    category: "Genel Cerrahi",
+    region: "Genel Cerrahi",
+    aliases: ["mastektomi", "meme kanseri ameliyatı", "breast surgery"],
+    blocks: [
+      {
+        id: "breast-pecs2",
+        name: "PECS II Bloğu",
+        role: "primary",
+        summary: "Pektoral ve aksiller bölgeyi kapsayan, meme cerrahisi için yaygın kullanılan interfasyal düzlem bloğu.",
+        anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Yüzeyel-orta derinlikte düzlem bloğu; pnömotoraks riski düşük ama sıfır değil." },
+      },
+      {
+        id: "breast-serratus",
+        name: "Serratus Anterior Plan Bloğu",
+        role: "alternative",
+        summary: "Lateral göğüs duvarı ve aksillayı hedefler; PECS'e göre daha yüzeyel.",
+        anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Plevradan biraz daha uzak, yüzeyel bir düzlem." },
+      },
+      {
+        id: "breast-paravertebral",
+        name: "Paravertebral Blok",
+        role: "alternative",
+        summary: "Geniş mastektomi/aksiller diseksiyonda tercih edilebilecek daha yoğun analjezi.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [10, 15], note: "seviye başına" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Düzeltilmemiş koagülopati / antikoagülan kullanımı"],
+        score: { safety: 3, convenience: 3, rationale: "Plevraya yakınlık nedeniyle pnömotoraks riski diğerlerine göre daha yüksek; teknik olarak daha zor." },
+      },
+    ],
+    clinicalNote:
+      "PECS II bloğu, tanım gereği PECS I düzlemi (pektoralis majör-minör arası) ile serratus anterior üzerindeki ek düzlemi birlikte kapsar; bu nedenle ayrıca bir 'PECS I + II' kombinasyonu listelenmemiştir.",
+  },
+  {
+    id: "thyroidectomy",
+    name: "Tiroidektomi",
+    category: "Baş-Boyun Cerrahisi",
+    region: "Baş-Boyun",
+    aliases: ["tiroid ameliyatı", "thyroidectomy"],
+    blocks: [
+      {
+        id: "thyroid-scpb",
+        name: "Yüzeyel Servikal Pleksus Bloğu",
+        role: "primary",
+        summary: "Genel anesteziye ek olarak boyun insizyonu ağrısını azaltan, yaygın kullanılan yüzeyel blok.",
+        anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [10, 15], note: "her iki tarafa" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 5, rationale: "Çok yüzeyel bir blok; major komplikasyon bildirimi nadirdir, uygulaması kolaydır." },
+      },
+    ],
+    clinicalNote: "Derin servikal pleksus bloğu (frenik sinir felci, vertebral arter enjeksiyonu riskleri nedeniyle) günümüzde yüzeyel bloğa göre çok daha az tercih edilir.",
+  },
+  {
+    id: "thoracotomy",
+    name: "Torakotomi",
+    category: "Toraks Cerrahisi",
+    region: "Toraks",
+    aliases: ["akciğer ameliyatı", "torakotomi", "thoracotomy"],
+    blocks: [
+      {
+        id: "thora-paravertebral",
+        name: "Paravertebral Blok",
+        role: "primary",
+        summary: "Torakotomi analjezisinde epidurale yakın etkinlikte, tek taraflı kullanılan standart teknik.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [15, 20], note: "veya seviye başına 3-5 mL" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS, "Düzeltilmemiş koagülopati / antikoagülan kullanımı"],
+        score: { safety: 3, convenience: 3, rationale: "Plevraya ve nöraksiyel yapılara yakınlık nedeniyle pnömotoraks/epidural yayılım riski taşır." },
+      },
+      {
+        id: "thora-esp",
+        name: "Erektor Spina Plan (ESP) Bloğu",
+        role: "alternative",
+        summary: "Paravertebral bloğa göre daha yüzeyel ve daha kolay öğrenilen alternatif düzlem bloğu.",
+        anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Kemik yapı (transvers çıkıntı) üzerinde, plevradan uzak; paravertebral'e göre daha güvenli kabul edilir." },
+      },
+      {
+        id: "thora-intercostal",
+        name: "İnterkostal Sinir Bloğu",
+        role: "adjunct",
+        summary: "Cerrah tarafından direkt görüş altında da uygulanabilen, hedefe yönelik ek analjezi.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [3, 5], note: "seviye başına" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 3, convenience: 4, rationale: "Plevraya yakın; pnömotoraks riski ve çoklu enjeksiyon nedeniyle kümülatif doz artışı." },
+      },
+    ],
+    combinations: [
+      {
+        id: "thora-esp-intercostal",
+        name: "ESP + İnterkostal Blok",
+        blockIds: ["thora-esp", "thora-intercostal"],
+        summary: "ESP'nin geniş kapsamına interkostal bloğun hedefe yönelik etkisini ekleyen kombinasyon.",
+        score: { safety: 3, convenience: 3, rationale: "Toplam lokal anestezik dozu belirgin artar; çoklu enjeksiyon süre ve dikkat gerektirir." },
+        doseWarning: "Torakotomi bloklarında toplam doz genellikle diğer bölgelere göre daha yüksek hacimlerle uygulanır; ağırlık başına maksimum sınırı mutlaka kontrol edin.",
+      },
+    ],
+  },
+  {
+    id: "gyn-laparoscopy",
+    name: "Jinekolojik Laparoskopi (Laparoskopik Histerektomi vb.)",
+    category: "Jinekolojik Cerrahi",
+    region: "Kadın Doğum",
+    aliases: ["laparoskopik histerektomi", "jinekolojik laparoskopi", "gynecologic laparoscopy"],
+    blocks: [
+      {
+        id: "gynlap-tap",
+        name: "TAP Bloğu",
+        role: "primary",
+        summary: "Port yeri ve karın duvarı ağrısını hedefleyen, genel anesteziye ek analjezi bloğu.",
+        anesthetics: [{ drug: "Ropivakain %0.25–0.375", concentrationPercent: 0.25, volumeMlRange: [15, 20], note: "her iki tarafa" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel fasyal düzlem; düşük komplikasyon riski." },
+      },
+      {
+        id: "gynlap-portsite",
+        name: "Port Yeri İnfiltrasyonu",
+        role: "adjunct",
+        summary: "Cerrah tarafından kapanış sırasında doğrudan uygulanabilen basit ek analjezi.",
+        anesthetics: [{ drug: "Ropivakain %0.5 veya Bupivakain %0.25", concentrationPercent: 0.5, volumeMlRange: [3, 5], note: "port başına" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 5, rationale: "Doğrudan görüş altında, çok yüzeyel; ek ekipman/USG gerektirmez." },
+      },
+    ],
+  },
+  {
+    id: "varicose-vein",
+    name: "Variköz Ven Cerrahisi (Safenektomi / Endovenöz Ablasyon)",
+    category: "Vasküler Cerrahi",
+    region: "Vasküler",
+    aliases: ["variköz ven", "safenektomi", "endovenöz lazer ablasyon", "varicose vein surgery"],
+    blocks: [
+      {
+        id: "varicose-saphenous",
+        name: "Safen Sinir Bloğu",
+        role: "primary",
+        summary: "Büyük safen ven bölgesi cerrahisi/ablasyonu için hedefe yönelik duyusal blok.",
+        anesthetics: [{ drug: "Ropivakain %0.5", concentrationPercent: 0.5, volumeMlRange: [5, 10] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 4, rationale: "Yüzeyel, saf duyusal sinir; düşük komplikasyon riski." },
+      },
+      {
+        id: "varicose-tumescent",
+        name: "Tümesan Lokal Anestezi",
+        role: "alternative",
+        summary: "Endovenöz ablasyon sırasında ven çevresine büyük hacimde seyreltilmiş lokal anestezik infiltrasyonu.",
+        anesthetics: [{ drug: "Lidokain %0.1 (seyreltilmiş, ± epinefrin)", concentrationPercent: 0.1, volumeMlRange: [200, 400], note: "Tümesan teknikte yavaş emilim nedeniyle literatürde standart bolus lidokain sınırlarının üzerinde (kilogram başına daha yüksek) toplam dozlar güvenli kabul edilir; bu uygulamadaki genel maksimum doz hesaplayıcısı tümesan teknik için doğrudan uygulanamaz — teknik özel dozlama kılavuzlarına bakın." }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Standart teknik; toplam doz teknik özel formüllere (ör. Klein formülü) göre ayrıca hesaplanmalıdır." },
+      },
+    ],
+  },
+  {
+    id: "circumcision",
+    name: "Sünnet / Penil Cerrahi",
+    category: "Ürolojik Cerrahi",
+    region: "Genel Cerrahi",
+    aliases: ["sünnet", "circumcision", "penil cerrahi"],
+    blocks: [
+      {
+        id: "circ-penile",
+        name: "Dorsal Penil Sinir Bloğu",
+        role: "primary",
+        summary: "Sünnet ve distal penil cerrahi için hedefe yönelik, yaygın kullanılan blok.",
+        anesthetics: [
+          { drug: "Lidokain %1 (epinefrinsiz)", concentrationPercent: 1, volumeMlRange: [2, 5], note: "epinefrin kesinlikle kullanılmamalı" },
+          { drug: "Bupivakain %0.25 (epinefrinsiz)", concentrationPercent: 0.25, volumeMlRange: [2, 5], note: "epinefrin kesinlikle kullanılmamalı" },
+        ],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Basit ve etkili; uç organ (penis) olması nedeniyle epinefrinsiz solüsyon zorunludur." },
+      },
+      {
+        id: "circ-caudal",
+        name: "Kaudal Blok",
+        role: "alternative",
+        summary: "Özellikle pediatrik hastalarda tercih edilen, daha geniş bölgeyi kapsayan nöraksiyel teknik.",
+        anesthetics: [{ drug: "Ropivakain %0.2", concentrationPercent: 0.2, volumeMlRange: [10, 20], note: "hacim hasta boyuna/ağırlığına göre ayarlanır" }],
+        contraindications: [
+          "Hasta reddi (veya ebeveyn onamı yok)",
+          "Sakral bölgede lokal enfeksiyon/cilt lezyonu",
+          "Düzeltilmemiş koagülopati",
+          "Sakral anatomik anomali (örn. spina bifida)",
+        ],
+        score: { safety: 3, convenience: 3, rationale: "Nöraksiyel bir teknik olduğu için penil bloğa göre daha fazla dikkat ve deneyim gerektirir." },
+      },
+    ],
+  },
+  {
+    id: "lumbar-spine-surgery",
+    name: "Lomber Omurga Cerrahisi (Diskektomi / Füzyon)",
+    category: "Omurga Cerrahisi",
+    region: "Omurga",
+    aliases: ["bel fıtığı ameliyatı", "lomber diskektomi", "spinal füzyon", "lumbar spine surgery"],
+    blocks: [
+      {
+        id: "spine-esp",
+        name: "Erektor Spina Plan (ESP) Bloğu",
+        role: "primary",
+        summary: "Genel anesteziye ek olarak insizyon hattı boyunca analjezi sağlayan, giderek yaygınlaşan bir teknik.",
+        anesthetics: [{ drug: "Ropivakain %0.375", concentrationPercent: 0.375, volumeMlRange: [20, 30], note: "seviye başına, iki taraf gerekebilir" }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 4, convenience: 4, rationale: "Kemik yapı üzerinde, nöraksiyel yapılardan ve plevradan uzak; nispeten güvenli kabul edilir." },
+      },
+      {
+        id: "spine-wound-infiltration",
+        name: "Cerrahi Yara İnfiltrasyonu",
+        role: "adjunct",
+        summary: "Cerrah tarafından kapanış sırasında doğrudan uygulanan basit ek analjezi.",
+        anesthetics: [{ drug: "Ropivakain %0.5 veya Bupivakain %0.25", concentrationPercent: 0.5, volumeMlRange: [15, 20] }],
+        contraindications: [...GENERAL_CONTRAINDICATIONS],
+        score: { safety: 5, convenience: 5, rationale: "Doğrudan görüş altında, ek ekipman gerektirmeyen en basit yöntem." },
       },
     ],
   },
@@ -259,7 +719,7 @@ export function searchSurgeries(query: string): Surgery[] {
   const q = query.trim().toLocaleLowerCase("tr");
   if (!q) return SURGERIES;
   return SURGERIES.filter((s) => {
-    const haystack = [s.name, s.category, ...s.aliases].join(" ").toLocaleLowerCase("tr");
+    const haystack = [s.name, s.category, s.region, ...s.aliases].join(" ").toLocaleLowerCase("tr");
     return haystack.includes(q);
   });
 }

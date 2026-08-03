@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { ScoreBadges } from "@/components/score-badges";
 import { BlockOption } from "@/data/types";
 import { colors, spacing } from "@/theme";
 import { volumeRangeToMgRange } from "@/utils/dose-math";
@@ -39,6 +40,19 @@ export function BlockCard({ block }: { block: BlockOption }) {
       </View>
 
       {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
+
+      <ScoreBadges score={block.score} />
+
+      {block.contraindications && block.contraindications.length > 0 ? (
+        <View style={styles.contraCard}>
+          <Text style={styles.contraTitle}>Kontrendikasyonlar</Text>
+          {block.contraindications.map((c) => (
+            <Text key={c} style={styles.contraItem}>
+              •  {c}
+            </Text>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -113,5 +127,22 @@ const styles = StyleSheet.create({
   landmark: {
     fontSize: 12,
     color: colors.textMuted,
+  },
+  contraCard: {
+    backgroundColor: colors.dangerBg,
+    borderRadius: 8,
+    padding: spacing.sm,
+    gap: 2,
+    marginTop: spacing.xs,
+  },
+  contraTitle: {
+    fontSize: 11.5,
+    fontWeight: "700",
+    color: colors.danger,
+  },
+  contraItem: {
+    fontSize: 12,
+    color: colors.danger,
+    lineHeight: 17,
   },
 });
