@@ -546,7 +546,7 @@ export const SURGERIES: Surgery[] = [
         coverage: {
           dermatomes: "T9–L1",
           motorEffect: "Yok (yalnızca duyusal).",
-          frontZones: ["abdomen-upper", "abdomen-lower"],
+          frontZones: ["abdomen-upper", "abdomen-mid", "abdomen-lower", "groin"],
         },
       },
     ],
@@ -638,7 +638,7 @@ export const SURGERIES: Surgery[] = [
         coverage: {
           dermatomes: "T2–T9 (ön ve yan göğüs duvarı, aksilla)",
           motorEffect: "Pektoral kaslarda hafif güçsüzlük; uzun torasik/torakodorsal etkiyle hafif skapular kas güçsüzlüğü olabilir.",
-          frontZones: ["chest", "shoulder"],
+          frontZones: ["chest-upper", "chest-lower", "abdomen-upper", "shoulder"],
         },
       },
     ],

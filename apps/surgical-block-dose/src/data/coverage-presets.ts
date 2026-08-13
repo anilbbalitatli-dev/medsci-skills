@@ -24,13 +24,13 @@ export const COVERAGE = {
   spinalLowerLimb: {
     dermatomes: "T10–S5 (kalça, bacak ve alt karının tamamı, iki taraflı)",
     motorEffect: "Yoğun, iki taraflı alt ekstremite motor bloğu (kalça-diz-ayak bileği hareketlerinin tamamı etkilenir).",
-    frontZones: ["abdomen-lower", "groin", "thigh-anterior", "thigh-medial", "knee", "lowerleg-anterior", "foot-top"],
+    frontZones: ["abdomen-mid", "abdomen-lower", "groin", "thigh-anterior", "thigh-medial", "knee", "lowerleg-anterior", "foot-top"],
     backZones: ["thigh-posterior", "knee", "calf", "heel-sole"],
   } satisfies Coverage,
   spinalCesarean: {
     dermatomes: "T4–S5 (göbek üstünden bacaklara, iki taraflı)",
     motorEffect: "Yoğun, iki taraflı alt ekstremite ve karın duvarı motor bloğu.",
-    frontZones: ["abdomen-upper", "abdomen-lower", "groin", "thigh-anterior", "thigh-medial", "knee", "lowerleg-anterior", "foot-top"],
+    frontZones: ["abdomen-upper", "abdomen-mid", "abdomen-lower", "groin", "thigh-anterior", "thigh-medial", "knee", "lowerleg-anterior", "foot-top"],
     backZones: ["thigh-posterior", "knee", "calf", "heel-sole"],
   } satisfies Coverage,
   peng: {
@@ -86,12 +86,12 @@ export const COVERAGE = {
   tap: {
     dermatomes: "T10–L1",
     motorEffect: "Yok (yalnızca duyusal; karın duvarı kas gücü fonksiyonel olarak etkilenmez).",
-    frontZones: ["abdomen-lower"],
+    frontZones: ["abdomen-mid", "abdomen-lower", "groin"],
   } satisfies Coverage,
   rectusSheath: {
     dermatomes: "T9–T11 (periumbilikal)",
     motorEffect: "Yok (yalnızca duyusal).",
-    frontZones: ["abdomen-upper", "abdomen-lower"],
+    frontZones: ["abdomen-upper", "abdomen-mid", "abdomen-lower"],
   } satisfies Coverage,
   ilioinguinal: {
     dermatomes: "L1 (± T12)",
@@ -101,17 +101,17 @@ export const COVERAGE = {
   pecs2: {
     dermatomes: "T2–T6 (ön-yan göğüs duvarı, aksilla)",
     motorEffect: "Pektoral kaslarda hafif güçsüzlük (fonksiyonel önemi sınırlı).",
-    frontZones: ["chest", "shoulder"],
+    frontZones: ["chest-upper", "chest-lower", "shoulder"],
   } satisfies Coverage,
   serratus: {
     dermatomes: "T2–T9 (lateral göğüs duvarı)",
     motorEffect: "Uzun torasik/torakodorsal sinir etkisiyle hafif skapular kas güçsüzlüğü olabilir.",
-    frontZones: ["chest"],
+    frontZones: ["chest-upper", "chest-lower", "abdomen-upper"],
   } satisfies Coverage,
   paravertebralBreast: {
     dermatomes: "İşlem seviyesine göre T2–T6",
     motorEffect: "İlgili seviyelerde hafif interkostal kas güçsüzlüğü.",
-    frontZones: ["chest"],
+    frontZones: ["chest-upper", "chest-lower"],
   } satisfies Coverage,
   scpb: {
     dermatomes: "C2–C4 (anterolateral boyun)",
@@ -121,19 +121,19 @@ export const COVERAGE = {
   paravertebralThoracotomy: {
     dermatomes: "İşlem seviyesine göre T4–T8",
     motorEffect: "İlgili seviyelerde interkostal kas güçsüzlüğü.",
-    frontZones: ["chest"],
+    frontZones: ["chest-lower", "abdomen-upper"],
     backZones: ["upper-back"],
   } satisfies Coverage,
   espThoracotomy: {
     dermatomes: "T4–T8 (yaklaşık; yayılım değişken)",
     motorEffect: "İlgili seviyelerde hafif interkostal kas güçsüzlüğü.",
-    frontZones: ["chest"],
+    frontZones: ["chest-lower", "abdomen-upper"],
     backZones: ["upper-back"],
   } satisfies Coverage,
   intercostal: {
     dermatomes: "Enjekte edilen seviye(ler)",
     motorEffect: "İlgili seviyede interkostal kas güçsüzlüğü.",
-    frontZones: ["chest"],
+    frontZones: ["chest-lower", "abdomen-upper"],
     backZones: ["upper-back"],
   } satisfies Coverage,
   portSiteInfiltration: {

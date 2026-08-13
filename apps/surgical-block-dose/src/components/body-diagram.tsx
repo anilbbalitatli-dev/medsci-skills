@@ -4,25 +4,53 @@ import Svg, { ClipPath, Defs, Ellipse, Path, Rect } from "react-native-svg";
 import { BodyZone } from "@/data/types";
 import { colors, spacing } from "@/theme";
 
-const ZONE_LABEL: Record<BodyZone, string> = {
-  "head-neck": "Baş-Boyun",
-  shoulder: "Omuz",
+export const ZONE_LABEL: Record<BodyZone, string> = {
+  "head-neck": "Baş-Boyun (C2–C4)",
+  shoulder: "Omuz (C5)",
   "upper-arm": "Üst Kol",
-  "forearm-hand": "Önkol-El",
-  chest: "Göğüs Duvarı",
-  "abdomen-upper": "Üst Karın",
-  "abdomen-lower": "Alt Karın",
-  groin: "Kasık",
-  "thigh-anterior": "Uyluk Ön",
-  "thigh-medial": "Uyluk Medial",
-  knee: "Diz",
-  "lowerleg-anterior": "Bacak Ön",
-  "foot-top": "Ayak Sırtı",
-  "upper-back": "Üst Sırt",
-  "lower-back": "Bel (Lomber)",
-  "thigh-posterior": "Uyluk Arka",
-  calf: "Baldır",
-  "heel-sole": "Topuk/Taban",
+  "forearm-hand": "Önkol-El (C6–C8)",
+  "chest-upper": "Üst Göğüs (T2–T3)",
+  "chest-lower": "Alt Göğüs / Meme Hattı (T4–T6)",
+  "abdomen-upper": "Üst Karın (T7–T9)",
+  "abdomen-mid": "Göbek Hizası (T10)",
+  "abdomen-lower": "Alt Karın (T11–T12)",
+  groin: "Kasık (L1)",
+  "thigh-anterior": "Uyluk Ön (L2–L3)",
+  "thigh-medial": "Uyluk Medial (L3–L4)",
+  knee: "Diz (L3–L4)",
+  "lowerleg-anterior": "Bacak Ön (L4–L5)",
+  "foot-top": "Ayak Sırtı (L5)",
+  "upper-back": "Üst Sırt (T2–T9)",
+  "lower-back": "Bel / Lomber (T10–L2)",
+  "thigh-posterior": "Uyluk Arka (S1–S2)",
+  calf: "Baldır (S1)",
+  "heel-sole": "Topuk/Taban (S1)",
+};
+
+const ALL_ZONES = Object.keys(ZONE_LABEL) as BodyZone[];
+
+// Distinct hues so a full reference legend can show every zone at once.
+const ZONE_COLOR: Record<BodyZone, string> = {
+  "head-neck": "#8E7CC3",
+  shoulder: "#4F86C6",
+  "upper-arm": "#3AA6A6",
+  "forearm-hand": "#3AA65C",
+  "chest-upper": "#8FB93A",
+  "chest-lower": "#D4B93A",
+  "abdomen-upper": "#D98A3A",
+  "abdomen-mid": "#D9603A",
+  "abdomen-lower": "#C7433F",
+  groin: "#B23A6B",
+  "thigh-anterior": "#8A3AA6",
+  "thigh-medial": "#5C3AA6",
+  knee: "#3A4FA6",
+  "lowerleg-anterior": "#3A86A6",
+  "foot-top": "#3AA687",
+  "upper-back": "#7AA63A",
+  "lower-back": "#A6923A",
+  "thigh-posterior": "#A65C3A",
+  calf: "#A63A5C",
+  "heel-sole": "#7A3AA6",
 };
 
 // Simplified schematic silhouette — not anatomically precise, for approximate
@@ -43,15 +71,19 @@ const SILHOUETTE = (
   </>
 );
 
-const FRONT_BANDS: { zone: BodyZone; x: number; y: number; w: number; h: number }[] = [
+type Band = { zone: BodyZone; x: number; y: number; w: number; h: number };
+
+export const FRONT_BANDS: Band[] = [
   { zone: "head-neck", x: 20, y: 0, w: 60, h: 22 },
   { zone: "shoulder", x: 0, y: 22, w: 100, h: 10 },
-  { zone: "chest", x: 20, y: 22, w: 60, h: 30 },
+  { zone: "chest-upper", x: 20, y: 22, w: 60, h: 14 },
+  { zone: "chest-lower", x: 20, y: 36, w: 60, h: 16 },
   { zone: "upper-arm", x: 0, y: 32, w: 100, h: 34 },
-  { zone: "abdomen-upper", x: 20, y: 52, w: 60, h: 22 },
+  { zone: "abdomen-upper", x: 20, y: 52, w: 60, h: 14 },
   { zone: "forearm-hand", x: 0, y: 66, w: 100, h: 56 },
-  { zone: "abdomen-lower", x: 20, y: 74, w: 60, h: 22 },
-  { zone: "groin", x: 20, y: 96, w: 60, h: 10 },
+  { zone: "abdomen-mid", x: 20, y: 66, w: 60, h: 8 },
+  { zone: "abdomen-lower", x: 20, y: 74, w: 60, h: 14 },
+  { zone: "groin", x: 20, y: 88, w: 60, h: 10 },
   { zone: "thigh-anterior", x: 0, y: 98, w: 50, h: 58 },
   { zone: "thigh-medial", x: 50, y: 98, w: 50, h: 58 },
   { zone: "knee", x: 0, y: 156, w: 100, h: 20 },
@@ -59,7 +91,7 @@ const FRONT_BANDS: { zone: BodyZone; x: number; y: number; w: number; h: number 
   { zone: "foot-top", x: 0, y: 205, w: 100, h: 15 },
 ];
 
-const BACK_BANDS: { zone: BodyZone; x: number; y: number; w: number; h: number }[] = [
+export const BACK_BANDS: Band[] = [
   { zone: "head-neck", x: 20, y: 0, w: 60, h: 22 },
   { zone: "upper-back", x: 0, y: 22, w: 100, h: 40 },
   { zone: "lower-back", x: 0, y: 62, w: 100, h: 36 },
@@ -69,18 +101,24 @@ const BACK_BANDS: { zone: BodyZone; x: number; y: number; w: number; h: number }
   { zone: "heel-sole", x: 0, y: 205, w: 100, h: 15 },
 ];
 
-function Figure({ bands, active, accent }: { bands: typeof FRONT_BANDS; active: Set<BodyZone>; accent: string }) {
+function Figure({
+  bands,
+  fill,
+}: {
+  bands: Band[];
+  fill: (zone: BodyZone) => string | null;
+}) {
   return (
-    <Svg viewBox="0 0 100 220" width={82} height={180}>
+    <Svg viewBox="0 0 100 220" width={92} height={202}>
       <Defs>
         <ClipPath id="body-clip">{SILHOUETTE}</ClipPath>
       </Defs>
       <Rect x={0} y={0} width={100} height={220} clipPath="url(#body-clip)" fill={colors.chip} />
-      {bands
-        .filter((b) => active.has(b.zone))
-        .map((b, i) => (
-          <Rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} clipPath="url(#body-clip)" fill={accent} opacity={0.88} />
-        ))}
+      {bands.map((b, i) => {
+        const color = fill(b.zone);
+        if (!color) return null;
+        return <Rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} clipPath="url(#body-clip)" fill={color} opacity={0.9} />;
+      })}
       <Rect
         x={0.75}
         y={0.75}
@@ -113,18 +151,44 @@ export function BodyDiagram({
       <View style={styles.figures}>
         {frontZones.length > 0 ? (
           <View style={styles.figureBlock}>
-            <Figure bands={FRONT_BANDS} active={front} accent={colors.primary} />
+            <Figure bands={FRONT_BANDS} fill={(z) => (front.has(z) ? colors.primary : null)} />
             <Text style={styles.figureLabel}>Ön</Text>
           </View>
         ) : null}
         {backZones.length > 0 ? (
           <View style={styles.figureBlock}>
-            <Figure bands={BACK_BANDS} active={back} accent={colors.primary} />
+            <Figure bands={BACK_BANDS} fill={(z) => (back.has(z) ? colors.primary : null)} />
             <Text style={styles.figureLabel}>Arka</Text>
           </View>
         ) : null}
       </View>
       <Text style={styles.legend}>Yaklaşık kapsanan bölge: {allLabels.join(", ")}</Text>
+    </View>
+  );
+}
+
+/** Full reference chart — every zone shown at once in a distinct color, with a legend. */
+export function FullDermatomeMap() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.figures}>
+        <View style={styles.figureBlock}>
+          <Figure bands={FRONT_BANDS} fill={(z) => ZONE_COLOR[z]} />
+          <Text style={styles.figureLabel}>Ön</Text>
+        </View>
+        <View style={styles.figureBlock}>
+          <Figure bands={BACK_BANDS} fill={(z) => ZONE_COLOR[z]} />
+          <Text style={styles.figureLabel}>Arka</Text>
+        </View>
+      </View>
+      <View style={styles.legendGrid}>
+        {ALL_ZONES.map((z) => (
+          <View key={z} style={styles.legendRow}>
+            <View style={[styles.legendSwatch, { backgroundColor: ZONE_COLOR[z] }]} />
+            <Text style={styles.legendText}>{ZONE_LABEL[z]}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
@@ -149,5 +213,23 @@ const styles = StyleSheet.create({
   legend: {
     fontSize: 11.5,
     color: colors.textMuted,
+  },
+  legendGrid: {
+    marginTop: spacing.md,
+    gap: 6,
+  },
+  legendRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  legendSwatch: {
+    width: 14,
+    height: 14,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 13,
+    color: colors.text,
   },
 });

@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: "Cerrahiler" }} />
         <Stack.Screen name="surgery/[id]" options={{ title: "Blok Önerisi" }} />
         <Stack.Screen name="last-info" options={{ title: "LAST Bilgisi", presentation: "modal" }} />
+        <Stack.Screen name="dermatome-map" options={{ title: "Dermatom Haritası", presentation: "modal" }} />
       </Stack>
     </SafeAreaProvider>
   );
