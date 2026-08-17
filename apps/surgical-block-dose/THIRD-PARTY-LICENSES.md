@@ -13,12 +13,26 @@ Bu uygulama, aşağıdaki üçüncü taraf materyalini içerir.
 >
 > - Uygulama **ücretsiz/eğitim amaçlı** kaldığı sürece sorun yoktur.
 > - Uygulamayı **ücretli hale getirir veya ticari bir üründe kullanırsanız**,
->   aşağıda listelenen `usg-*.jpg` dosyalarını **silmeniz** gerekir. Kod
->   bunları kaybettiğinde çökmez; ilgili blok kartı yalnızca şematik
->   sonoanatomi çizimini gösterir.
+>   aşağıda listelenen `usg-*.jpg` dosyalarını çıkarmanız gerekir.
 > - Depoyu MIT şartlarıyla yeniden kullanan üçüncü kişiler de aynı kısıtla
 >   bağlıdır; bu nedenle kısıt hem burada hem `assets/reference/README.md`
 >   içinde belirtilmiştir.
+>
+> ### Nasıl çıkarılır
+>
+> ```bash
+> ./scripts/strip-noncommercial-assets.sh
+> ```
+>
+> **Dosyaları tek başına silmek yetmez ve build'i kırar.** Metro `require()`
+> çağrılarını derleme sırasında çözdüğü için, kayıttaki satır dururken dosya
+> yoksa paketleme `Unable to resolve module` hatasıyla durur. Script ikisini
+> birlikte kaldırır: `src/data/block-images.ts` içindeki `@noncommercial`
+> işaretli satırları ve işaret ettikleri dosyaları.
+>
+> Sonrasında ilgili blok kartları şematik sonoanatomi çizimine düşer; o
+> çizimler bu depoya özgü orijinal çalışmadır ve hiçbir kısıt taşımaz.
+> Script çalıştırıldıktan sonra bu bölümü de dosyadan silin.
 
 ## ISNCSCI Dermatom Diyagramı
 

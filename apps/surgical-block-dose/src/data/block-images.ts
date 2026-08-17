@@ -24,12 +24,15 @@ import { ImageSourcePropType } from "react-native";
 export const REFERENCE_IMAGES: Record<string, ImageSourcePropType> = {
   // Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199 — CC BY-NC 4.0.
   // Cropped to the ultrasound panels; see THIRD-PARTY-LICENSES.md. These files
-  // are NOT covered by this repository's MIT license.
-  "usg-paravertebral": require("../../assets/reference/usg-paravertebral.jpg"),
-  "usg-intercostal": require("../../assets/reference/usg-intercostal.jpg"),
-  "usg-esp": require("../../assets/reference/usg-esp.jpg"),
-  "usg-pecs2": require("../../assets/reference/usg-pecs2.jpg"),
-  "usg-serratus": require("../../assets/reference/usg-serratus.jpg"),
+  // are NOT covered by this repository's MIT license and may not be used
+  // commercially. Entries carrying the marker at the end of the line are
+  // stripped by scripts/strip-noncommercial-assets.sh — keep that marker on
+  // any future entry with the same restriction.
+  "usg-paravertebral": require("../../assets/reference/usg-paravertebral.jpg"), // @noncommercial
+  "usg-intercostal": require("../../assets/reference/usg-intercostal.jpg"), // @noncommercial
+  "usg-esp": require("../../assets/reference/usg-esp.jpg"), // @noncommercial
+  "usg-pecs2": require("../../assets/reference/usg-pecs2.jpg"), // @noncommercial
+  "usg-serratus": require("../../assets/reference/usg-serratus.jpg"), // @noncommercial
 };
 
 export function getReferenceImage(key: string): ImageSourcePropType | undefined {
