@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from "expo-router";
+import { Pressable } from "react-native";
+
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { SurgeryCard } from "@/components/surgery-card";
 import { SurgeryChip } from "@/components/surgery-chip";
@@ -36,6 +40,18 @@ export function Home() {
       ListHeaderComponent={
         <View style={styles.headerBlock}>
           <DisclaimerBanner />
+          <Link href="/combination-builder" asChild>
+            <Pressable style={({ pressed }) => [styles.builderButton, pressed && { opacity: 0.6 }]}>
+              <Ionicons name="git-merge-outline" size={18} color={colors.primary} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
+                <Text style={styles.builderSub}>
+                  2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            </Pressable>
+          </Link>
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -88,6 +104,24 @@ const styles = StyleSheet.create({
   headerBlock: {
     gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  builderButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.primaryMuted,
+    borderRadius: 12,
+    padding: spacing.md,
+  },
+  builderTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.primary,
+  },
+  builderSub: {
+    fontSize: 11.5,
+    color: colors.textMuted,
+    marginTop: 1,
   },
   search: {
     backgroundColor: colors.surface,
