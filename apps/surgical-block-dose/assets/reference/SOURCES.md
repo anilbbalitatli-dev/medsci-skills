@@ -4,10 +4,10 @@ PubMed üzerinden taranarak derlenmiş, **açık erişimli (PMC'de tam metni ola
 ve sonoanatomi figürü içeren makale listesi. Amaç: hangi PDF'i açıp hangi
 figürü alacağınızı önceden bilmeniz.
 
-> **Bu dosyadaki görseller uygulamaya eklenmedi.** Bu geliştirme ortamının ağ
-> politikası PMC, yayıncı siteleri ve tüm görsel barındırma servislerini
-> engellediği için figürler indirilemedi. Makaleleri siz açıp figürü
-> indirdiğinizde `README.md`'deki üç adımla eklenir.
+> **Durum:** 1 numaralı makale eklendi (5 figür). Kalanlar hâlâ bekliyor —
+> bu geliştirme ortamının ağ politikası PMC, yayıncı siteleri ve tüm görsel
+> barındırma servislerini engellediği için makaleler buradan indirilemiyor;
+> PDF'i siz gönderdiğinizde figürler çıkarılıp eklenebiliyor.
 
 ## ⚠ Lisansı mutlaka kendiniz doğrulayın
 
@@ -30,15 +30,25 @@ credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 5 (CC BY
 
 ## Liste
 
-### 1. Toraks ve göğüs duvarı — tek makalede 5 teknik
+### 1. ✅ EKLENDİ — Toraks ve göğüs duvarı, 5 figür
 
 Park D, Chang MC. *Ultrasound-guided interventions for controlling the thoracic
 spine and chest wall pain: a narrative review.* J Yeungnam Med Sci.
 2022;39(3):190-199. PMC9273134 —
 [DOI](https://doi.org/10.12701/jyms.2022.00192)
 
-Kapsadığı anahtarlar: `usg-esp`, `usg-pecs2`, ayrıca torasik paravertebral ve
-interkostal blok figürleri. **Listedeki en verimli kaynak.**
+**Lisans doğrulandı: CC BY-NC 4.0.** Beş figür de ultrason panellerine kırpılıp
+uygulamaya eklendi:
+
+| Figür | Anahtar | Görüldüğü cerrahi |
+| --- | --- | --- |
+| Fig. 3 | `usg-paravertebral` | Torakotomi, meme cerrahisi |
+| Fig. 4 | `usg-intercostal` | Torakotomi |
+| Fig. 5 | `usg-esp` | Torakotomi, lomber omurga |
+| Fig. 6 | `usg-pecs2` | Meme cerrahisi |
+| Fig. 7 | `usg-serratus` | Meme cerrahisi |
+
+⚠ CC BY-NC ticari kullanıma izin vermez — ayrıntı için `THIRD-PARTY-LICENSES.md`.
 
 ### 2. Adduktor kanal
 
@@ -92,6 +102,7 @@ Bunlar için tarama sürdürülmeli:
 | Anahtar | Teknik |
 | --- | --- |
 | `usg-tap` | Transversus abdominis düzlemi |
+| `usg-interscalene` | İnterskalen (aday: liste no. 4) |
 | `usg-peng` | PENG |
 | `usg-fascia-iliaca` | Fasya iliaka |
 | `usg-popliteal-sciatic` | Popliteal siyatik |

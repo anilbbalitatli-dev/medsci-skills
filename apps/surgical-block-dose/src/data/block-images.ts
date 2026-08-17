@@ -22,9 +22,14 @@ import { ImageSourcePropType } from "react-native";
  * license. Do not add copyrighted textbook/atlas/commercial images.
  */
 export const REFERENCE_IMAGES: Record<string, ImageSourcePropType> = {
-  // Example (uncomment once the file exists):
-  // "usg-interscalene": require("../../assets/reference/usg-interscalene.jpg"),
-  // "grays-dermatome-anterior": require("../../assets/reference/grays-dermatome-anterior.png"),
+  // Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199 — CC BY-NC 4.0.
+  // Cropped to the ultrasound panels; see THIRD-PARTY-LICENSES.md. These files
+  // are NOT covered by this repository's MIT license.
+  "usg-paravertebral": require("../../assets/reference/usg-paravertebral.jpg"),
+  "usg-intercostal": require("../../assets/reference/usg-intercostal.jpg"),
+  "usg-esp": require("../../assets/reference/usg-esp.jpg"),
+  "usg-pecs2": require("../../assets/reference/usg-pecs2.jpg"),
+  "usg-serratus": require("../../assets/reference/usg-serratus.jpg"),
 };
 
 export function getReferenceImage(key: string): ImageSourcePropType | undefined {

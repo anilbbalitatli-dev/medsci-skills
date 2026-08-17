@@ -58,13 +58,28 @@ export const USG: Record<string, ReferenceImage> = {
   },
   esp: {
     key: "usg-esp",
-    caption: "USG — ESP: transvers çıkıntı ve erektor spina kas grubu",
-    credit: CREDIT_PENDING,
+    caption: "USG — ESP: T5 ve T7 seviyesinde trapezius, romboid, erektor spina ve transvers çıkıntı",
+    credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 5 (CC BY-NC 4.0, ultrason panellerine kırpıldı)",
   },
   pecs2: {
     key: "usg-pecs2",
-    caption: "USG — PECS II: pektoralis majör/minör ve serratus anterior düzlemleri",
-    credit: CREDIT_PENDING,
+    caption: "USG — PECS: pektoralis majör/minör, serratus anterior, kotlar ve torakoakromiyal arter",
+    credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 6 (CC BY-NC 4.0, ultrason panellerine kırpıldı)",
+  },
+  paravertebral: {
+    key: "usg-paravertebral",
+    caption: "USG — Torasik paravertebral: transvers çıkıntı, plevra ve iğne yolu",
+    credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 3 (CC BY-NC 4.0, ultrason panellerine kırpıldı)",
+  },
+  intercostal: {
+    key: "usg-intercostal",
+    caption: "USG — İnterkostal: kotlar, interkostal arter ve kas tabakaları, plevra",
+    credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 4 (CC BY-NC 4.0, ultrason panellerine kırpıldı)",
+  },
+  serratus: {
+    key: "usg-serratus",
+    caption: "USG — Serratus düzlemi: latissimus dorsi, teres majör, serratus anterior ve kot",
+    credit: "Park D, Chang MC. J Yeungnam Med Sci. 2022;39(3):190-199, Fig. 7 (CC BY-NC 4.0, ultrason panellerine kırpıldı)",
   },
   spinal: {
     key: "usg-spinal",
@@ -112,6 +127,10 @@ const BY_BLOCK_ID: Record<string, ReferenceImage[]> = {
   "hernia-tap": [USG.tap],
   "gynlap-tap": [USG.tap],
   "thora-esp": [USG.esp],
+  "thora-paravertebral": [USG.paravertebral],
+  "breast-paravertebral": [USG.paravertebral],
+  "thora-intercostal": [USG.intercostal],
+  "breast-serratus": [USG.serratus],
   "spine-esp": [USG.esp],
   "breast-pecs2": [USG.pecs2],
 };

@@ -53,11 +53,12 @@ export function BlockCard({ block }: { block: BlockOption }) {
 
       <CoverageInfo coverage={block.coverage} />
 
+      {/* Real capture first, then the schematic that explains how to read it. */}
+      <ReferenceImageList images={images} />
+
       {sonoSpecs.map((spec) => (
         <SonoAnatomyView key={spec.title} spec={spec} />
       ))}
-
-      <ReferenceImageList images={images} />
 
       <ScoreBadges score={block.score} />
 
