@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
+import { SonoAnatomyView } from "@/components/sono-anatomy";
 import { imagesForBlock } from "@/data/reference-images";
+import { sonoSpecFor } from "@/data/sono-anatomy";
 import { BlockOption } from "@/data/types";
 import { colors, spacing } from "@/theme";
 import { volumeRangeToMgRange } from "@/utils/dose-math";
@@ -15,6 +17,11 @@ const ROLE_LABEL: Record<BlockOption["role"], string> = {
 };
 
 export function BlockCard({ block }: { block: BlockOption }) {
+  const images = imagesForBlock(block);
+  const sonoSpecs = images
+    .map((img) => sonoSpecFor(img.key))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
@@ -46,7 +53,11 @@ export function BlockCard({ block }: { block: BlockOption }) {
 
       <CoverageInfo coverage={block.coverage} />
 
-      <ReferenceImageList images={imagesForBlock(block)} />
+      {sonoSpecs.map((spec) => (
+        <SonoAnatomyView key={spec.title} spec={spec} />
+      ))}
+
+      <ReferenceImageList images={images} />
 
       <ScoreBadges score={block.score} />
 

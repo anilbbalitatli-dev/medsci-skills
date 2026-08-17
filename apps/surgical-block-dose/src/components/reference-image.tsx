@@ -56,11 +56,18 @@ function Lightbox({
   );
 }
 
-export function ReferenceImageView({ data }: { data: ReferenceImageData }) {
+export function ReferenceImageView({
+  data,
+  showPending = false,
+}: {
+  data: ReferenceImageData;
+  /** Render a labelled placeholder when the file isn't registered yet. */
+  showPending?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const image = getReferenceImage(data.key);
 
-  if (!image) return <PendingSlot caption={data.caption} />;
+  if (!image) return showPending ? <PendingSlot caption={data.caption} /> : null;
 
   return (
     <View style={styles.container}>
@@ -78,11 +85,12 @@ export function ReferenceImageView({ data }: { data: ReferenceImageData }) {
 }
 
 export function ReferenceImageList({ images }: { images?: ReferenceImageData[] }) {
-  if (!images || images.length === 0) return null;
+  const available = (images ?? []).filter((img) => getReferenceImage(img.key));
+  if (available.length === 0) return null;
 
   return (
     <View style={styles.list}>
-      {images.map((img) => (
+      {available.map((img) => (
         <ReferenceImageView key={img.key} data={img} />
       ))}
     </View>

@@ -1,3 +1,5 @@
+import { DermatomeLevel } from "./dermatome-figure";
+
 export type BlockRole = "primary" | "alternative" | "adjunct";
 
 export interface LocalAnestheticChoice {
@@ -21,9 +23,10 @@ export interface TechniqueScore {
 }
 
 /**
- * Named zones on the schematic body diagram (src/components/body-diagram.tsx).
- * Coverage is approximate/educational — real dermatomal boundaries vary
- * between individuals and overlap between adjacent nerves.
+ * Coarse body regions, kept as supplementary metadata alongside the precise
+ * `Coverage.levels` spinal segments that drive the dermatome figure.
+ * Approximate/educational — real dermatomal boundaries vary between
+ * individuals and overlap between adjacent nerves.
  */
 export type BodyZone =
   | "head-neck"
@@ -52,6 +55,12 @@ export interface Coverage {
   dermatomes: string;
   /** Plain-language description of expected motor block, if any. */
   motorEffect: string;
+  /**
+   * Segments to highlight on the ISNCSCI dermatome figure. Only C2-S1 exist in
+   * that diagram — techniques covering S2-S5 (perineal) or non-segmental field
+   * infiltration are described in `dermatomes` text instead and leave this empty.
+   */
+  levels?: DermatomeLevel[];
   frontZones?: BodyZone[];
   backZones?: BodyZone[];
 }

@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { BodyDiagram } from "@/components/body-diagram";
+import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { Coverage } from "@/data/types";
 import { colors, spacing } from "@/theme";
 
 export function CoverageInfo({ coverage }: { coverage: Coverage }) {
+  const levels = coverage.levels ?? [];
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -15,7 +17,13 @@ export function CoverageInfo({ coverage }: { coverage: Coverage }) {
         <Text style={styles.label}>Motor blok</Text>
         <Text style={styles.value}>{coverage.motorEffect}</Text>
       </View>
-      <BodyDiagram frontZones={coverage.frontZones} backZones={coverage.backZones} />
+      {levels.length > 0 ? (
+        <DermatomeFigureCard
+          levels={levels}
+          height={260}
+          caption={`Boyalı alanlar: ${levels.join(", ")} — yaklaşık duyusal kapsama.`}
+        />
+      ) : null}
     </View>
   );
 }
