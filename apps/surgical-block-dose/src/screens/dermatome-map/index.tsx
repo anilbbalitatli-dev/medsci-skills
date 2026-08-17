@@ -20,19 +20,18 @@ export function DermatomeMap() {
       <View style={styles.noteCard}>
         <Text style={styles.noteText}>
           ISNCSCI (spinal kord yaralanması sınıflandırması) dermatom şeması. Blok kartlarındaki
-          şekiller de bu haritanın aynısıdır; orada yalnızca ilgili segmentler boyalıdır.
-          Dermatom sınırları kişiden kişiye değişir ve komşu segmentlerle örtüşür.
+          şekiller de bu haritanın aynısıdır; orada yalnızca ilgili segmentler boyalıdır. Arka
+          figür, lumbosakral segmentleri kapsayan bloklarda otomatik olarak görünür. Dermatom
+          sınırları kişiden kişiye değişir ve komşu segmentlerle örtüşür.
         </Text>
       </View>
 
-      <DermatomeFigureCard height={520} showLabels caption="C2–S1 segmentleri ve etiketleri." />
-
-      <View style={styles.noteCard}>
-        <Text style={styles.noteText}>
-          S2–S5 (perine/eyer bölgesi) bu şemada yer almaz; bu segmentleri kapsayan teknikler
-          (kaudal blok, penil blok) kartlarında yalnızca metinle belirtilir.
-        </Text>
-      </View>
+      <DermatomeFigureCard
+        height={440}
+        showLabels
+        alwaysShowPosterior
+        caption="Ön figür C2–S1; arka figür alt ekstremite ve perine (L2–S5)."
+      />
 
       {hasPlates ? (
         <>

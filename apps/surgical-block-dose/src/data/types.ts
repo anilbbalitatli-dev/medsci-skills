@@ -1,4 +1,4 @@
-import { DermatomeLevel } from "./dermatome-figure";
+import { DermatomeLevel, PosteriorLevel } from "./dermatome-figure";
 
 export type BlockRole = "primary" | "alternative" | "adjunct";
 
@@ -56,11 +56,12 @@ export interface Coverage {
   /** Plain-language description of expected motor block, if any. */
   motorEffect: string;
   /**
-   * Segments to highlight on the ISNCSCI dermatome figure. Only C2-S1 exist in
-   * that diagram — techniques covering S2-S5 (perineal) or non-segmental field
-   * infiltration are described in `dermatomes` text instead and leave this empty.
+   * Segments to highlight on the ISNCSCI dermatome figures. C2-S1 appear on the
+   * anterior figure; L2-S3 also appear on the posterior lower-body figure, which
+   * is shown automatically when any such level is listed. Non-segmental field
+   * infiltration is described in `dermatomes` text instead and leaves this empty.
    */
-  levels?: DermatomeLevel[];
+  levels?: (DermatomeLevel | PosteriorLevel)[];
   frontZones?: BodyZone[];
   backZones?: BodyZone[];
 }
