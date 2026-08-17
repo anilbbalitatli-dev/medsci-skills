@@ -9,6 +9,26 @@ figürü alacağınızı önceden bilmeniz.
 > barındırma servislerini engellediği için makaleler buradan indirilemiyor;
 > PDF'i siz gönderdiğinizde figürler çıkarılıp eklenebiliyor.
 
+## Seçim sırası: önce lisans, sonra verimlilik
+
+Bu listenin ilk hâlinde makaleler "kaç figür veriyor" diye sıralanmıştı ve
+başa konan makale (no. 1) aynı zamanda **en kısıtlı lisanslı** olandı: CC BY-NC,
+yani ticari kullanıma kapalı. Uygulamadaki 5 gerçek USG görüntüsünün ticari
+kısıtı buradan geliyor.
+
+Doğru sıra şudur:
+
+1. **CC BY 4.0** (Cureus'un tamamı) — hiçbir kısıt yok, önce burada arayın.
+2. **CC BY-NC** — yalnızca uygulama ücretsiz kalacaksa.
+3. Diğerleri — kullanmayın.
+
+**Değiştirme fırsatı:** `usg-paravertebral` için aşağıdaki no. 3 (Wardhan &
+Kantamneni, Cureus, CC BY 4.0) doğrudan bir muadil; oradaki figür alınırsa o
+görselin ticari kısıtı kalkar. `usg-esp`, `usg-pecs2`, `usg-serratus` ve
+`usg-intercostal` için CC BY 4.0 muadili bulunamadı — Cureus'ta bu bloklara
+dair makaleler var ama çoğu derleme/meta-analiz olduğu için orijinal ultrason
+figürü içermeleri olası değil.
+
 ## ⚠ Lisansı mutlaka kendiniz doğrulayın
 
 Aşağıdaki makalelerin **açık erişimli olduğu doğrulandı**, ancak her birinin
