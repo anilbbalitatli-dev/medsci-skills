@@ -56,6 +56,22 @@ export interface Coverage {
   backZones?: BodyZone[];
 }
 
+/**
+ * A real photographic/anatomical reference image (ultrasound capture,
+ * anatomical plate). The actual file is resolved through the static asset
+ * registry in ./block-images.ts by `key`.
+ *
+ * `credit` is REQUIRED and is always rendered under the image: every image in
+ * this app must be either the author's own material, public domain, or under a
+ * license that permits redistribution. Never add an image whose license you
+ * cannot state on this line.
+ */
+export interface ReferenceImage {
+  key: string;
+  caption: string;
+  credit: string;
+}
+
 export interface BlockOption {
   id: string;
   name: string;
@@ -66,6 +82,7 @@ export interface BlockOption {
   contraindications?: string[];
   score: TechniqueScore;
   coverage: Coverage;
+  images?: ReferenceImage[];
 }
 
 export interface BlockCombination {

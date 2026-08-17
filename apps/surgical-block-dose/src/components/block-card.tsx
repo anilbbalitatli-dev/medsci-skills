@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { CoverageInfo } from "@/components/coverage-info";
+import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
+import { imagesForBlock } from "@/data/reference-images";
 import { BlockOption } from "@/data/types";
 import { colors, spacing } from "@/theme";
 import { volumeRangeToMgRange } from "@/utils/dose-math";
@@ -43,6 +45,8 @@ export function BlockCard({ block }: { block: BlockOption }) {
       {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
 
       <CoverageInfo coverage={block.coverage} />
+
+      <ReferenceImageList images={imagesForBlock(block)} />
 
       <ScoreBadges score={block.score} />
 
