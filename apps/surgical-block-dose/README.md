@@ -57,6 +57,47 @@ Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
 
+### Sinir modeli ve kombinasyon analizi
+
+Kombinasyon oluşturucusu, blokları serbest metin "kapsama" bilgisiyle değil,
+sinir düzeyinde karşılaştırır:
+
+- `src/data/nerves.ts` — sinirler bir yönlü çevrimsiz çizge (DAG) olarak
+  tutulur. Her sinir hangi yapıdan çıktığını bildirir; bir siniri bloke etmek
+  ondan sonra gelen her şeyi bloke eder. Bu sayede "safen sinir femoral sinirin
+  dalıdır, femoral blok yapılmışsa zaten kapsanır" ilişkisi elle yazılmaz,
+  anatomiden hesaplanır. Birden çok kökten beslenen bir sinir (radial sinir üç
+  trunkustan gelir) yalnızca köklerinin tamamı bloke edilmişse *tam*, aksi
+  hâlde *kısmi* sayılır — interskalen bloğun ulnar tarafı açık bırakması bu
+  şekilde doğru çıkar.
+- `src/data/technique-nerves.ts` — her tekniğin hangi sinirleri, hangi
+  güvenilirlikle tuttuğu. Bloklar sinirin *bir noktasında* yapıldığı için
+  teknikler ulaşabildikleri en distal yapıyı hedef gösterir. `commonlyMissed`,
+  çizgenin kapsanmış sayacağı ama o yaklaşımın pratikte kaçırdığı sinirleri
+  işaretler.
+- `src/data/combination-analysis.ts` — kapanım hesabı, sinir sinir kapsama
+  tablosu ve bulgular. Bir bloğun kimsenin kapsamadığı hiçbir siniri kalmamışsa
+  *gereksiz tekrar* olarak işaretlenir. Çizgenin ifade edemediği klinik
+  gerçekler (aynı pleksusa iki yaklaşım, frenik yükü, orta hat/yan duvar
+  ayrımı) `INTERACTION_RULES` içinde elle tutulur; `complementary` bir kural,
+  o çift için otomatik tekrar uyarısını bastırır.
+
+Yeni bir teknik eklerken `TECHNIQUES` girdisinin yanına `TECHNIQUE_NERVES`
+girdisini de eklemek gerekir; aksi hâlde teknik kombinasyon analizinde sinirsiz
+görünür.
+
+## Web artifact üretimi
+
+```bash
+npx expo export --platform web
+node scripts/build-web-artifact.js
+```
+
+İkinci komut `dist/` çıktısını tek bir kendi kendine yeten HTML dosyasına
+katlar: bundle satır içine alınır, varlıklar `data:` URI'ye çevrilir ve
+expo-router'ın iç içe bir yolda "Unmatched Route" göstermemesi için bir
+`history.replaceState` düzeltmesi eklenir.
+
 ## Çalıştırma
 
 ```bash

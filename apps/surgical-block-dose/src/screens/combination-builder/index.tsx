@@ -3,8 +3,10 @@ import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { CombinationFindings } from "@/components/combination-findings";
 import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { DoseMeter, DoseMeterRow } from "@/components/dose-meter";
+import { NerveCoverageList } from "@/components/nerve-coverage";
 import {
   AGE_BANDS,
   AgeBand,
@@ -12,11 +14,24 @@ import {
   maxTotalVolumeMl,
   SelectedBlockDose,
 } from "@/data/age-dosing";
+import { analyzeCombination } from "@/data/combination-analysis";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
+import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
 import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
 
 const MAX_SELECTION = 3;
+
+/**
+ * Head-to-toe ordering for the dermatome attribution list, so segments read in
+ * anatomical sequence rather than the order the nerves happen to be stored in.
+ */
+const LEVEL_ORDER: string[] = [
+  ...Array.from({ length: 7 }, (_, i) => `C${i + 2}`),
+  ...Array.from({ length: 12 }, (_, i) => `T${i + 1}`),
+  ...Array.from({ length: 5 }, (_, i) => `L${i + 1}`),
+  ...Array.from({ length: 5 }, (_, i) => `S${i + 1}`),
+];
 
 /**
  * Concentrations actually used in paediatric practice, so the "how many mL do
@@ -107,11 +122,58 @@ export function CombinationBuilder() {
 
   const dose = hasWeight ? computeCombinationDose(doseInput, weightKg, band, withEpi) : null;
 
+  const analysis = useMemo(() => analyzeCombination(selected), [selected]);
+
+  /**
+   * Segments come from both sources on purpose. The curated per-technique
+   * coverage is quoted as a level range and stays authoritative for the figure;
+   * the nerve graph adds segments that belong to individual branches. Using
+   * only the nerve graph would narrow plane blocks incorrectly, since their
+   * generic thoracic target carries no level of its own.
+   */
   const levels = useMemo(() => {
     const set = new Set<string>();
     for (const t of chosen) for (const l of t.coverage.levels ?? []) set.add(l);
+    for (const c of analysis.coverage) for (const l of c.nerve.levels ?? []) set.add(l);
     return Array.from(set) as (DermatomeLevel | PosteriorLevel)[];
-  }, [chosen]);
+  }, [chosen, analysis]);
+
+  /**
+   * Dose-related caveats from the catalogue, plus the anatomical caveats from
+   * the nerve map — what a technique reaches, and what it pointedly does not.
+   */
+  const techniqueNotes = useMemo(
+    () =>
+      chosen
+        .map((t) => ({
+          id: t.id,
+          name: t.name,
+          notes: [t.note, TECHNIQUE_NERVES[t.id]?.note].filter((n): n is string => Boolean(n)),
+        }))
+        .filter((entry) => entry.notes.length > 0),
+    [chosen]
+  );
+
+  /** Motor and mixed nerves in the closure — what will actually stop working. */
+  const motorNerves = useMemo(
+    () => analysis.coverage.filter((c) => Boolean(c.nerve.motor)),
+    [analysis]
+  );
+
+  /** Which nerve accounts for each highlighted segment. */
+  const levelAttribution = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const c of analysis.coverage) {
+      for (const level of c.nerve.levels ?? []) {
+        const names = map.get(level) ?? [];
+        if (!names.includes(c.nerve.name)) names.push(c.nerve.name);
+        map.set(level, names);
+      }
+    }
+    return Array.from(map.entries()).sort(
+      (a, b) => LEVEL_ORDER.indexOf(a[0]) - LEVEL_ORDER.indexOf(b[0])
+    );
+  }, [analysis]);
 
   return (
     <ScrollView
@@ -121,9 +183,10 @@ export function CombinationBuilder() {
     >
       <View style={styles.intro}>
         <Text style={styles.introText}>
-          İstediğiniz 2–3 bloğu seçin; toplam lokal anestezik yükü, birleşik dermatom kapsaması ve
-          beklenen motor etkiler birlikte hesaplansın. Bloklar tek tek güvenli olsa da{" "}
-          <Text style={styles.bold}>dozlar toplanır</Text> — asıl kısıt budur.
+          İstediğiniz 2–3 bloğu seçin; hangi sinirlerin tek tek kapsandığı, blokların birbirini tekrar
+          edip etmediği, toplam lokal anestezik yükü ve beklenen motor etkiler birlikte hesaplansın.
+          Bir bloğun sinirleri diğerinin içinde kalıyorsa{" "}
+          <Text style={styles.bold}>kapsama genişlemez, yalnızca doz artar</Text>.
         </Text>
       </View>
 
@@ -205,7 +268,13 @@ export function CombinationBuilder() {
       {/* ---- Sonuç ---- */}
       {chosen.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>3. Toplam Doz</Text>
+          {/* Verdicts come before the arithmetic: finding out that a block is
+              redundant should change the selection, and there is no point
+              costing a combination you are about to alter. */}
+          <Text style={styles.sectionTitle}>3. Kombinasyon Değerlendirmesi</Text>
+          <CombinationFindings findings={analysis.findings} />
+
+          <Text style={styles.sectionTitle}>4. Toplam Doz</Text>
 
           {!hasWeight ? (
             <View style={styles.card}>
@@ -291,13 +360,33 @@ export function CombinationBuilder() {
           ) : null}
 
           {/* ---- Kapsama ---- */}
-          <Text style={styles.sectionTitle}>4. Birleşik Kapsama</Text>
+          <Text style={styles.sectionTitle}>5. Sinir Sinir Kapsama</Text>
+          <NerveCoverageList coverage={analysis.coverage} />
+
+          <Text style={styles.sectionTitle}>6. Dermatom Kapsaması</Text>
           {levels.length > 0 ? (
-            <DermatomeFigureCard
-              levels={levels}
-              height={300}
-              caption={`Birleşik dermatom kapsaması: ${levels.join(", ")}`}
-            />
+            <>
+              <DermatomeFigureCard
+                levels={levels}
+                height={300}
+                caption={`Birleşik dermatom kapsaması: ${levels.join(", ")}`}
+              />
+              {levelAttribution.length > 0 ? (
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>Hangi segment hangi sinirden</Text>
+                  {levelAttribution.map(([level, names]) => (
+                    <View key={level} style={styles.attrRow}>
+                      <Text style={styles.attrLevel}>{level}</Text>
+                      <Text style={styles.attrNames}>{names.join(", ")}</Text>
+                    </View>
+                  ))}
+                  <Text style={styles.additiveNote}>
+                    Şekildeki bazı segmentler, tek tek dermatom düzeyi tanımlanmayan plan bloklarından
+                    gelir; bunlar yukarıdaki listede yer almaz.
+                  </Text>
+                </View>
+              ) : null}
+            </>
           ) : (
             <View style={styles.card}>
               <Text style={styles.hint}>
@@ -307,8 +396,32 @@ export function CombinationBuilder() {
             </View>
           )}
 
-          <Text style={styles.sectionTitle}>5. Beklenen Motor Etkiler</Text>
+          <Text style={styles.sectionTitle}>7. Beklenen Motor Etkiler</Text>
           <View style={styles.card}>
+            {/* Named motor nerves first — this is the precise answer to "what
+                will stop working". The per-technique prose stays underneath
+                because it carries the degree, which a nerve list cannot. */}
+            {motorNerves.length > 0 ? (
+              <>
+                <Text style={styles.cardTitle}>Etkilenen motor sinirler</Text>
+                {motorNerves.map((c) => (
+                  <View key={c.nerve.id} style={styles.row}>
+                    <Text style={styles.rowName}>
+                      {c.nerve.name}
+                      {c.status === "partial" ? " (kısmi)" : ""}
+                    </Text>
+                    <Text style={styles.rowDose}>{c.nerve.motor}</Text>
+                  </View>
+                ))}
+              </>
+            ) : (
+              <Text style={styles.hint}>
+                Seçilen bloklar adlandırılmış bir motor siniri hedeflemiyor; belirgin kas gücü kaybı
+                beklenmez.
+              </Text>
+            )}
+
+            <Text style={[styles.cardTitle, styles.blockTitleSpacing]}>Blok bazında beklenen etki</Text>
             {chosen.map((t) => (
               <View key={t.id} style={styles.row}>
                 <Text style={styles.rowName}>{t.name}</Text>
@@ -322,16 +435,16 @@ export function CombinationBuilder() {
             </Text>
           </View>
 
-          {chosen.some((t) => t.note) ? (
+          {techniqueNotes.length > 0 ? (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Teknik notları</Text>
-              {chosen
-                .filter((t) => t.note)
-                .map((t) => (
-                  <Text key={t.id} style={styles.noteRow}>
-                    • <Text style={styles.bold}>{t.name}:</Text> {t.note}
+              {techniqueNotes.map(({ id, name, notes }) =>
+                notes.map((note, i) => (
+                  <Text key={`${id}-${i}`} style={styles.noteRow}>
+                    • <Text style={styles.bold}>{name}:</Text> {note}
                   </Text>
-                ))}
+                ))
+              )}
             </View>
           ) : null}
         </>
@@ -411,6 +524,16 @@ const styles = StyleSheet.create({
   row: { gap: 3 },
   rowName: { fontSize: 13, fontWeight: "600", color: colors.text },
   rowDose: { fontSize: 12, color: colors.textMuted, lineHeight: 17 },
+  blockTitleSpacing: { marginTop: spacing.sm },
+  attrRow: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
+  attrLevel: {
+    ...type.caption,
+    ...numeric,
+    fontWeight: "800",
+    color: colors.primary,
+    width: 34,
+  },
+  attrNames: { ...type.caption, color: colors.textMuted, flex: 1, lineHeight: 17 },
   verdictMeter: { marginTop: spacing.sm },
   additiveNote: { fontSize: 11.5, color: colors.textMuted, fontStyle: "italic", lineHeight: 17 },
   unknownNote: { fontSize: 11.5, color: colors.warning, lineHeight: 17 },
