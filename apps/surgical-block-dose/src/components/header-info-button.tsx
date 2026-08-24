@@ -7,13 +7,17 @@ export function HeaderInfoButton() {
   return (
     <View style={styles.row}>
       <Link href="/dermatome-map" asChild>
-        <Pressable hitSlop={8} style={({ pressed }) => [styles.button, styles.mapButton, pressed && styles.pressed]}>
-          <Text style={[styles.text, styles.mapText]}>Harita</Text>
+        <Pressable hitSlop={8}>
+          <View style={[styles.button, styles.mapButton]}>
+            <Text style={[styles.text, styles.mapText]}>Harita</Text>
+          </View>
         </Pressable>
       </Link>
       <Link href="/last-info" asChild>
-        <Pressable hitSlop={8} style={({ pressed }) => [styles.button, styles.lastButton, pressed && styles.pressed]}>
-          <Text style={[styles.text, styles.lastText]}>LAST</Text>
+        <Pressable hitSlop={8}>
+          <View style={[styles.button, styles.lastButton]}>
+            <Text style={[styles.text, styles.lastText]}>LAST</Text>
+          </View>
         </Pressable>
       </Link>
     </View>

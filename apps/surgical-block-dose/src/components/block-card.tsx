@@ -7,161 +7,208 @@ import { SonoAnatomyView } from "@/components/sono-anatomy";
 import { imagesForBlock } from "@/data/reference-images";
 import { sonoSpecFor } from "@/data/sono-anatomy";
 import { BlockOption } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { colors, elevation, numeric, radius, role, spacing, type } from "@/theme";
 import { volumeRangeToMgRange } from "@/utils/dose-math";
-
-const ROLE_LABEL: Record<BlockOption["role"], string> = {
-  primary: "Öncelikli",
-  alternative: "Alternatif",
-  adjunct: "Ek (Adjuvan)",
-};
 
 export function BlockCard({ block }: { block: BlockOption }) {
   const images = imagesForBlock(block);
   const sonoSpecs = images
     .map((img) => sonoSpecFor(img.key))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
+  const roleStyle = role[block.role];
 
   return (
     <View style={styles.card}>
-      <View style={styles.headerRow}>
-        <Text style={styles.name}>{block.name}</Text>
-        <View style={[styles.badge, block.role === "primary" && styles.badgePrimary]}>
-          <Text style={[styles.badgeText, block.role === "primary" && styles.badgeTextPrimary]}>
-            {ROLE_LABEL[block.role]}
-          </Text>
+      <View style={[styles.rail, { backgroundColor: roleStyle.rail }]} />
+
+      <View style={styles.body}>
+        <View style={styles.headerRow}>
+          <Text style={styles.name}>{block.name}</Text>
+          <View style={[styles.badge, { backgroundColor: roleStyle.badgeBg }]}>
+            <Text style={[styles.badgeText, { color: roleStyle.badgeText }]}>{roleStyle.label}</Text>
+          </View>
         </View>
-      </View>
-      <Text style={styles.summary}>{block.summary}</Text>
+        <Text style={styles.summary}>{block.summary}</Text>
 
-      <View style={styles.table}>
-        {block.anesthetics.map((a) => {
-          const [minMg, maxMg] = volumeRangeToMgRange(a.concentrationPercent, a.volumeMlRange);
-          return (
-            <View key={a.drug} style={styles.row}>
-              <Text style={styles.drug}>{a.drug}</Text>
-              <Text style={styles.volume}>
-                {a.volumeMlRange[0]}–{a.volumeMlRange[1]} mL · ≈{Math.round(minMg)}–{Math.round(maxMg)} mg
-              </Text>
-              {a.note ? <Text style={styles.note}>{a.note}</Text> : null}
-            </View>
-          );
-        })}
-      </View>
-
-      {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
-
-      <CoverageInfo coverage={block.coverage} />
-
-      {/* Real capture first, then the schematic that explains how to read it. */}
-      <ReferenceImageList images={images} />
-
-      {sonoSpecs.map((spec) => (
-        <SonoAnatomyView key={spec.title} spec={spec} />
-      ))}
-
-      <ScoreBadges score={block.score} />
-
-      {block.contraindications && block.contraindications.length > 0 ? (
-        <View style={styles.contraCard}>
-          <Text style={styles.contraTitle}>Kontrendikasyonlar</Text>
-          {block.contraindications.map((c) => (
-            <Text key={c} style={styles.contraItem}>
-              •  {c}
-            </Text>
-          ))}
+        {/* Doses read as a table: drug on the left, figures right-aligned and
+            tabular so volumes and milligrams line up down the column. */}
+        <View style={styles.doseTable}>
+          {block.anesthetics.map((a) => {
+            const [minMg, maxMg] = volumeRangeToMgRange(a.concentrationPercent, a.volumeMlRange);
+            return (
+              <View key={a.drug} style={styles.doseRow}>
+                <View style={styles.doseMain}>
+                  <Text style={styles.drug}>{a.drug}</Text>
+                  <View style={styles.figures}>
+                    <Text style={styles.volume}>
+                      {a.volumeMlRange[0]}–{a.volumeMlRange[1]}
+                      <Text style={styles.unit}> mL</Text>
+                    </Text>
+                    <Text style={styles.mg}>
+                      {Math.round(minMg)}–{Math.round(maxMg)}
+                      <Text style={styles.unit}> mg</Text>
+                    </Text>
+                  </View>
+                </View>
+                {a.note ? <Text style={styles.note}>{a.note}</Text> : null}
+              </View>
+            );
+          })}
         </View>
-      ) : null}
+
+        {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
+
+        <CoverageInfo coverage={block.coverage} />
+
+        <ReferenceImageList images={images} />
+
+        {sonoSpecs.map((spec) => (
+          <SonoAnatomyView key={spec.title} spec={spec} />
+        ))}
+
+        <ScoreBadges score={block.score} />
+
+        {block.contraindications && block.contraindications.length > 0 ? (
+          <View style={styles.contraCard}>
+            <Text style={styles.contraTitle}>Kontrendikasyonlar</Text>
+            {block.contraindications.map((c) => (
+              <View key={c} style={styles.contraRow}>
+                <View style={styles.contraDot} />
+                <Text style={styles.contraItem}>{c}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: "row",
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    overflow: "hidden",
+    ...elevation.card,
+  },
+  rail: {
+    width: 4,
+  },
+  body: {
+    flex: 1,
     padding: spacing.lg,
     gap: spacing.sm,
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: spacing.sm,
   },
   name: {
-    fontSize: 16,
+    ...type.heading,
+    color: colors.text,
+    flexShrink: 1,
+    lineHeight: 20,
+  },
+  badge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
+  },
+  badgeText: {
+    fontSize: 10.5,
     fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  summary: {
+    ...type.bodySm,
+    color: colors.textMuted,
+    lineHeight: 18.5,
+  },
+  doseTable: {
+    gap: 1,
+    borderRadius: radius.sm,
+    overflow: "hidden",
+    marginTop: spacing.xs,
+  },
+  doseRow: {
+    backgroundColor: colors.surfaceAlt,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: 2,
+  },
+  doseMain: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+  },
+  drug: {
+    ...type.subheading,
     color: colors.text,
     flexShrink: 1,
   },
-  badge: {
-    backgroundColor: colors.chip,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: 999,
-  },
-  badgePrimary: {
-    backgroundColor: colors.primaryMuted,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: colors.textMuted,
-  },
-  badgeTextPrimary: {
-    color: colors.primary,
-  },
-  summary: {
-    fontSize: 13.5,
-    color: colors.textMuted,
-    lineHeight: 19,
-  },
-  table: {
-    gap: spacing.xs,
-    marginTop: spacing.xs,
-  },
-  row: {
-    backgroundColor: colors.background,
-    borderRadius: 8,
-    padding: spacing.sm,
-    gap: 2,
-  },
-  drug: {
-    fontSize: 13.5,
-    fontWeight: "600",
-    color: colors.text,
+  figures: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: spacing.md,
   },
   volume: {
-    fontSize: 12.5,
-    color: colors.textMuted,
+    ...type.subheading,
+    ...numeric,
+    color: colors.text,
+  },
+  mg: {
+    ...type.subheading,
+    ...numeric,
+    color: colors.primary,
+  },
+  unit: {
+    fontSize: 10.5,
+    fontWeight: "600",
+    color: colors.textFaint,
   },
   note: {
-    fontSize: 12,
+    ...type.caption,
     color: colors.textMuted,
     fontStyle: "italic",
+    lineHeight: 16,
   },
   landmark: {
-    fontSize: 12,
+    ...type.caption,
     color: colors.textMuted,
   },
   contraCard: {
     backgroundColor: colors.dangerBg,
-    borderRadius: 8,
-    padding: spacing.sm,
-    gap: 2,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    gap: 5,
     marginTop: spacing.xs,
   },
   contraTitle: {
-    fontSize: 11.5,
-    fontWeight: "700",
+    ...type.label,
     color: colors.danger,
   },
+  contraRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.sm,
+  },
+  contraDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: colors.danger,
+    marginTop: 7,
+  },
   contraItem: {
-    fontSize: 12,
+    ...type.caption,
     color: colors.danger,
     lineHeight: 17,
+    flex: 1,
   },
 });

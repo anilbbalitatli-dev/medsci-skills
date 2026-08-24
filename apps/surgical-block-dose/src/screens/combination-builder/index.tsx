@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DermatomeFigureCard } from "@/components/dermatome-figure";
+import { DoseMeter, DoseMeterRow } from "@/components/dose-meter";
 import {
   AGE_BANDS,
   AgeBand,
@@ -13,7 +14,7 @@ import {
 } from "@/data/age-dosing";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
-import { colors, spacing } from "@/theme";
+import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
 
 const MAX_SELECTION = 3;
 
@@ -65,6 +66,9 @@ function VerdictBanner({
       <Text style={[styles.verdictBody, textStyle, styles.verdictMath]}>
         Toplam kullanım: sınırın %{Math.round(low * 100)}–{Math.round(high * 100)}'i
       </Text>
+      <View style={styles.verdictMeter}>
+        <DoseMeter fractionLow={low} fractionHigh={high} />
+      </View>
     </View>
   );
 }
@@ -242,29 +246,13 @@ export function CombinationBuilder() {
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>İlaç bazında yük</Text>
                 {dose.loads.map((l) => (
-                  <View key={l.drug} style={styles.row}>
-                    <Text style={styles.rowName}>{l.maxDose.drug}</Text>
-                    <Text style={styles.rowDose}>
-                      ≈{Math.round(l.mgLow)}–{Math.round(l.mgHigh)} mg / sınır {Math.round(l.ceiling)} mg ·{" "}
-                      %{Math.round(l.fractionLow * 100)}–{Math.round(l.fractionHigh * 100)}
-                    </Text>
-                    <View style={styles.bar}>
-                      <View
-                        style={[
-                          styles.barFill,
-                          {
-                            width: `${Math.min(100, l.fractionHigh * 100)}%`,
-                            backgroundColor:
-                              l.fractionHigh >= 1
-                                ? colors.danger
-                                : l.fractionHigh >= 0.75
-                                  ? colors.warning
-                                  : colors.primary,
-                          },
-                        ]}
-                      />
-                    </View>
-                  </View>
+                  <DoseMeterRow
+                    key={l.drug}
+                    label={l.maxDose.drug}
+                    detail={`≈${Math.round(l.mgLow)}–${Math.round(l.mgHigh)} mg  ·  sınır ${Math.round(l.ceiling)} mg`}
+                    fractionLow={l.fractionLow}
+                    fractionHigh={l.fractionHigh}
+                  />
                 ))}
                 {dose.loads.length > 1 ? (
                   <Text style={styles.additiveNote}>
@@ -423,14 +411,7 @@ const styles = StyleSheet.create({
   row: { gap: 3 },
   rowName: { fontSize: 13, fontWeight: "600", color: colors.text },
   rowDose: { fontSize: 12, color: colors.textMuted, lineHeight: 17 },
-  bar: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.chip,
-    overflow: "hidden",
-    marginTop: 3,
-  },
-  barFill: { height: 6, borderRadius: 3 },
+  verdictMeter: { marginTop: spacing.sm },
   additiveNote: { fontSize: 11.5, color: colors.textMuted, fontStyle: "italic", lineHeight: 17 },
   unknownNote: { fontSize: 11.5, color: colors.warning, lineHeight: 17 },
   pedCard: {

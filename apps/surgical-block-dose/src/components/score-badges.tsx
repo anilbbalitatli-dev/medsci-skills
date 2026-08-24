@@ -1,14 +1,33 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { TechniqueScore } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { colors, numeric, radius, spacing, type } from "@/theme";
 
-function ScoreDots({ value }: { value: number }) {
+const SEGMENTS = 5;
+
+/**
+ * A segmented meter rather than five dots: the filled span reads as a quantity
+ * at a glance, and the value is printed alongside so the scale is never
+ * ambiguous. Colour shifts only at the low end, where the caveat matters.
+ */
+function Meter({ label, value }: { label: string; value: number }) {
+  const tone = value <= 2 ? colors.warning : value === 3 ? colors.primaryStrong : colors.primary;
+
   return (
-    <View style={styles.dots}>
-      {[1, 2, 3, 4, 5].map((n) => (
-        <View key={n} style={[styles.dot, n <= value && styles.dotFilled]} />
-      ))}
+    <View style={styles.meterRow}>
+      <Text style={styles.meterLabel}>{label}</Text>
+      <View style={styles.track}>
+        {Array.from({ length: SEGMENTS }, (_, i) => (
+          <View
+            key={i}
+            style={[styles.segment, { backgroundColor: i < value ? tone : colors.chip }]}
+          />
+        ))}
+      </View>
+      <Text style={[styles.value, { color: tone }]}>
+        {value}
+        <Text style={styles.outOf}>/5</Text>
+      </Text>
     </View>
   );
 }
@@ -16,14 +35,8 @@ function ScoreDots({ value }: { value: number }) {
 export function ScoreBadges({ score }: { score: TechniqueScore }) {
   return (
     <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.label}>Güvenlik</Text>
-        <ScoreDots value={score.safety} />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Kolaylık</Text>
-        <ScoreDots value={score.convenience} />
-      </View>
+      <Meter label="Güvenlik" value={score.safety} />
+      <Meter label="Kolaylık" value={score.convenience} />
       <Text style={styles.rationale}>{score.rationale}</Text>
     </View>
   );
@@ -31,37 +44,44 @@ export function ScoreBadges({ score }: { score: TechniqueScore }) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 4,
+    gap: 6,
     marginTop: spacing.xs,
   },
-  row: {
+  meterRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
   },
-  label: {
-    fontSize: 11.5,
-    fontWeight: "600",
+  meterLabel: {
+    ...type.label,
     color: colors.textMuted,
-    width: 64,
+    width: 62,
   },
-  dots: {
+  track: {
     flexDirection: "row",
     gap: 3,
+    flex: 1,
   },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: colors.border,
+  segment: {
+    flex: 1,
+    height: 6,
+    borderRadius: radius.pill,
   },
-  dotFilled: {
-    backgroundColor: colors.primary,
+  value: {
+    ...type.subheading,
+    ...numeric,
+    width: 34,
+    textAlign: "right",
+  },
+  outOf: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: colors.textFaint,
   },
   rationale: {
-    fontSize: 11.5,
+    ...type.caption,
     color: colors.textMuted,
-    fontStyle: "italic",
-    marginTop: 2,
+    lineHeight: 16.5,
+    marginTop: 1,
   },
 });

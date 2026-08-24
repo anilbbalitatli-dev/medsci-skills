@@ -10,7 +10,7 @@ import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { SurgeryCard } from "@/components/surgery-card";
 import { SurgeryChip } from "@/components/surgery-chip";
 import { SURGERIES, searchSurgeries } from "@/data/surgeries";
-import { colors, spacing } from "@/theme";
+import { colors, elevation, radius, spacing, type } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 import { useRecentlyViewed } from "@/utils/recently-viewed";
 
@@ -41,15 +41,19 @@ export function Home() {
         <View style={styles.headerBlock}>
           <DisclaimerBanner />
           <Link href="/combination-builder" asChild>
-            <Pressable style={({ pressed }) => [styles.builderButton, pressed && { opacity: 0.6 }]}>
-              <Ionicons name="git-merge-outline" size={18} color={colors.primary} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
-                <Text style={styles.builderSub}>
-                  2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
-                </Text>
+            <Pressable>
+              <View style={styles.builderButton}>
+                <View style={styles.builderIcon}>
+                  <Ionicons name="git-merge-outline" size={19} color="#FFFFFF" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
+                  <Text style={styles.builderSub}>
+                    2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.85)" />
               </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
             </Pressable>
           </Link>
           <TextInput
@@ -108,30 +112,42 @@ const styles = StyleSheet.create({
   builderButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
-    backgroundColor: colors.primaryMuted,
-    borderRadius: 12,
-    padding: spacing.md,
+    gap: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    ...elevation.raised,
+  },
+  builderIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.md,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   builderTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.primary,
+    ...type.heading,
+    color: "#FFFFFF",
   },
   builderSub: {
-    fontSize: 11.5,
-    color: colors.textMuted,
+    ...type.caption,
+    fontSize: 11,
+    color: "rgba(255,255,255,0.82)",
     marginTop: 1,
+    lineHeight: 15,
   },
   search: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: 10,
+    paddingVertical: 11,
     fontSize: 15,
     color: colors.text,
+    ...elevation.card,
   },
   quickAccess: {
     gap: spacing.sm,
@@ -140,16 +156,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   quickTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
+    ...type.label,
+    color: colors.textFaint,
   },
   chipRow: {
     gap: spacing.sm,
   },
   empty: {
+    ...type.body,
     textAlign: "center",
     color: colors.textMuted,
     marginTop: spacing.xl,

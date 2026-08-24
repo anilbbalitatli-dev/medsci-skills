@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { getRegionStyle } from "@/data/region-icons";
 import { Surgery } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { colors, elevation, radius, spacing, type } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 
 export function SurgeryCard({ surgery }: { surgery: Surgery }) {
@@ -15,32 +15,52 @@ export function SurgeryCard({ surgery }: { surgery: Surgery }) {
 
   return (
     <Link href={{ pathname: "/surgery/[id]", params: { id: surgery.id } }} asChild>
-      <Pressable style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
-        <View style={styles.header}>
-          <View style={[styles.regionChip, { backgroundColor: regionStyle.color + "1A" }]}>
-            <Ionicons name={regionStyle.icon} size={13} color={regionStyle.color} />
-            <Text style={[styles.regionText, { color: regionStyle.color }]}>{surgery.region}</Text>
+      {/* Visual styling lives on this inner View, not on the Pressable:
+          expo-router's <Link asChild> drops the style prop it clones onto the
+          anchor, so anything styled directly on the Pressable renders bare. */}
+      <Pressable style={styles.pressable}>
+        <View style={styles.card}>
+          {/* Region colour carries down the edge rather than sitting only in a
+              chip, so the list groups visually while scrolling. */}
+          <View style={[styles.rail, { backgroundColor: regionStyle.color }]} />
+
+          <View style={styles.body}>
+          <View style={styles.topRow}>
+            <View style={[styles.iconBadge, { backgroundColor: regionStyle.color + "1A" }]}>
+              <Ionicons name={regionStyle.icon} size={15} color={regionStyle.color} />
+            </View>
+            <Text style={[styles.region, { color: regionStyle.color }]} numberOfLines={1}>
+              {surgery.region}
+            </Text>
+            <Pressable
+              hitSlop={12}
+              onPress={(e) => {
+                e.preventDefault();
+                toggleFavorite(surgery.id);
+              }}
+            >
+              <Ionicons
+                name={isFavorite ? "heart" : "heart-outline"}
+                size={19}
+                color={isFavorite ? colors.danger : colors.textFaint}
+              />
+            </Pressable>
           </View>
-          <Pressable
-            hitSlop={10}
-            onPress={(e) => {
-              e.preventDefault();
-              toggleFavorite(surgery.id);
-            }}
-          >
-            <Ionicons
-              name={isFavorite ? "heart" : "heart-outline"}
-              size={20}
-              color={isFavorite ? colors.danger : colors.textMuted}
-            />
-          </Pressable>
+
+          <Text style={styles.name}>{surgery.name}</Text>
+
+          {primaryBlock ? (
+            <View style={styles.blockRow}>
+              <View style={styles.blockDot} />
+              <Text style={styles.blockName} numberOfLines={1}>
+                {primaryBlock.name}
+              </Text>
+            </View>
+          ) : null}
         </View>
-        <Text style={styles.name}>{surgery.name}</Text>
-        {primaryBlock ? (
-          <Text style={styles.primaryBlock} numberOfLines={1}>
-            Öncelikli blok: {primaryBlock.name}
-          </Text>
-        ) : null}
+
+          <Ionicons name="chevron-forward" size={16} color={colors.textFaint} style={styles.chevron} />
+        </View>
       </Pressable>
     </Link>
   );
@@ -48,40 +68,68 @@ export function SurgeryCard({ surgery }: { surgery: Surgery }) {
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: "row",
+    alignItems: "stretch",
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.lg,
-    gap: spacing.xs,
+    overflow: "hidden",
+    ...elevation.card,
   },
-  cardPressed: {
-    opacity: 0.6,
+  pressable: {
+    borderRadius: radius.lg,
   },
-  header: {
+  rail: {
+    width: 4,
+  },
+  body: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingLeft: spacing.md,
+    gap: 5,
+  },
+  topRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: spacing.sm,
   },
-  regionChip: {
-    flexDirection: "row",
+  iconBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: radius.sm,
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: 999,
+    justifyContent: "center",
   },
-  regionText: {
-    fontSize: 11,
-    fontWeight: "600",
+  region: {
+    ...type.label,
+    flex: 1,
   },
   name: {
-    fontSize: 17,
-    fontWeight: "700",
+    ...type.heading,
+    fontSize: 16.5,
     color: colors.text,
+    lineHeight: 21,
   },
-  primaryBlock: {
-    fontSize: 13,
+  blockRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  blockDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.primary,
+  },
+  blockName: {
+    ...type.caption,
     color: colors.textMuted,
+    flex: 1,
+  },
+  chevron: {
+    alignSelf: "center",
+    marginRight: spacing.md,
+    marginLeft: spacing.sm,
   },
 });
