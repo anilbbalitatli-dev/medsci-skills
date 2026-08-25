@@ -14,8 +14,10 @@ import {
   maxTotalVolumeMl,
   SelectedBlockDose,
 } from "@/data/age-dosing";
+import { PediatricLimitList } from "@/components/pediatric-limits";
 import { analyzeCombination } from "@/data/combination-analysis";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
+import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
 import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
@@ -121,6 +123,29 @@ export function CombinationBuilder() {
   });
 
   const dose = hasWeight ? computeCombinationDose(doseInput, weightKg, band, withEpi) : null;
+
+  /**
+   * The guideline check runs off the same typical regimens as the dose maths,
+   * but is reported separately — see the note in pediatric-limits.tsx for why
+   * the sourced per-block ceilings are kept apart from this app's own total.
+   */
+  const pediatricChecks =
+    hasWeight && band.pediatric
+      ? checkPediatricBlocks(
+          chosen.map((t) => {
+            const sides = t.bilateralByDefault ? 2 : 1;
+            const mgPerMl = t.typical.concentrationPercent * 10;
+            return {
+              techniqueId: t.id,
+              techniqueName: t.name,
+              drug: t.typical.drug,
+              mgLow: t.typical.volumeMlRange[0] * sides * mgPerMl,
+              mgHigh: t.typical.volumeMlRange[1] * sides * mgPerMl,
+            };
+          }),
+          weightKg
+        )
+      : [];
 
   const analysis = useMemo(() => analyzeCombination(selected), [selected]);
 
@@ -338,23 +363,36 @@ export function CombinationBuilder() {
               </View>
 
               {band.pediatric ? (
-                <View style={styles.pedCard}>
-                  <Text style={styles.pedTitle}>Pediatrik uyarı</Text>
-                  <Text style={styles.pedBody}>
-                    Yukarıdaki hacimler <Text style={styles.bold}>erişkin</Text> değerleridir ve çocukta
-                    doğrudan kullanılamaz; pediatrik hacimler mL/kg üzerinden ölçeklenir. Bu ağırlıkta
-                    kullanılabilecek toplam hacim sınırı:
-                  </Text>
-                  {PED_VOLUME_REFERENCE.map(({ drug: d, conc }) => {
-                    const v = maxTotalVolumeMl(d, conc, weightKg, band, withEpi);
-                    if (v === null) return null;
-                    return (
-                      <Text key={d} style={styles.pedRow}>
-                        • {d} %{conc}: en fazla ≈{v.toFixed(1)} mL (tüm bloklar toplamı)
-                      </Text>
-                    );
-                  })}
-                </View>
+                <>
+                  <View style={styles.pedCard}>
+                    <Text style={styles.pedTitle}>Pediatrik uyarı</Text>
+                    <Text style={styles.pedBody}>
+                      Yukarıdaki hacimler <Text style={styles.bold}>erişkin</Text> değerleridir ve
+                      çocukta doğrudan kullanılamaz; pediatrik hacimler mL/kg üzerinden ölçeklenir. Bu
+                      ağırlıkta kullanılabilecek toplam hacim sınırı:
+                    </Text>
+                    {PED_VOLUME_REFERENCE.map(({ drug: d, conc }) => {
+                      const v = maxTotalVolumeMl(d, conc, weightKg, band, withEpi);
+                      if (v === null) return null;
+                      return (
+                        <Text key={d} style={styles.pedRow}>
+                          • {d} %{conc}: en fazla ≈{v.toFixed(1)} mL (tüm bloklar toplamı)
+                        </Text>
+                      );
+                    })}
+                    <Text style={styles.pedCaveat}>
+                      Bu toplam, erişkin mg/kg sınırının yaşa göre ×{band.modifier} ölçeklenmesiyle
+                      bulunur. Bu katsayı{" "}
+                      <Text style={styles.bold}>kılavuz değil, bu uygulamanın ihtiyatlı kuralıdır</Text>{" "}
+                      — kılavuzlar tek doz için yaş katsayısı vermez. Kaynaklı sınırlar aşağıdadır.
+                    </Text>
+                    {band.guidelineInfusionNote ? (
+                      <Text style={styles.pedCaveat}>{band.guidelineInfusionNote}</Text>
+                    ) : null}
+                  </View>
+
+                  <PediatricLimitList checks={pediatricChecks} weightKg={weightKg} />
+                </>
               ) : null}
             </>
           ) : null}
@@ -548,6 +586,7 @@ const styles = StyleSheet.create({
   pedTitle: { fontSize: 13.5, fontWeight: "800", color: colors.warning },
   pedBody: { fontSize: 12.5, color: colors.warning, lineHeight: 18 },
   pedRow: { fontSize: 12.5, color: colors.warning, fontWeight: "600" },
+  pedCaveat: { fontSize: 11.5, color: colors.warning, lineHeight: 17, marginTop: 4 },
   noteRow: { fontSize: 12, color: colors.textMuted, lineHeight: 17 },
   disclaimer: {
     fontSize: 11,

@@ -57,6 +57,27 @@ Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
 
+### Pediatrik doz modeli
+
+`src/data/pediatric-dosing.ts` — kaynaklı pediatrik sınırlar. Yapısal nokta:
+**kılavuzlar ilaç başına tek bir maksimum vermez, sınırı teknik başına koyar.**
+Ropivakain kaudalde 2, epiduralde 1.7, intratekalde 0.5, fasyal planda
+0.75 mg/kg'dır — tek ilaç için dört ayrı sayı. Bu yüzden arama anahtarı
+`(kategori, ilaç)` çiftidir; `maxDose[drug]` biçiminde bir tablo bu değerlerin
+hiçbirini ifade edemez.
+
+- Kaynaklar: ESRA/ASRA 2018 (birincil, sayfa numaralı) ve SFAR/ADARPEF RFE.
+  İkisinin ayrıldığı yerler `CONFLICTS` içinde **çözülmeden** tutulur; birini
+  sessizce seçmek açık bir soruyu kapalı gösterirdi.
+- `TECHNIQUE_CATEGORY` her tekniği bir kategoriye bağlar ve kılavuzun onu
+  adıyla sayıp saymadığını (`explicit` / `inferred`) kaydeder. Arayüz bu ayrımı
+  gösterir — kaynak aktarmakla kaynağı genişletmek aynı şey değildir.
+- `GAPS` kılavuzların cevaplamadıklarını listeler: pediatrik lidokain sınırı,
+  prematüre dozu ve **kombinasyon tavanı**. Uygulamadaki toplam doz hesabı ve
+  `AGE_BANDS` içindeki yaş katsayıları kılavuz değil, bu uygulamanın ihtiyatlı
+  kuralıdır; `modifierBasis: "house-rule"` alanı bunu işaretler ve arayüz de
+  açıkça söyler.
+
 ### Sinir modeli ve kombinasyon analizi
 
 Kombinasyon oluşturucusu, blokları serbest metin "kapsama" bilgisiyle değil,

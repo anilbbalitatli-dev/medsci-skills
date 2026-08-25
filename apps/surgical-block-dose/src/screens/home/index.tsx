@@ -56,6 +56,17 @@ export function Home() {
               </View>
             </Pressable>
           </Link>
+          {/* Reachable without building a combination first: the paediatric
+              tables are a lookup people come to the app for on their own. */}
+          <Link href="/pediatric-dosing" asChild>
+            <Pressable>
+              <View style={styles.pedButton}>
+                <Ionicons name="body-outline" size={17} color={colors.primary} />
+                <Text style={styles.pedButtonText}>Pediatrik doz tabloları</Text>
+                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+              </View>
+            </Pressable>
+          </Link>
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -138,6 +149,16 @@ const styles = StyleSheet.create({
     marginTop: 1,
     lineHeight: 15,
   },
+  pedButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.primaryMuted,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+  },
+  pedButtonText: { ...type.subheading, color: colors.primaryStrong, flex: 1 },
   search: {
     backgroundColor: colors.surface,
     borderWidth: 1,

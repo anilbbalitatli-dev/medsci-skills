@@ -19,19 +19,35 @@ import { DrugMaxDose } from "./types";
  *    reaches the ropivacaine ceiling at roughly 22 mL of 0.2% — less than one
  *    adult fascia iliaca block.
  *
- * The age modifiers below are conservative teaching adjustments reflecting
- * reduced α1-acid glycoprotein (higher free drug fraction) and immature
- * hepatic clearance in the youngest patients. They are NOT a validated
- * formula; institutional protocol and the drug label govern.
+ * The age modifiers below are this app's own conservative adjustments, not
+ * guideline figures. That distinction matters enough to spell out: ESRA/ASRA
+ * and SFAR/ADARPEF both set paediatric limits **per technique** rather than per
+ * drug, and neither publishes an age coefficient for single-shot dosing — the
+ * only age banding either gives is for continuous infusion. The sourced,
+ * per-technique ceilings live in ./pediatric-dosing.ts and are the figures to
+ * trust; what follows is a house rule for the one thing no guideline answers,
+ * which is how much a *combination* may total.
+ *
+ * The modifiers reflect reduced α1-acid glycoprotein (higher free drug
+ * fraction) and immature hepatic clearance in the youngest patients. They are
+ * not a validated formula; institutional protocol and the drug label govern.
  */
 
 export interface AgeBand {
   id: string;
   label: string;
-  /** Multiplier applied to the adult mg/kg ceiling. */
+  /** Multiplier applied to the adult mg/kg ceiling for the combination total. */
   modifier: number;
   rationale: string;
   pediatric: boolean;
+  /**
+   * Whether `modifier` comes from a guideline or from this app. Currently every
+   * value is a house rule; the field exists so the UI can say so, and so a
+   * sourced figure can be marked as such if one ever turns up.
+   */
+  modifierBasis: "guideline" | "house-rule";
+  /** What the guidelines do say at this age, for infusion. Reference only. */
+  guidelineInfusionNote?: string;
 }
 
 export const AGE_BANDS: AgeBand[] = [
@@ -42,6 +58,9 @@ export const AGE_BANDS: AgeBand[] = [
     rationale:
       "α1-asit glikoprotein düşük olduğundan serbest ilaç fraksiyonu yüksek; hepatik klirens immatür. Amid lokal anesteziklerde belirgin doz azaltımı gerekir.",
     pediatric: true,
+    modifierBasis: "house-rule",
+    guidelineInfusionNote:
+      "Epidural infüzyon: ESRA/ASRA <3 ay için 0.2 mg/kg/sa; SFAR/ADARPEF <1 ay için 0.20 mg/kg/sa.",
   },
   {
     id: "infant-1-6m",
@@ -49,6 +68,9 @@ export const AGE_BANDS: AgeBand[] = [
     modifier: 0.7,
     rationale: "Protein bağlanması ve klirens hâlâ olgunlaşmamış; doz azaltımı sürer.",
     pediatric: true,
+    modifierBasis: "house-rule",
+    guidelineInfusionNote:
+      "Epidural infüzyon: ESRA/ASRA <3 ay 0.2 → 3 ay–1 yaş 0.3 mg/kg/sa; SFAR/ADARPEF <6 ay 0.30 mg/kg/sa. İki kılavuzun yaş eşikleri bu bantta çakışmıyor.",
   },
   {
     id: "infant-6-12m",
@@ -56,6 +78,9 @@ export const AGE_BANDS: AgeBand[] = [
     modifier: 0.8,
     rationale: "Klirens erişkine yaklaşır ancak güvenlik payı için ölçülü azaltım korunur.",
     pediatric: true,
+    modifierBasis: "house-rule",
+    guidelineInfusionNote:
+      "Epidural infüzyon: ESRA/ASRA 3 ay–1 yaş 0.3 mg/kg/sa; SFAR/ADARPEF >6 ay 0.40 mg/kg/sa.",
   },
   {
     id: "child",
@@ -64,6 +89,8 @@ export const AGE_BANDS: AgeBand[] = [
     rationale:
       "mg/kg sınırları erişkinle aynıdır; asıl kısıt düşük vücut ağırlığının yarattığı küçük mutlak doz bütçesidir.",
     pediatric: true,
+    modifierBasis: "house-rule",
+    guidelineInfusionNote: "Epidural infüzyon: her iki kılavuzda da 0.4 mg/kg/sa.",
   },
   {
     id: "adolescent-adult",
@@ -71,6 +98,7 @@ export const AGE_BANDS: AgeBand[] = [
     modifier: 1,
     rationale: "Standart erişkin sınırları.",
     pediatric: false,
+    modifierBasis: "house-rule",
   },
   {
     id: "elderly",
@@ -79,6 +107,7 @@ export const AGE_BANDS: AgeBand[] = [
     rationale:
       "Azalmış klirens, düşük kas kütlesi ve sık görülen kardiyak/hepatik komorbidite nedeniyle ihtiyatlı azaltım önerilir.",
     pediatric: false,
+    modifierBasis: "house-rule",
   },
 ];
 
