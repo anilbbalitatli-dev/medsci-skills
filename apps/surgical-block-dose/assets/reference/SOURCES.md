@@ -4,10 +4,26 @@ PubMed üzerinden taranarak derlenmiş, **açık erişimli (PMC'de tam metni ola
 ve sonoanatomi figürü içeren makale listesi. Amaç: hangi PDF'i açıp hangi
 figürü alacağınızı önceden bilmeniz.
 
-> **Durum:** 1 numaralı makale eklendi (5 figür). Kalanlar hâlâ bekliyor —
-> bu geliştirme ortamının ağ politikası PMC, yayıncı siteleri ve tüm görsel
+> **Durum:** 9 gerçek USG görüntüsü eklendi.
+>
+> - **CC BY-NC 4.0 (5 figür, ticari kullanıma kapalı):** no. 1 — toraks ve
+>   göğüs duvarı blokları.
+> - **CC BY 4.0 (4 figür, kısıtsız):** Muse IO ve ark. J Clin Med.
+>   2024;13(12):3457 — fasya iliaka (SIFI), femoral sinir, LFCN ve PENG.
+>   Aynı makalenin Şekil 1, 2 ve 7'si başka yayıncılardan izinle alınmıştır,
+>   CC BY kapsamı dışındadır ve kullanılmamıştır.
+>
+> Hâlâ boş olan slotlar: TAP, popliteal siyatik, supraklaviküler,
+> infraklaviküler, spinal.
+>
+> Bu geliştirme ortamının ağ politikası PMC, yayıncı siteleri ve tüm görsel
 > barındırma servislerini engellediği için makaleler buradan indirilemiyor;
 > PDF'i siz gönderdiğinizde figürler çıkarılıp eklenebiliyor.
+
+> **Not — makale içindeki her figür makalenin lisansında değildir.** Muse ve
+> ark. makalesi CC BY 4.0 olmasına rağmen üç figürü başka yayıncılardan
+> *"reproduced with permission"* notuyla alınmış. Bir figürü almadan önce
+> yalnızca makalenin lisansına değil, o figürün altındaki nota da bakın.
 
 ## Seçim sırası: önce lisans, sonra verimlilik
 

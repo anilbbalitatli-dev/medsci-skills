@@ -15,6 +15,15 @@ import { BlockOption, ReferenceImage } from "./types";
  */
 const CREDIT_PENDING = "⚠ Kaynak/lisans bilgisi girilmedi";
 
+/**
+ * Muse et al. is CC BY 4.0, so unlike the CC BY-NC images elsewhere in this
+ * file these may be used commercially. Only the authors' own ultrasound
+ * captures are taken — that paper's Figures 1, 2 and 7 carry "reproduced with
+ * permission" lines from other publishers, which puts them outside its licence.
+ */
+const JCM_2024 = (figure: string) =>
+  `Muse IO, Deiling B, Grinman L, Hadeed MM, Elkassabany N. J Clin Med. 2024;13(12):3457, ${figure} (CC BY 4.0)`;
+
 export const USG: Record<string, ReferenceImage> = {
   adductorCanal: {
     key: "usg-adductor-canal",
@@ -48,13 +57,27 @@ export const USG: Record<string, ReferenceImage> = {
   },
   peng: {
     key: "usg-peng",
-    caption: "USG — PENG: iliopubik eminens, psoas tendonu, femoral arter",
-    credit: CREDIT_PENDING,
+    caption:
+      "USG — PENG: AIIS, iliopubik eminens (IPE), psoas tendonu; femoral sinir (FN) ve arter (FA) medialde",
+    credit: JCM_2024("Fig. 6"),
   },
   fasciaIliaca: {
     key: "usg-fascia-iliaca",
-    caption: "USG — Fasya iliaka: sartorius, iliakus kası ve fasya iliaka düzlemi",
-    credit: CREDIT_PENDING,
+    caption:
+      "USG — Supra-inguinal fasya iliaka (SIFI): fasya iliaka düzlemi, iliakus kası, sartorius; DCIA landmark",
+    credit: JCM_2024("Fig. 3"),
+  },
+  lfcn: {
+    key: "usg-lfcn",
+    caption:
+      "USG — Lateral femoral kutanöz sinir (LFCN): sartorius ile tensor fascia latae arasında; fasya iliaka bloğunun hedeflerinden biri",
+    credit: JCM_2024("Fig. 5"),
+  },
+  femoral: {
+    key: "usg-femoral",
+    caption:
+      "USG — Femoral sinir (FN), femoral arter (FA) ve ven (FV); fasya iliaka düzlemi ve iliopsoas kası",
+    credit: JCM_2024("Fig. 4"),
   },
   esp: {
     key: "usg-esp",
@@ -114,8 +137,14 @@ const BY_BLOCK_ID: Record<string, ReferenceImage[]> = {
   "cs-spinal": [USG.spinal],
   "tha-peng": [USG.peng],
   "hipfx-peng": [USG.peng],
-  "tha-fascia-iliaca": [USG.fasciaIliaca],
-  "hipfx-fascia-iliaca": [USG.fasciaIliaca],
+  // The fascia iliaca block reliably takes the LFCN as well as the femoral
+  // nerve, so the second capture shows where that nerve sits rather than
+  // standing for a separate technique.
+  "tha-fascia-iliaca": [USG.fasciaIliaca, USG.lfcn],
+  "hipfx-fascia-iliaca": [USG.fasciaIliaca, USG.lfcn],
+  "tka-femoral": [USG.femoral],
+  "acl-femoral": [USG.femoral],
+  "bka-femoral": [USG.femoral],
   "shoulder-interscalene": [USG.interscalene],
   "hand-supraclavicular": [USG.supraclavicular],
   "hand-infraclavicular": [USG.infraclavicular],

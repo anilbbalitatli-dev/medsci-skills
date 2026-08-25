@@ -33,6 +33,16 @@ export const REFERENCE_IMAGES: Record<string, ImageSourcePropType> = {
   "usg-esp": require("../../assets/reference/usg-esp.jpg"), // @noncommercial
   "usg-pecs2": require("../../assets/reference/usg-pecs2.jpg"), // @noncommercial
   "usg-serratus": require("../../assets/reference/usg-serratus.jpg"), // @noncommercial
+
+  // Muse IO et al. J Clin Med. 2024;13(12):3457 — CC BY 4.0, commercial use
+  // permitted. Deliberately unmarked: these survive the strip script. Only the
+  // authors' own figures are taken; Figures 1, 2 and 7 of that paper are
+  // reproduced there under permission from other publishers, so the article's
+  // CC BY licence does not extend to them and they are not used here.
+  "usg-fascia-iliaca": require("../../assets/reference/usg-fascia-iliaca.jpg"),
+  "usg-femoral": require("../../assets/reference/usg-femoral.jpg"),
+  "usg-lfcn": require("../../assets/reference/usg-lfcn.jpg"),
+  "usg-peng": require("../../assets/reference/usg-peng.jpg"),
 };
 
 export function getReferenceImage(key: string): ImageSourcePropType | undefined {

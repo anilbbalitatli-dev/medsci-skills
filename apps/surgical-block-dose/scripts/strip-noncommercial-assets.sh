@@ -8,7 +8,21 @@
 # Entries are identified by the `@noncommercial` marker in
 # src/data/block-images.ts. Cards whose image disappears fall back to the
 # schematic sonoanatomy diagram, which is original work with no such restriction.
+#
+# Usage:
+#   ./scripts/strip-noncommercial-assets.sh --dry-run   # list what would go
+#   ./scripts/strip-noncommercial-assets.sh             # actually remove
+#
+# The listing is worth having on its own: it is the only way to check which
+# images carry the restriction without destroying them to find out.
 set -euo pipefail
+
+DRY_RUN=0
+case "${1:-}" in
+  --dry-run|-n) DRY_RUN=1 ;;
+  "") ;;
+  *) echo "Unknown argument: $1 (expected --dry-run or nothing)" >&2; exit 2 ;;
+esac
 
 cd "$(dirname "$0")/.."
 REGISTRY="src/data/block-images.ts"
@@ -19,12 +33,23 @@ if [ ${#LINES[@]} -eq 0 ]; then
   exit 0
 fi
 
-echo "Removing ${#LINES[@]} non-commercial asset(s):"
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "Would remove ${#LINES[@]} non-commercial asset(s):"
+else
+  echo "Removing ${#LINES[@]} non-commercial asset(s):"
+fi
+
 for l in "${LINES[@]}"; do
   file=$(sed -E 's#.*require\("\.\./\.\./([^"]+)".*#\1#' <<<"$l")
   echo "  - $file"
-  rm -f -- "$file"
+  [ "$DRY_RUN" -eq 1 ] || rm -f -- "$file"
 done
+
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo
+  echo "Dry run — nothing was deleted. Re-run without --dry-run to remove them."
+  exit 0
+fi
 
 # Drop the marked registry lines.
 sed -i -E '/require\(.*@noncommercial/d' "$REGISTRY"

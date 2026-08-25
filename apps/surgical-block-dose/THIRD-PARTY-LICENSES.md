@@ -5,15 +5,22 @@ Bu uygulama, aşağıdaki üçüncü taraf materyalini içerir.
 > ## ⚠ Deponun MIT lisansı bu dosyaları KAPSAMAZ
 >
 > Bu depo MIT lisanslıdır ve MIT ticari kullanıma izin verir. Ancak
-> `assets/reference/` altındaki ultrason görüntüleri **CC BY-NC 4.0**
-> lisanslıdır ve **ticari kullanıma izin vermez**. Bu iki lisans birbirine
-> dönüştürülemez.
+> `assets/reference/` altındaki ultrason görüntülerinin **bir kısmı**
+> **CC BY-NC 4.0** lisanslıdır ve **ticari kullanıma izin vermez**. Bu iki
+> lisans birbirine dönüştürülemez.
+>
+> **Kısıtlı olanlar (5 dosya, CC BY-NC 4.0):** `usg-paravertebral.jpg`,
+> `usg-intercostal.jpg`, `usg-esp.jpg`, `usg-pecs2.jpg`, `usg-serratus.jpg`
+>
+> **Kısıtsız olanlar (4 dosya, CC BY 4.0):** `usg-fascia-iliaca.jpg`,
+> `usg-femoral.jpg`, `usg-lfcn.jpg`, `usg-peng.jpg` — bunlar ticari kullanımda
+> da kalabilir, yalnızca atıf gerekir.
 >
 > Dolayısıyla:
 >
 > - Uygulama **ücretsiz/eğitim amaçlı** kaldığı sürece sorun yoktur.
 > - Uygulamayı **ücretli hale getirir veya ticari bir üründe kullanırsanız**,
->   aşağıda listelenen `usg-*.jpg` dosyalarını çıkarmanız gerekir.
+>   yalnızca yukarıdaki **kısıtlı 5 dosyayı** çıkarmanız gerekir.
 > - Depoyu MIT şartlarıyla yeniden kullanan üçüncü kişiler de aynı kısıtla
 >   bağlıdır; bu nedenle kısıt hem burada hem `assets/reference/README.md`
 >   içinde belirtilmiştir.
@@ -88,5 +95,41 @@ uygulamada yalnızca **ultrason panelleri** alınacak şekilde kırpılmış, ar
 1400 piksel genişliğe ölçeklenmiştir. Ultrason görüntülerinin kendisinde,
 etiketlerinde veya işaretlerinde hiçbir değişiklik yapılmamıştır. Klinik
 fotoğraf panelleri kasıtlı olarak çıkarılmıştır.
+
+## Ultrason Görüntüleri (Kalça ve Alt Ekstremite)
+
+`assets/reference/usg-fascia-iliaca.jpg`, `usg-femoral.jpg`, `usg-lfcn.jpg`,
+`usg-peng.jpg`
+
+- **Kaynak:** Muse IO, Deiling B, Grinman L, Hadeed MM, Elkassabany N.
+  *Peripheral Nerve Blocks for Hip Fractures.* J Clin Med. 2024;13(12):3457.
+  https://doi.org/10.3390/jcm13123457
+- **Telif:** Copyright © 2024 by the authors. Licensee MDPI, Basel, Switzerland.
+- **Lisans:** Creative Commons Attribution 4.0 (CC BY 4.0)
+  (https://creativecommons.org/licenses/by/4.0/) — atıf verilmesi koşuluyla
+  **ticari kullanım dahil** dağıtım, çoğaltma ve uyarlama serbesttir.
+
+Hangi figürün nereye karşılık geldiği:
+
+| Dosya | Orijinal figür | Uygulamadaki blok |
+| --- | --- | --- |
+| `usg-fascia-iliaca.jpg` | Fig. 3 | Fasya iliaka (supra-inguinal / SIFI) |
+| `usg-femoral.jpg` | Fig. 4 | Femoral sinir bloğu (TKA, ACL, BKA) |
+| `usg-lfcn.jpg` | Fig. 5 | Fasya iliaka — LFCN hedefi (ikinci görsel) |
+| `usg-peng.jpg` | Fig. 6 | PENG (THA, kalça kırığı) |
+
+> **Kullanılmayan figürler.** Aynı makalenin **Şekil 1, 2 ve 7**'si başka
+> yayıncılardan (Oxford University Press, AAOS/OrthoInfo, Elsevier) *"reproduced
+> with permission"* notuyla alınmıştır. Makalenin CC BY 4.0 lisansı bu üç
+> figürü **kapsamaz**; bu nedenle uygulamaya alınmamışlardır. Aynı makaleden
+> ileride figür eklenecekse önce o figürün altında böyle bir izin notu olup
+> olmadığına bakılmalıdır.
+
+**Değişiklik bildirimi:** Figürler PDF'ten gömülü çözünürlükte çıkarılmış,
+1400 pikselden geniş olanlar 1400 piksel genişliğe ölçeklenmiş ve JPEG olarak
+yeniden kodlanmıştır. Kırpma yapılmamış; ultrason görüntülerinde, etiketlerde
+veya işaretlerde değişiklik yoktur.
+
+---
 
 Atıf, her görselin altında uygulama içinde de gösterilir.

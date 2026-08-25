@@ -72,7 +72,11 @@ export function ReferenceImageView({
   return (
     <View style={styles.container}>
       <Pressable onPress={() => setOpen(true)} style={({ pressed }) => pressed && styles.pressed}>
-        <Image source={image} style={styles.thumb} resizeMode="cover" />
+        {/* "contain", not "cover": these captures carry the anatomy labels that
+            make them worth showing, and cropping to fill the frame cuts them
+            off. Letterboxing against the imaging ground is invisible anyway,
+            since ultrasound sits on black already. */}
+        <Image source={image} style={styles.thumb} resizeMode="contain" />
         <View style={styles.expandHint}>
           <Ionicons name="expand-outline" size={14} color="#FFFFFF" />
         </View>
@@ -110,9 +114,9 @@ const styles = StyleSheet.create({
   },
   thumb: {
     width: "100%",
-    height: 180,
+    height: 210,
     borderRadius: 10,
-    backgroundColor: colors.chip,
+    backgroundColor: colors.imaging,
   },
   expandHint: {
     position: "absolute",
