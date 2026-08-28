@@ -1,26 +1,21 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CombinationFindings } from "@/components/combination-findings";
 import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { DoseMeter, DoseMeterRow } from "@/components/dose-meter";
 import { NerveCoverageList } from "@/components/nerve-coverage";
-import {
-  AGE_BANDS,
-  AgeBand,
-  computeCombinationDose,
-  maxTotalVolumeMl,
-  SelectedBlockDose,
-} from "@/data/age-dosing";
+import { PatientBar } from "@/components/patient-bar";
 import { PediatricLimitList } from "@/components/pediatric-limits";
+import { computeCombinationDose, maxTotalVolumeMl, SelectedBlockDose } from "@/data/age-dosing";
 import { analyzeCombination } from "@/data/combination-analysis";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
 import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
 import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { usePatient } from "@/utils/patient";
 
 const MAX_SELECTION = 3;
 
@@ -93,13 +88,10 @@ function VerdictBanner({
 export function CombinationBuilder() {
   const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<string[]>([]);
-  const [weightInput, setWeightInput] = useState("");
-  const [bandId, setBandId] = useState("adolescent-adult");
-  const [withEpi, setWithEpi] = useState(false);
-
-  const band: AgeBand = AGE_BANDS.find((b) => b.id === bandId) ?? AGE_BANDS[4];
-  const weightKg = Number(weightInput.replace(",", "."));
-  const hasWeight = weightInput.length > 0 && Number.isFinite(weightKg) && weightKg > 0;
+  // Weight and age band belong to the session, not to this screen — see
+  // utils/patient.ts. The surgery detail screen reads the same values.
+  const [patient] = usePatient();
+  const { band, weightKg, hasWeight, withEpi } = patient;
 
   const chosen: Technique[] = useMemo(
     () => selected.map((id) => TECHNIQUES.find((t) => t.id === id)).filter((t): t is Technique => Boolean(t)),
@@ -217,46 +209,8 @@ export function CombinationBuilder() {
 
       {/* ---- Hasta ---- */}
       <Text style={styles.sectionTitle}>1. Hasta</Text>
-      <View style={styles.card}>
-        <TextInput
-          value={weightInput}
-          onChangeText={setWeightInput}
-          placeholder="Ağırlık (kg)"
-          placeholderTextColor={colors.textMuted}
-          keyboardType="decimal-pad"
-          style={styles.input}
-        />
-        <Text style={styles.fieldLabel}>Yaş grubu</Text>
-        <View style={styles.chipWrap}>
-          {AGE_BANDS.map((b) => {
-            const on = b.id === bandId;
-            return (
-              <Pressable
-                key={b.id}
-                onPress={() => setBandId(b.id)}
-                style={[styles.chip, on && styles.chipOn]}
-              >
-                <Text style={[styles.chipText, on && styles.chipTextOn]}>{b.label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={styles.rationale}>{band.rationale}</Text>
-        {band.modifier !== 1 ? (
-          <Text style={styles.modifierNote}>
-            Bu yaş grubunda mg/kg sınırı ×{band.modifier} uygulanır.
-          </Text>
-        ) : null}
-
-        <Pressable onPress={() => setWithEpi((v) => !v)} style={styles.toggleRow}>
-          <Ionicons
-            name={withEpi ? "checkbox" : "square-outline"}
-            size={20}
-            color={withEpi ? colors.primary : colors.textMuted}
-          />
-          <Text style={styles.toggleText}>Solüsyon epinefrin içeriyor</Text>
-        </Pressable>
-      </View>
+      <PatientBar />
+      <Text style={styles.rationale}>{band.rationale}</Text>
 
       {/* ---- Blok seçimi ---- */}
       <Text style={styles.sectionTitle}>
@@ -512,17 +466,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   cardTitle: { fontSize: 13.5, fontWeight: "700", color: colors.text },
-  input: {
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 9,
-    fontSize: 15,
-    color: colors.text,
-  },
-  fieldLabel: { fontSize: 12, fontWeight: "700", color: colors.textMuted },
   chipWrap: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chip: {
     backgroundColor: colors.chip,
@@ -536,9 +479,6 @@ const styles = StyleSheet.create({
   chipTextOn: { color: "#FFFFFF", fontWeight: "700" },
   chipTextDisabled: { color: colors.textMuted },
   rationale: { fontSize: 11.5, color: colors.textMuted, lineHeight: 17 },
-  modifierNote: { fontSize: 12, fontWeight: "700", color: colors.warning },
-  toggleRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm, marginTop: 2 },
-  toggleText: { fontSize: 13, color: colors.text },
   regionBlock: { gap: 6 },
   regionTitle: {
     fontSize: 11.5,

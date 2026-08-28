@@ -6,6 +6,7 @@ import { BlockCard } from "@/components/block-card";
 import { CombinationCard } from "@/components/combination-card";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { MaxDoseCalculator } from "@/components/max-dose-calculator";
+import { PatientBar } from "@/components/patient-bar";
 import { getRegionStyle } from "@/data/region-icons";
 import { Surgery } from "@/data/types";
 import { colors, spacing } from "@/theme";
@@ -41,6 +42,10 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
       </View>
 
       <DisclaimerBanner />
+
+      {/* The patient sits above the blocks so every figure below is read as
+          belonging to someone, rather than as a generic table. */}
+      <PatientBar />
 
       {surgery.clinicalNote ? (
         <View style={styles.noteCard}>
