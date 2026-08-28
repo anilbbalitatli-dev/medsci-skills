@@ -57,6 +57,25 @@ Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
 
+### Dermatoma göre blok arama
+
+`src/data/block-finder.ts` — uygulamanın ters yönü: segmentleri seç, o bölgeye
+ulaşan blokları al. İki sayı hesaplanır ve ikisi de arayüze taşınır:
+
+- **Kapsama** — istenen segmentlerin ne kadarına ulaşılıyor.
+- **Taşma** — istenmeyen kaç segment de bloke oluyor.
+
+Bunları tek bir skora indirmek işin ilginç yarısını gizlerdi: spinal anestezi
+L3–L4 isteğini kusursuz "kapsar" ve yanında istenmeyen on dört segmenti de
+bloke eder. Yalnız kapsamaya göre sıralansa her alt ekstremite aramasının
+başında dururdu.
+
+İkili kombinasyonlar, tek bir blok işi **düzgünce** halledemiyorsa önerilir —
+yalnızca "tam kapsayan bir blok var mı" diye bakmak yanlış çıktı, çünkü spinal
+neredeyse her alt vücut isteğini tamamlıyor ve ACB + siyatik gibi doğru cevabı
+gizliyordu. Öneri listesi, kombinasyon analizinde *gereksiz tekrar* veya
+*yapılmamalı* olarak işaretlenen çiftleri dışarıda bırakır.
+
 ### Pediatrik doz modeli
 
 `src/data/pediatric-dosing.ts` — kaynaklı pediatrik sınırlar. Yapısal nokta:

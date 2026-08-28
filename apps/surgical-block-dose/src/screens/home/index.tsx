@@ -56,6 +56,22 @@ export function Home() {
               </View>
             </Pressable>
           </Link>
+          {/* The reverse of the surgery list: start from the territory rather
+              than from the operation. */}
+          <Link href="/dermatome-blocks" asChild>
+            <Pressable>
+              <View style={styles.finderButton}>
+                <Ionicons name="body" size={17} color="#FFFFFF" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.finderTitle}>Dermatoma Göre Blok</Text>
+                  <Text style={styles.finderSub}>
+                    Kapsanmasını istediğin segmentleri seç · uygun blokları ve taşmayı gör
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
+              </View>
+            </Pressable>
+          </Link>
           {/* Reachable without building a combination first: the paediatric
               tables are a lookup people come to the app for on their own. */}
           <Link href="/pediatric-dosing" asChild>
@@ -143,6 +159,23 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   builderSub: {
+    ...type.caption,
+    fontSize: 11,
+    color: "rgba(255,255,255,0.82)",
+    marginTop: 1,
+    lineHeight: 15,
+  },
+  finderButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    backgroundColor: colors.primaryStrong,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 11,
+  },
+  finderTitle: { ...type.subheading, color: "#FFFFFF" },
+  finderSub: {
     ...type.caption,
     fontSize: 11,
     color: "rgba(255,255,255,0.82)",

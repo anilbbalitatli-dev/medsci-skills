@@ -26,7 +26,20 @@ const ATTRIBUTION =
 /** Levels the posterior figure can show; anything else only appears anteriorly. */
 const POSTERIOR_SET = new Set<string>(POSTERIOR_LEVELS);
 
-function AnteriorFigure({ active, height, showLabels }: { active: Set<string>; height: number; showLabels: boolean }) {
+/** Passed down so a segment only becomes interactive when a handler exists. */
+type LevelPress = ((level: string) => void) | undefined;
+
+function AnteriorFigure({
+  active,
+  height,
+  showLabels,
+  onLevelPress,
+}: {
+  active: Set<string>;
+  height: number;
+  showLabels: boolean;
+  onLevelPress: LevelPress;
+}) {
   return (
     <Svg viewBox={DERMATOME_VIEWBOX} width="100%" height={height}>
       <Path d={HEAD_PATH} fill={colors.chip} stroke={colors.border} strokeWidth={1} />
@@ -41,8 +54,9 @@ function AnteriorFigure({ active, height, showLabels }: { active: Set<string>; h
                 d={d}
                 fill={on ? colors.primary : colors.chip}
                 fillOpacity={on ? 0.85 : 1}
-                stroke={colors.border}
-                strokeWidth={0.8}
+                stroke={on ? colors.primaryStrong : colors.border}
+                strokeWidth={on ? 1.4 : 0.8}
+                onPress={onLevelPress ? () => onLevelPress(level) : undefined}
               />
             ))}
           </G>
@@ -67,7 +81,17 @@ function AnteriorFigure({ active, height, showLabels }: { active: Set<string>; h
   );
 }
 
-function PosteriorFigure({ active, height, showLabels }: { active: Set<string>; height: number; showLabels: boolean }) {
+function PosteriorFigure({
+  active,
+  height,
+  showLabels,
+  onLevelPress,
+}: {
+  active: Set<string>;
+  height: number;
+  showLabels: boolean;
+  onLevelPress: LevelPress;
+}) {
   return (
     <Svg viewBox={DERMATOME_POSTERIOR_VIEWBOX} width="100%" height={height}>
       {POSTERIOR_EXTRAS.map((d, i) => (
@@ -83,8 +107,9 @@ function PosteriorFigure({ active, height, showLabels }: { active: Set<string>; 
                 d={d}
                 fill={on ? colors.primary : colors.chip}
                 fillOpacity={on ? 0.85 : 1}
-                stroke={colors.border}
-                strokeWidth={0.8}
+                stroke={on ? colors.primaryStrong : colors.border}
+                strokeWidth={on ? 1.4 : 0.8}
+                onPress={onLevelPress ? () => onLevelPress(level) : undefined}
               />
             ))}
           </G>
@@ -117,26 +142,46 @@ export function DermatomeFigureCard({
   showLabels = false,
   caption,
   alwaysShowPosterior = false,
+  onLevelPress,
 }: {
   levels?: (DermatomeLevel | PosteriorLevel)[];
   height?: number;
   showLabels?: boolean;
   caption?: string;
   alwaysShowPosterior?: boolean;
+  /**
+   * Makes segments tappable. Omitted by the read-only callers, which keeps the
+   * figure inert everywhere it is illustrating a result rather than taking one.
+   */
+  onLevelPress?: (level: string) => void;
 }) {
   const active = new Set<string>(levels);
-  const posteriorRelevant = alwaysShowPosterior || levels.some((l) => POSTERIOR_SET.has(l));
+  // While picking, the posterior view has to stay put: it holds L2–S3, and
+  // hiding it the moment the selection has no such level would make those
+  // segments unreachable.
+  const posteriorRelevant =
+    alwaysShowPosterior || Boolean(onLevelPress) || levels.some((l) => POSTERIOR_SET.has(l));
 
   return (
     <View style={styles.card}>
       <View style={styles.figures}>
         <View style={styles.figureBlock}>
-          <AnteriorFigure active={active} height={height} showLabels={showLabels} />
+          <AnteriorFigure
+            active={active}
+            height={height}
+            showLabels={showLabels}
+            onLevelPress={onLevelPress}
+          />
           <Text style={styles.figureLabel}>Ön</Text>
         </View>
         {posteriorRelevant ? (
           <View style={styles.figureBlock}>
-            <PosteriorFigure active={active} height={height} showLabels={showLabels} />
+            <PosteriorFigure
+              active={active}
+              height={height}
+              showLabels={showLabels}
+              onLevelPress={onLevelPress}
+            />
             <Text style={styles.figureLabel}>Arka (alt ekstremite / perine)</Text>
           </View>
         ) : null}
