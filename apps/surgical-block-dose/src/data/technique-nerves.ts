@@ -311,6 +311,11 @@ export const TECHNIQUE_NERVES: Record<string, TechniqueNerveMap> = {
     segments: "Segmental değil",
     note: "İnsizyon hattındaki uç dallara infiltrasyon.",
   },
+  tumescent: {
+    targets: [],
+    segments: "Segmental değil",
+    note: "Ven trasesi boyunca perivenöz alana verilen seyreltik solüsyon; adlandırılmış bir siniri hedeflemez, uç dalları alan olarak bloke eder.",
+  },
   scpb: {
     targets: [{ nerve: "cervical-plexus-superficial", reliability: "consistent" }],
     segments: "C2–C4",

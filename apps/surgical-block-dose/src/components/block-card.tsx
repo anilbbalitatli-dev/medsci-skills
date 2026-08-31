@@ -4,6 +4,7 @@ import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
 import { SonoAnatomyView } from "@/components/sono-anatomy";
+import { techniqueForBlock } from "@/data/block-technique";
 import { imagesForBlock } from "@/data/reference-images";
 import { sonoSpecFor } from "@/data/sono-anatomy";
 import { BlockOption } from "@/data/types";
@@ -16,6 +17,7 @@ export function BlockCard({ block }: { block: BlockOption }) {
     .map((img) => sonoSpecFor(img.key))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
   const roleStyle = role[block.role];
+  const landmarkNote = block.landmarkNote ?? techniqueForBlock(block.id)?.landmark;
 
   return (
     <View style={styles.card}>
@@ -56,7 +58,10 @@ export function BlockCard({ block }: { block: BlockOption }) {
           })}
         </View>
 
-        {block.landmarkNote ? <Text style={styles.landmark}>{block.landmarkNote}</Text> : null}
+        {/* A block may override the note, but none currently does — the text
+            is authored once per technique so the same block reads the same way
+            under every operation that lists it. */}
+        {landmarkNote ? <Text style={styles.landmark}>{landmarkNote}</Text> : null}
 
         <CoverageInfo coverage={block.coverage} />
 

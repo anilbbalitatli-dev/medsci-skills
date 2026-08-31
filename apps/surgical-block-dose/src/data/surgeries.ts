@@ -94,6 +94,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "tha",
+    clinicalNote:
+      "Kalça kapsülünün duyusu femoral, obturator ve aksesuar obturator sinirlerin artiküler dallarından gelir; posterior kapsüle siyatik ve superior gluteal sinir katkı verir. Tek bir periferik blok kapsülün tamamını karşılamaz — blok seçimi cerrahi yaklaşıma (posterior/anterolateral) ve erken mobilizasyon hedefine göre yapılır.",
     name: "Total Kalça Protezi (THA)",
     category: "Ortopedi — Alt Ekstremite",
     region: "Alt Ekstremite",
@@ -148,6 +150,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "acl",
+    clinicalNote:
+      "Greft alınan yer ağrının önemli bir kaynağıdır: hamstring grefti posteromedial (safen dalları), kemik-patellar tendon-kemik grefti ise ön diz ağrısı yaratır. Blok seçimi yalnızca eklemi değil, greft sahasını da kapsamalıdır.",
     name: "ACL Rekonstrüksiyonu (Artroskopik Diz Ligaman Onarımı)",
     category: "Ortopedi — Alt Ekstremite",
     region: "Alt Ekstremite",
@@ -177,6 +181,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "ankle-foot",
+    clinicalNote:
+      "Turnike uyluğa uygulanıyorsa distal blok turnike ağrısını karşılamaz; sedasyon veya proksimal ek blok planlanmalıdır. Ayak cerrahisinde postoperatif ağrı sıklıkla şiddetlidir ve blok sönümü öngörülerek oral analjezi önceden başlatılır.",
     name: "Ayak / Ayak Bileği Cerrahisi",
     category: "Ortopedi — Alt Ekstremite",
     region: "Alt Ekstremite",
@@ -397,6 +403,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "elbow-surgery",
+    clinicalNote:
+      "Dirsek, brakiyal pleksusun üç kordundan da lif alır; tek bir uç sinir bloğu yetersiz kalır. Medial epikondil cerrahisinde ulnar sinir, radial baş cerrahisinde radial sinir kapsaması ayrıca doğrulanmalıdır.",
     name: "Dirsek Cerrahisi",
     category: "Ortopedi — Üst Ekstremite",
     region: "Üst Ekstremite",
@@ -426,6 +434,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "hand-forearm",
+    clinicalNote:
+      "Turnike ağrısı bu grupta belirleyicidir: interkostobrakiyal sinir (T2) brakiyal pleksusun parçası değildir ve hiçbir pleksus bloğu onu kapsamaz. Uzun turnike süresi bekleniyorsa aksillaya ayrı cilt altı infiltrasyon planlanmalıdır.",
     name: "El / Önkol Cerrahisi",
     category: "Ortopedi — Üst Ekstremite",
     region: "Üst Ekstremite",
@@ -510,6 +520,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "appendectomy",
+    clinicalNote:
+      "Viseral ağrı somatik bloklarla kapsanmaz; TAP ve rektus kılıf blokları yalnızca karın duvarını karşılar. Laparoskopide omuza vuran diyafram irritasyonu da blok kapsamı dışındadır ve sistemik analjezi gerektirir.",
     name: "Açık / Laparoskopik Apendektomi",
     category: "Genel Cerrahi",
     region: "Genel Cerrahi",
@@ -553,6 +565,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "inguinal-hernia",
+    clinicalNote:
+      "Kasık bölgesi ilioinguinal, iliohipogastrik ve genitofemoral sinirlerden beslenir; genitofemoral sinirin genital dalı çoğu blokla güvenilir şekilde kapsanmaz ve kord manipülasyonu sırasında ağrı olabilir. Cerrahın kord çevresine doğrudan infiltrasyonu bu boşluğu kapatır.",
     name: "İnguinal Herni Onarımı",
     category: "Genel Cerrahi",
     region: "Genel Cerrahi",
@@ -667,6 +681,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "thoracotomy",
+    clinicalNote:
+      "Torakotomi en şiddetli postoperatif ağrı yaratan girişimlerdendir ve yetersiz analjezi kronik post-torakotomi ağrı sendromu riskini artırır. Göğüs tüpü giriş yeri çoğu zaman insizyondan farklı bir dermatomdadır ve blok planına ayrıca dahil edilmelidir.",
     name: "Torakotomi",
     category: "Toraks Cerrahisi",
     region: "Toraks",
@@ -717,6 +733,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "gyn-laparoscopy",
+    clinicalNote:
+      "Ağrının büyük kısmı port yerleri ve rezidüel karbondioksitin yarattığı diyafram irritasyonundan kaynaklanır; ikincisi omuz ağrısı olarak ortaya çıkar ve karın duvarı bloklarıyla kapsanmaz. Derin infiltrasyon ve gazın dikkatli boşaltılması bloklardan daha etkili olabilir.",
     name: "Jinekolojik Laparoskopi (Laparoskopik Histerektomi vb.)",
     category: "Jinekolojik Cerrahi",
     region: "Kadın Doğum",
@@ -756,6 +774,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "varicose-vein",
+    clinicalNote:
+      "Tümesan anestezi hem analjezi sağlar hem de endovenöz termal ablasyonda çevre dokuyu ısıdan korur; bu nedenle ablasyon uygulanacaksa tekniğin kendisi zaten tümesan gerektirir. Dozlama bu uygulamanın mg/kg tablosuyla değerlendirilemez.",
     name: "Variköz Ven Cerrahisi (Safenektomi / Endovenöz Ablasyon)",
     category: "Vasküler Cerrahi",
     region: "Vasküler",
@@ -787,9 +807,34 @@ export const SURGERIES: Surgery[] = [
         coverage: COVERAGE.tumescent,
       },
     ],
+    combinations: [
+      {
+        id: "varicose-saphenous-tumescent",
+        name: "Safen Bloğu + Tümesan",
+        blockIds: ["varicose-saphenous", "varicose-tumescent"],
+        summary:
+          "Endovenöz termal ablasyonun fiili standardı: tümesan solüsyon hem analjezi sağlar hem de veni çevre dokudan ayırıp ısı hasarına karşı tampon oluşturur; safen bloğu ise ven trasesi dışındaki flebektomi kesilerini karşılar.",
+        score: {
+          safety: 4,
+          convenience: 4,
+          rationale:
+            "Her ikisi de yüzeyeldir ve ablasyon zaten tümesan gerektirir; asıl dikkat noktası toplam lidokain hacmidir.",
+        },
+        doseWarning:
+          "Tümesan hacmi bu uygulamanın mg/kg hesabıyla değerlendirilemez (seyreltik, epinefrinli, cilt altı, pik gecikmeli). Safen bloğu için ayrı bir ilaç kullanılacaksa toplam yük yine de birlikte düşünülmelidir.",
+        coverage: {
+          dermatomes: "L3–L4 (safen) + ven trasesi boyunca lokal",
+          motorEffect: "Yok; her iki bileşen de motor sinir hedeflemez.",
+          levels: ["L3", "L4"],
+          frontZones: ["thigh-medial", "lowerleg-anterior"],
+        },
+      },
+    ],
   },
   {
     id: "circumcision",
+    clinicalNote:
+      "Penis uç organdır: epinefrin içeren solüsyon kullanılmaz. Çocukta penil blok ile kaudal blok birbirinin alternatifidir; penil blok motor blok ve idrar retansiyonu yaratmadığı için günübirlik cerrahide tercih edilir.",
     name: "Sünnet / Penil Cerrahi",
     category: "Ürolojik Cerrahi",
     region: "Genel Cerrahi",
@@ -827,6 +872,8 @@ export const SURGERIES: Surgery[] = [
   },
   {
     id: "lumbar-spine-surgery",
+    clinicalNote:
+      "Cerrahi insizyon orta hatta olsa da ağrı paraspinal kaslardan ve faset eklemlerden gelir; bunlar dorsal ramus alanıdır. Füzyon cerrahisinde greft alınan iliak krest ayrı bir ağrı odağıdır ve blok planına dahil edilmelidir.",
     name: "Lomber Omurga Cerrahisi (Diskektomi / Füzyon)",
     category: "Omurga Cerrahisi",
     region: "Omurga",

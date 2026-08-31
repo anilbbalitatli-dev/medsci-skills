@@ -299,6 +299,9 @@ export const TECHNIQUE_CATEGORY: Record<string, TechniqueCategory> = {
   ivra: { category: "not-covered", basis: "explicit" },
   "port-site": { category: "not-covered", basis: "explicit" },
   "wound-infiltration": { category: "not-covered", basis: "explicit" },
+  // Tumescent dosing follows its own literature entirely — dilute solution with
+  // epinephrine, subcutaneous, delayed peak — and neither guideline addresses it.
+  tumescent: { category: "not-covered", basis: "explicit" },
 };
 
 /** Drug names in the catalogue carry qualifiers ("Bupivakain (hiperbarik)"). */
