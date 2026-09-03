@@ -267,6 +267,8 @@ export const TECHNIQUE_CATEGORY: Record<string, TechniqueCategory> = {
   // Named in [A]'s own lists
   caudal: { category: "caudal", basis: "explicit" },
   spinal: { category: "spinal", basis: "explicit" },
+  "epidural-lumbar": { category: "epidural", basis: "explicit" },
+  "epidural-thoracic": { category: "epidural", basis: "explicit" },
   femoral: { category: "psb-lower", basis: "explicit" },
   "sciatic-popliteal": { category: "psb-lower", basis: "explicit" },
   acb: { category: "psb-lower", basis: "explicit" },
@@ -279,6 +281,16 @@ export const TECHNIQUE_CATEGORY: Record<string, TechniqueCategory> = {
   "fascia-iliaca": { category: "fascial-plane", basis: "explicit" },
 
   // Same class of block, not named in the guideline
+  "sciatic-subgluteal": { category: "psb-lower", basis: "inferred" },
+  obturator: { category: "psb-lower", basis: "inferred" },
+  genicular: { category: "psb-lower", basis: "inferred" },
+  "quadratus-lumborum": { category: "fascial-plane", basis: "inferred" },
+  "wrist-block": { category: "psb-upper", basis: "inferred" },
+  pecs1: { category: "fascial-plane", basis: "inferred" },
+  parasternal: { category: "fascial-plane", basis: "inferred" },
+  "deep-cervical": { category: "psb-upper", basis: "inferred" },
+  "scalp-block": { category: "psb-upper", basis: "inferred" },
+  pudendal: { category: "psb-lower", basis: "inferred" },
   saphenous: { category: "psb-lower", basis: "inferred" },
   "ankle-block": { category: "psb-lower", basis: "inferred" },
   suprascapular: { category: "psb-upper", basis: "inferred" },
@@ -297,6 +309,7 @@ export const TECHNIQUE_CATEGORY: Record<string, TechniqueCategory> = {
 
   // Nothing in these guidelines applies
   ivra: { category: "not-covered", basis: "explicit" },
+  digital: { category: "not-covered", basis: "explicit" },
   "port-site": { category: "not-covered", basis: "explicit" },
   "wound-infiltration": { category: "not-covered", basis: "explicit" },
   // Tumescent dosing follows its own literature entirely — dilute solution with

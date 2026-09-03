@@ -120,6 +120,26 @@ export const TECHNIQUES: Technique[] = [
     note: "İntratekal doz, periferik blok dozlarından bağımsız değerlendirilir; toplam sistemik yük hesabına yine de dahil edilir.",
   },
   {
+    id: "epidural-lumbar",
+    name: "Lomber Epidural",
+    region: "Nöraksiyel",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.2, volumeMlRange: [10, 15] },
+    coverage: COVERAGE.epiduralLumbar,
+    landmark:
+      "L2-3 veya L3-4 aralığı; direnç kaybı yöntemiyle epidural aralık bulunur, kateter 3–5 cm ilerletilir. Test dozu ile intratekal/intravasküler yerleşim dışlanır.",
+    note: "Buradaki hacim tek seferlik bolus içindir. Kateterden sürekli infüzyon yapılıyorsa saatlik doz ayrıca hesaplanmalı ve toplam gün içi yük takip edilmelidir.",
+  },
+  {
+    id: "epidural-thoracic",
+    name: "Torasik Epidural",
+    region: "Nöraksiyel",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.2, volumeMlRange: [5, 10] },
+    coverage: COVERAGE.epiduralThoracic,
+    landmark:
+      "İnsizyonun orta dermatomuna denk gelen aralık (torakotomide T5-7, üst karında T7-9); paramedian yaklaşım tercih edilir, spinöz çıkıntıların eğimi nedeniyle iğne belirgin sefalik açıyla ilerletilir.",
+    note: "Segmental bir bloktur: hacim arttıkça kapsama genişler ama sempatik blokaj da yayılır. Torakotomi ve büyük karın cerrahisinde uzun süre referans standart olarak kabul edilmiştir.",
+  },
+  {
     id: "caudal",
     name: "Kaudal Blok",
     region: "Nöraksiyel",
@@ -130,7 +150,90 @@ export const TECHNIQUES: Technique[] = [
     note: "Pediatrik hacim genellikle Armitage'a göre 0.5–1.25 mL/kg olarak hesaplanır; buradaki erişkin hacmi çocukta geçerli değildir.",
   },
 
+  {
+    id: "sciatic-subgluteal",
+    name: "Siyatik Sinir Bloğu (Subgluteal)",
+    region: "Alt Ekstremite",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [15, 20] },
+    coverage: COVERAGE.sciaticSubgluteal,
+    landmark:
+      "Büyük trokanter ile iskial tuberositas arasında, gluteus maksimusun altındaki subgluteal aralıkta yassı hiperekoik sinir; kurvilineer prob, iğne lateralden mediale.",
+    note: "Popliteal yaklaşımın aksine hamstring dalları da bloke olur; diz fleksiyonu zayıflar ve mobilizasyon planı buna göre yapılmalıdır.",
+  },
+  {
+    id: "obturator",
+    name: "Obturator Sinir Bloğu",
+    region: "Alt Ekstremite",
+    typical: { drug: "Lidokain", concentrationPercent: 1, volumeMlRange: [10, 15] },
+    coverage: COVERAGE.obturator,
+    landmark:
+      "İnguinal kıvrımın altında, pektineus ile adduktor kasların arasındaki fasyal düzlemlerde ön ve arka dallar; interadduktor yaklaşımda tek enjeksiyonla iki dal birlikte hedeflenebilir.",
+    note: "Mesane tümörü rezeksiyonunda obturator refleksini (adduktor sıçraması) önlemek için kullanıldığında motor blok istenen etkidir; bu endikasyonda kısa etkili ajan tercih edilir.",
+  },
+  {
+    id: "genicular",
+    name: "Genikular Sinir Bloğu",
+    region: "Alt Ekstremite",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [3, 5] },
+    coverage: COVERAGE.genicular,
+    landmark:
+      "Femur ve tibia metafizlerinde periost-diafiz birleşim noktaları: superomedial, superolateral ve inferomedial genikular sinirler; seviye başına küçük hacim.",
+    note: "Kronik diz ağrısında radyofrekans öncesi tanısal blok olarak yaygındır; akut cerrahi analjezide ACB/IPACK kadar yerleşik değildir.",
+  },
+  {
+    id: "quadratus-lumborum",
+    name: "Quadratus Lumborum (QL) Bloğu",
+    region: "Karın Duvarı",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.375, volumeMlRange: [20, 30] },
+    coverage: COVERAGE.quadratusLumborum,
+    landmark:
+      "Kurvilineer prob orta aksiller çizgide iliak krestin üzerinde; 'shamrock' görünümünde quadratus lumborum kasının lateral kenarı (QL1), posterioru (QL2) veya transmusküler (QL3) hedeflenir.",
+    bilateralByDefault: true,
+    note: "TAP'a göre daha proksimal ve daha uzun süreli analjezi bildirilir; torakolumbar fasya üzerinden paravertebral alana yayılım nedeniyle viseral bileşene de kısmi katkısı olabilir.",
+  },
+
   // ---- Üst ekstremite -------------------------------------------------
+  {
+    id: "wrist-block",
+    name: "Bilek Bloğu (median/ulnar/radial)",
+    region: "Üst Ekstremite",
+    typical: { drug: "Lidokain", concentrationPercent: 1, volumeMlRange: [9, 15] },
+    coverage: COVERAGE.wristBlock,
+    landmark:
+      "Median: palmaris longus ile fleksör karpi radialis arasında; ulnar: fleksör karpi ulnaris altında, ulnar arterin medialinde; radial: radial stiloid üzerinde yelpaze şeklinde cilt altı.",
+    note: "El bileği hareketini korur, günübirlik el cerrahisinde hastanın erken taburculuğunu kolaylaştırır. Turnike gerekiyorsa tek başına yetersizdir.",
+  },
+  {
+    id: "digital",
+    name: "Dijital Blok (parmak)",
+    region: "Üst Ekstremite",
+    typical: { drug: "Lidokain (epinefrinsiz)", concentrationPercent: 1, volumeMlRange: [2, 4] },
+    coverage: COVERAGE.digital,
+    landmark:
+      "Parmak kökünde dorsal ve palmar dijital sinirler için iki taraflı enjeksiyon; alternatif olarak tek enjeksiyonla subkutan transtekal yaklaşım.",
+    note: "Klasik öğreti uç organ olduğu için epinefrinden kaçınmaktır. Toplam hacim sınırlı tutulur — dar bir alanda basınç artışı dolaşımı bozabilir.",
+  },
+  {
+    id: "pecs1",
+    name: "PECS I Bloğu",
+    region: "Toraks",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.375, volumeMlRange: [10, 15] },
+    coverage: COVERAGE.pecs1,
+    landmark:
+      "Klavikula altı 2-3. kot düzeyinde, pektoralis majör ile minör arasındaki fasyal düzlem; torakoakromiyal arterin pektoral dalı landmark olarak kullanılır.",
+    note: "Yalnızca pektoral sinirleri tutar; cilt duyusunu kapsamaz. Tek başına meme cerrahisi için yetersizdir, ekspander/implant yerleştirilmesinde kas spazmına yöneliktir.",
+  },
+  {
+    id: "parasternal",
+    name: "Parasternal Blok (transversus torasis / pekto-interkostal)",
+    region: "Toraks",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.25, volumeMlRange: [15, 20] },
+    coverage: COVERAGE.parasternal,
+    bilateralByDefault: true,
+    note: "Sternotomi analjezisinde ön göğüs duvarının orta hat bandını kapsar; ESP ve paravertebral bloklar bu bölgeye güvenilir şekilde ulaşmaz.",
+    landmark:
+      "Sternum kenarının 1–2 cm lateralinde, 3-5. kıkırdak kot düzeyi; pektoralis majör ile interkostal kaslar arasına (pekto-interkostal) ya da transversus torasis kasının yüzeyine. İnternal torasik arter hemen komşudur.",
+  },
   {
     id: "interscalene",
     name: "İnterskalen Brakiyal Pleksus Bloğu",
@@ -324,6 +427,37 @@ export const TECHNIQUES: Technique[] = [
       "Ven trasesi boyunca perivenöz alana, USG eşliğinde büyük hacimli seyreltik solüsyon; aynı zamanda ısı hasarına karşı termal tampon oluşturur.",
     note:
       "Tümesan dozlama bu uygulamanın mg/kg tablosuyla değerlendirilemez: solüsyon çok seyreltiktir, epinefrin içerir ve cilt altına verildiği için emilim yavaş, pik gecikmelidir. Literatürde çok daha yüksek toplam mg/kg değerleri bildirilmiştir; buradaki sınır hesabı bu tekniğe uygulanmamalıdır.",
+  },
+  {
+    id: "deep-cervical",
+    name: "Derin Servikal Pleksus Bloğu",
+    region: "Baş-Boyun",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [10, 15] },
+    coverage: COVERAGE.deepCervical,
+    landmark:
+      "C2-C3-C4 transvers çıkıntılarının posterior tüberkülleri; mastoid ile Chassaignac tüberkülü arasındaki çizgi üzerinde, tek veya üç enjeksiyon.",
+    note: "Yüzeyel bloğun aksine frenik sinir felci, rekürren laringeal sinir tutulumu ve vertebral arter enjeksiyonu riski taşır; bu nedenle günümüzde çoğu endikasyonda yüzeyel blok tercih edilir. İki taraflı uygulanmaz.",
+  },
+  {
+    id: "scalp-block",
+    name: "Skalp Bloğu",
+    region: "Baş-Boyun",
+    typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [20, 30] },
+    coverage: COVERAGE.scalp,
+    landmark:
+      "Altı sinir çifti halka şeklinde: supraorbital ve supratroklear (kaş üzeri), zigomatikotemporal, aurikulotemporal (tragus önü, yüzeyel temporal arter komşuluğu), büyük ve küçük oksipital (oksipital protuberans hizası).",
+    note: "Kraniyotomide çivili başlık takılması ve insizyon yanıtını körler; hemodinamik dalgalanmayı azaltır. Epinefrinli solüsyon skalpin yoğun kanamasını da sınırlar.",
+  },
+  {
+    id: "pudendal",
+    name: "Pudendal Sinir Bloğu",
+    region: "Ürogenital",
+    typical: { drug: "Lidokain", concentrationPercent: 1, volumeMlRange: [10, 20] },
+    coverage: COVERAGE.pudendal,
+    bilateralByDefault: true,
+    landmark:
+      "Transvajinal yaklaşımda iskial spina palpe edilip sakrospinöz ligamanın hemen medial-altına; perineal yaklaşımda iskial tuberositas medialinden pudendal kanala.",
+    note: "Vajinal doğumun ikinci evresinde ve perine cerrahisinde kullanılır; uterus kaynaklı viseral ağrıyı kapsamaz.",
   },
   {
     id: "penile",

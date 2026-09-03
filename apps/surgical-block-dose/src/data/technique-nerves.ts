@@ -125,6 +125,27 @@ export const TECHNIQUE_NERVES: Record<string, TechniqueNerveMap> = {
     segments: "Seviyeye göre T4/T10–S5",
     note: "Kök düzeyinde blokaj — aşağıdaki tüm periferik sinirler iki taraflı olarak kapsanır.",
   },
+  "epidural-lumbar": {
+    targets: [
+      { nerve: "lumbar-spinal-nerve", reliability: "consistent" },
+      {
+        nerve: "sacral-plexus",
+        reliability: "variable",
+        note: "Sakral kökler lomber kateterden en geç ve en değişken bloke olan bölgedir.",
+      },
+      { nerve: "thoracic-spinal-nerve", reliability: "variable" },
+    ],
+    segments: "Kateter seviyesine göre T10–S5",
+    note: "Kök düzeyinde, iki taraflı blokaj. Konsantrasyon motor bloğun derecesini belirler: seyreltik solüsyonlarda duyu-motor ayrışması hedeflenir.",
+  },
+  "epidural-thoracic": {
+    targets: [
+      { nerve: "thoracic-spinal-nerve", reliability: "consistent" },
+      { nerve: "thoracic-sympathetic-chain", reliability: "consistent" },
+    ],
+    segments: "Kateter çevresinde yaklaşık T4–T10",
+    note: "Segmentaldir: alt ekstremite kökleri kapsanmaz, bu yüzden hasta yürüyebilir. Sempatik blokaj hipotansiyonun ana kaynağıdır.",
+  },
   caudal: {
     targets: [
       { nerve: "sacral-plexus", reliability: "consistent" },
@@ -137,7 +158,68 @@ export const TECHNIQUE_NERVES: Record<string, TechniqueNerveMap> = {
     segments: "S2–S5 (± lomber)",
   },
 
+  "sciatic-subgluteal": {
+    targets: [{ nerve: "sciatic", reliability: "consistent" }],
+    segments: "L4–S3",
+    note: "Hamstring dalları henüz ayrılmadığı için popliteal yaklaşımdan farklı olarak diz fleksiyonu da tutulur.",
+  },
+  obturator: {
+    targets: [{ nerve: "obturator", reliability: "consistent" }],
+    segments: "L2–L4",
+  },
+  genicular: {
+    targets: [
+      { nerve: "femoral-articular-hip", reliability: "variable", note: "Diz artiküler dalları femoral ve siyatik kaynaklıdır; katalogda ayrı düğüm olarak tutulmaz." },
+      { nerve: "sciatic-articular-knee", reliability: "consistent" },
+      { nerve: "obturator-articular-hip", reliability: "variable" },
+    ],
+    segments: "L3–S1 (artiküler)",
+    note: "Yalnızca eklem kapsülünün duyusal dalları hedeflenir; hiçbir motor dal tutulmaz.",
+  },
+  "quadratus-lumborum": {
+    targets: [
+      { nerve: "intercostal", reliability: "consistent" },
+      { nerve: "subcostal", reliability: "consistent" },
+      { nerve: "iliohypogastric", reliability: "consistent" },
+      { nerve: "ilioinguinal", reliability: "consistent" },
+      {
+        nerve: "thoracic-sympathetic-chain",
+        reliability: "variable",
+        note: "Paravertebral alana yayılım bildirilmiştir; viseral bileşene kısmi katkısı buradan gelir.",
+      },
+    ],
+    segments: "T7–L1",
+    note: "TAP'tan daha proksimal bir plan; lateral kutanöz dallar henüz ayrılmadığı için onları da kapsayabilir.",
+  },
+
   // ---- Üst ekstremite ---------------------------------------------------
+  "wrist-block": {
+    targets: [
+      { nerve: "median", reliability: "consistent" },
+      { nerve: "ulnar", reliability: "consistent" },
+      { nerve: "radial", reliability: "consistent" },
+    ],
+    segments: "C6–T1 (el)",
+    note: "Üç sinirin bilek seviyesindeki uç dalları hedeflenir; önkol ve turnike bölgesi kapsanmaz.",
+  },
+  digital: {
+    targets: [],
+    segments: "Segmental değil",
+    note: "Parmağın uç dijital sinirleri; adlandırılmış bir gövdeyi değil, tek bir parmağın dallarını bloke eder.",
+  },
+  pecs1: {
+    targets: [
+      { nerve: "lateral-pectoral", reliability: "consistent" },
+      { nerve: "medial-pectoral", reliability: "consistent" },
+    ],
+    segments: "C5–T1 (motor)",
+    note: "Yalnızca motor pektoral sinirler — cilt duyusu kapsanmaz, tek başına cerrahi analjezi sağlamaz.",
+  },
+  parasternal: {
+    targets: [{ nerve: "intercostal-anterior-cutaneous", reliability: "consistent" }],
+    segments: "T2–T6",
+    note: "Orta hat/parasternal bandı hedefler; ESP ve paravertebralın en güvenilmez olduğu bölge burasıdır.",
+  },
   interscalene: {
     targets: [
       { nerve: "upper-trunk", reliability: "consistent" },
@@ -319,6 +401,35 @@ export const TECHNIQUE_NERVES: Record<string, TechniqueNerveMap> = {
   scpb: {
     targets: [{ nerve: "cervical-plexus-superficial", reliability: "consistent" }],
     segments: "C2–C4",
+  },
+  "deep-cervical": {
+    targets: [
+      { nerve: "cervical-plexus-superficial", reliability: "consistent" },
+      {
+        nerve: "phrenic",
+        reliability: "variable",
+        incidental: true,
+        note: "C4 seviyesine yakınlık nedeniyle hemidiyafram felci olabilir; iki taraflı uygulanmamasının başlıca sebebi budur.",
+      },
+    ],
+    segments: "C2–C4",
+    note: "Yüzeyel bloğun kapsadığı cilt alanına ek olarak derin yapılara ulaşır, ama komplikasyon profili belirgin şekilde ağırdır.",
+  },
+  "scalp-block": {
+    targets: [
+      {
+        nerve: "cervical-plexus-superficial",
+        reliability: "consistent",
+        note: "Büyük ve küçük oksipital sinirler bu dallardandır; halkanın ön yarısı trigeminal dallardır ve bu katalogda sinir düğümü olarak tutulmaz.",
+      },
+    ],
+    segments: "C2–C3 + trigeminal dallar",
+    note: "Altı sinir çiftinin tamamı hedeflenir; trigeminal dallar (V1–V2) bu uygulamanın spinal sinir grafiğinin dışındadır.",
+  },
+  pudendal: {
+    targets: [{ nerve: "pudendal", reliability: "consistent" }],
+    segments: "S2–S4",
+    note: "Perineal somatik ağrıyı karşılar; uterus kaynaklı viseral ağrı (T10–L1) kapsam dışıdır.",
   },
   penile: {
     targets: [{ nerve: "dorsal-nerve-of-penis", reliability: "consistent" }],

@@ -215,4 +215,104 @@ export const COVERAGE = {
     levels: ["T10", "T11", "T12", "L1", "L2"],
     backZones: ["lower-back"],
   } satisfies Coverage,
+
+  // ---- Nöraksiyel ----
+  epiduralLumbar: {
+    dermatomes: "Kateter seviyesine göre T10–S5 (iki taraflı)",
+    motorEffect:
+      "Konsantrasyona bağlı; analjezik konsantrasyonlarda (%0.1–0.2) yürüyüş korunabilir, anestezik konsantrasyonlarda belirgin alt ekstremite motor bloğu olur.",
+    levels: ["T10", "T11", "T12", "L1", "L2", "L3", "L4", "L5", "S1"],
+    frontZones: ["abdomen-lower", "groin", "thigh-anterior", "thigh-medial", "knee", "lowerleg-anterior"],
+    backZones: ["lower-back", "thigh-posterior", "calf"],
+  } satisfies Coverage,
+  epiduralThoracic: {
+    dermatomes: "Kateter seviyesi çevresinde yaklaşık T4–T10 (iki taraflı, segmental)",
+    motorEffect:
+      "Alt ekstremite motor bloğu beklenmez; ilgili seviyelerde interkostal kas gücü azalır. Sempatik blokaj nedeniyle hipotansiyon görülebilir.",
+    levels: ["T4", "T5", "T6", "T7", "T8", "T9", "T10"],
+    frontZones: ["chest-lower", "abdomen-upper", "abdomen-mid"],
+    backZones: ["upper-back"],
+  } satisfies Coverage,
+
+  // ---- Gövde ----
+  quadratusLumborum: {
+    dermatomes: "T7–L1 (yayılıma bağlı; torakolumbar fasya üzerinden paravertebral alana)",
+    motorEffect: "Yok/minimal; karın duvarı kas gücü fonksiyonel olarak korunur.",
+    levels: ["T7", "T8", "T9", "T10", "T11", "T12", "L1"],
+    frontZones: ["abdomen-upper", "abdomen-mid", "abdomen-lower"],
+    backZones: ["lower-back"],
+  } satisfies Coverage,
+  parasternal: {
+    dermatomes: "T2–T6 anterior kutanöz dallar (parasternal bant)",
+    motorEffect: "Yok (yalnızca duyusal anterior dallar).",
+    levels: ["T2", "T3", "T4", "T5", "T6"],
+    frontZones: ["chest-upper", "chest-lower"],
+  } satisfies Coverage,
+  pecs1: {
+    dermatomes: "Segmental değil — pektoral sinirlerin motor alanı",
+    motorEffect: "Pektoralis majör ve minörde güçsüzlük; cilt duyusu bu blokla kapsanmaz.",
+    frontZones: ["chest-upper"],
+  } satisfies Coverage,
+
+  // ---- Alt ekstremite ----
+  sciaticSubgluteal: {
+    dermatomes: "L4–S3 (uyluk arkası dahil, safen alanı hariç bacağın tamamı)",
+    motorEffect:
+      "Hamstringler dahil diz altındaki tüm kaslarda motor blok; popliteal yaklaşımın aksine diz fleksiyonu da etkilenir.",
+    levels: ["L4", "L5", "S1", "S2"],
+    frontZones: ["lowerleg-anterior", "foot-top"],
+    backZones: ["thigh-posterior", "calf", "heel-sole"],
+  } satisfies Coverage,
+  obturator: {
+    dermatomes: "L2–L4 (uyluk medial yüzü — değişken; diz posteromedial kapsülü)",
+    motorEffect:
+      "Adduktor kaslarda belirgin güçsüzlük. TUR-M sırasında obturator refleksi (adduktor sıçraması) önlemek için kullanılır.",
+    levels: ["L2", "L3", "L4"],
+    frontZones: ["thigh-medial"],
+  } satisfies Coverage,
+  genicular: {
+    dermatomes: "L3–S1 (diz eklem kapsülünün artiküler dalları)",
+    motorEffect: "Yok; yalnızca artiküler duyusal dallar hedeflenir.",
+    levels: ["L3", "L4", "L5", "S1"],
+    frontZones: ["knee"],
+    backZones: ["knee"],
+  } satisfies Coverage,
+
+  // ---- Üst ekstremite ----
+  wristBlock: {
+    dermatomes: "C6–T1 (median, ulnar ve radial sinirlerin el dalları)",
+    motorEffect:
+      "El içi küçük kaslarda güçsüzlük olabilir; bilek ve parmak uzun kasları korunur, el bileği hareketi etkilenmez.",
+    levels: ["C6", "C7", "C8", "T1"],
+    frontZones: ["forearm-hand"],
+  } satisfies Coverage,
+  digital: {
+    dermatomes: "Yalnızca ilgili parmak (segmental değil)",
+    motorEffect: "Yok.",
+    frontZones: ["forearm-hand"],
+  } satisfies Coverage,
+
+  // ---- Baş-boyun ----
+  scalp: {
+    dermatomes:
+      "Trigeminal dallar (supraorbital, supratroklear, zigomatikotemporal, aurikulotemporal) + C2–C3 (oksipital sinirler)",
+    motorEffect: "Yok (yalnızca duyusal); frontalis hareketinde geçici etki olabilir.",
+    levels: ["C2", "C3"],
+    frontZones: ["head-neck"],
+  } satisfies Coverage,
+  deepCervical: {
+    dermatomes: "C2–C4 (derin servikal pleksus — yüzeyel dallara ek olarak derin yapılar)",
+    motorEffect:
+      "Boyun kaslarında güçsüzlük; frenik sinir yakınlığı nedeniyle hemidiyafram felci ve rekürren laringeal sinir tutulumu riski taşır.",
+    levels: ["C2", "C3", "C4"],
+    frontZones: ["head-neck"],
+  } satisfies Coverage,
+
+  // ---- Ürogenital / perine ----
+  pudendal: {
+    dermatomes: "S2–S4 (perine, dış genital bölge, anal kanal)",
+    motorEffect: "Perine kasları ve eksternal sfinkterde güçsüzlük.",
+    levels: ["S2", "S3"],
+    frontZones: ["groin"],
+  } satisfies Coverage,
 } as const;
