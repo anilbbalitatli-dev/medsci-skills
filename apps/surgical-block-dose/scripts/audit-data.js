@@ -225,6 +225,48 @@ function main() {
     }
   }
 
+  // ---- Every technique should be illustrated, or say why not ----
+  //
+  // The earlier version only inspected declared image slots, so a technique
+  // with no slot at all was invisible to it — which is how twelve new blocks
+  // shipped with nothing to look at. Checked per technique now.
+  //
+  // Landmark techniques are exempt: drawing an "ultrasound view" of a block
+  // performed by palpation would invent a picture that does not exist.
+  const NO_ULTRASOUND_VIEW = new Set([
+    "ivra",
+    "digital",
+    "scalp-block",
+    "pudendal",
+    "genicular",
+    "port-site",
+    "wound-infiltration",
+    "tumescent",
+    "penile",
+    "ankle-block",
+    "caudal",
+    "saphenous",
+    "ipack",
+    "ilioinguinal",
+    "rectus-sheath",
+    "scpb",
+    "suprascapular",
+    "axillary-nerve",
+    "axillary-plexus",
+  ]);
+  const { imagesForTechnique } = load("reference-images");
+  for (const t of TECHNIQUES) {
+    if (NO_ULTRASOUND_VIEW.has(t.id)) continue;
+    const slots = imagesForTechnique(t.id);
+    if (slots.length === 0) {
+      add("warn", "görsel", `${t.id} (${t.name}) hiçbir görsel yuvası tanımlamıyor`);
+      continue;
+    }
+    if (!slots.some((s) => sonoKeys.has(s.key) || registered.has(s.key))) {
+      add("warn", "görsel", `${t.id} yuvası var ama ne çizim ne gerçek görüntü içeriyor`);
+    }
+  }
+
   // ---- Report ----
   const order = { error: 0, warn: 1, info: 2 };
   problems.sort((a, b) => order[a.level] - order[b.level] || a.area.localeCompare(b.area));
