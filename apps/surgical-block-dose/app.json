@@ -1,30 +1,47 @@
 {
   "expo": {
-    "name": "Surgical Block Dose Guide",
+    "name": "Blok & Doz Rehberi",
     "slug": "surgical-block-dose",
     "scheme": "surgicalblockdose",
     "version": "1.0.0",
+    "description": "Cerrahi tipine göre rejyonal anestezi bloklarını, sinir ve dermatom kapsamlarını, yaşa ve kiloya göre doz sınırlarını gösteren eğitim/referans uygulaması. Klinik karar aracı değildir.",
+    "primaryColor": "#0F7A5F",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "plugins": [
       "expo-router",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F7F9"
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.medsci.surgicalblockdose"
+      "bundleIdentifier": "com.medsci.surgicalblockdose",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "Blok & Doz"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0A5A45",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.medsci.surgicalblockdose"
+      "package": "com.medsci.surgicalblockdose",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
