@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { BlockDoseTable } from "@/components/block-dose-table";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
@@ -20,6 +21,7 @@ export function BlockCard({ block }: { block: BlockOption }) {
   const roleStyle = role[block.role];
   const landmarkNote = block.landmarkNote ?? techniqueForBlock(block.id)?.landmark;
   const techniqueId = BLOCK_TECHNIQUE[block.id];
+  const technique = techniqueForBlock(block.id);
 
   return (
     <View style={styles.card}>
@@ -34,31 +36,7 @@ export function BlockCard({ block }: { block: BlockOption }) {
         </View>
         <Text style={styles.summary}>{block.summary}</Text>
 
-        {/* Doses read as a table: drug on the left, figures right-aligned and
-            tabular so volumes and milligrams line up down the column. */}
-        <View style={styles.doseTable}>
-          {block.anesthetics.map((a) => {
-            const [minMg, maxMg] = volumeRangeToMgRange(a.concentrationPercent, a.volumeMlRange);
-            return (
-              <View key={a.drug} style={styles.doseRow}>
-                <View style={styles.doseMain}>
-                  <Text style={styles.drug}>{a.drug}</Text>
-                  <View style={styles.figures}>
-                    <Text style={styles.volume}>
-                      {a.volumeMlRange[0]}–{a.volumeMlRange[1]}
-                      <Text style={styles.unit}> mL</Text>
-                    </Text>
-                    <Text style={styles.mg}>
-                      {Math.round(minMg)}–{Math.round(maxMg)}
-                      <Text style={styles.unit}> mg</Text>
-                    </Text>
-                  </View>
-                </View>
-                {a.note ? <Text style={styles.note}>{a.note}</Text> : null}
-              </View>
-            );
-          })}
-        </View>
+        <BlockDoseTable technique={technique} curated={block.anesthetics} />
 
         {/* A block may override the note, but none currently does — the text
             is authored once per technique so the same block reads the same way

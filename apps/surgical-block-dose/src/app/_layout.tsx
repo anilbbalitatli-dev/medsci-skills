@@ -21,6 +21,7 @@ export default function RootLayout() {
         <Stack.Screen name="last-info" options={{ title: "LAST Bilgisi", presentation: "modal" }} />
         <Stack.Screen name="dermatome-map" options={{ title: "Dermatom Haritası", presentation: "modal" }} />
         <Stack.Screen name="pediatric-dosing" options={{ title: "Pediatrik Doz", presentation: "modal" }} />
+        <Stack.Screen name="mixture" options={{ title: "Karışım Hesaplayıcı", presentation: "modal" }} />
         <Stack.Screen name="combination-builder" options={{ title: "Kombinasyon Oluşturucu" }} />
         <Stack.Screen name="dermatome-blocks" options={{ title: "Dermatoma Göre Blok" }} />
       </Stack>
