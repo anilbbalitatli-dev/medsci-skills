@@ -89,7 +89,24 @@ cd apps/surgical-block-dose
 eas init          # projeyi Expo hesabınıza bağlar, projectId yazar
 ```
 
-### Derleme
+### Bilgisayarınız yoksa: GitHub Actions ile derleme
+
+Yukarıdaki komutlar bir makine ister. Elinizde bilgisayar yoksa derlemeyi
+GitHub'ın makinesinde çalıştırabilirsiniz — telefondan tarayıcıyla yeterli.
+
+1. <https://expo.dev> → hesabınız → **Access tokens** → yeni token üretin.
+2. GitHub'da bu depoda **Settings → Secrets and variables → Actions → New
+   repository secret**: ad `EXPO_TOKEN`, değer az önceki token.
+3. **Actions** sekmesi → *Blok & Doz — uygulama derle* → **Run workflow**.
+   Platform ve profil seçip başlatın.
+
+İş akışı önce tip kontrolü ve veri denetimini çalıştırır, sonra EAS'e derleme
+gönderir. Sonucu expo.dev üzerindeki proje sayfasından indirir veya TestFlight'a
+düşmesini beklersiniz. İlk çalıştırmada Apple kimlik bilgileri gerektiğinden bir
+kez `eas build` komutunu etkileşimli çalıştırmanız gerekebilir; alternatif olarak
+sertifikaları expo.dev arayüzünden yükleyebilirsiniz.
+
+### Derleme (kendi makinenizde)
 
 ```bash
 eas build --platform ios --profile production
