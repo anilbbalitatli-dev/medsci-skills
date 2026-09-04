@@ -43,50 +43,48 @@ Eklemeden önce:
 
 ## Nasıl eklenir
 
-1. Dosyayı bu klasöre koyun (ör. `usg-tap.jpg`).
-2. `src/data/block-images.ts` içindeki kayda bir satır ekleyin:
-   ```ts
-   "usg-tap": require("../../assets/reference/usg-tap.jpg"),
-   ```
-3. `src/data/reference-images.ts` içinde o görselin `credit` alanındaki
-   `CREDIT_PENDING` yerine gerçek kaynağı yazın, ör.:
-   ```ts
-   credit: "Kaynak: Smith et al., BMC Anesthesiol 2021, Fig. 2 (CC BY 4.0)",
-   ```
+Tek komut:
 
-Bu üç adım tamamlanana kadar uygulama o alanda "Görsel eklenmeyi bekliyor"
-yazan kesikli çerçeveli bir kutu gösterir — yani eksik görseller sessizce
-kaybolmaz, ekranda görünür.
+```bash
+npm run image:add -- <dosya> --key usg-tap --credit "Kaynak: Smith ve ark., BMC Anesthesiol 2021, Fig. 2 (CC BY 4.0)"
+```
+
+Script üç işi birlikte yapar: dosyayı bu klasöre `usg-tap.jpg` adıyla kopyalar,
+`src/data/block-images.ts` içine `require()` satırını yazar ve
+`src/data/reference-images.ts` içindeki `credit` alanını doldurur. `--credit`
+zorunludur; kaynağı yazılmamış bir görsel eklenemez.
+
+Faydalı seçenekler:
+
+- `npm run image:add` (argümansız) veya `--list`: hangi yuvaların boş olduğunu
+  ve her birinde ne beklendiğini yazar.
+- `--caption "USG — ..."`: hazır açıklamayı değiştirir.
+- `--force`: o anahtarda zaten bir görsel varsa üzerine yazar.
+- `--noncommercial`: CC BY-NC gibi ticari kullanıma kapalı bir kaynaktan
+  geliyorsa satıra `@noncommercial` işaretini koyar; ticari sürüm
+  hazırlanırken `scripts/strip-noncommercial-assets.sh` o dosyaları ve
+  satırları birlikte kaldırır. Kendi çektiğiniz görsellerde gerekmez.
+
+Yeni bir teknik için henüz yuva yoksa, önce `src/data/reference-images.ts`
+içine bir girdi (`key` + `caption`) ekleyin; script tanımlı olmayan bir
+anahtara dosya yazmaz.
+
+Kayıt tamamlanana kadar uygulama o alanda "Görsel eklenmeyi bekliyor" yazan
+kesikli çerçeveli bir kutu gösterir — yani eksik görseller sessizce kaybolmaz,
+ekranda görünür. Kaynağı boş kalan bir görsel de uygulama içindeki **Yasal
+Bilgi** ekranında kırmızı kutuda listelenir.
 
 ## Beklenen görseller
 
 Görseller **teknik bazında** anahtarlanır: tek bir TAP görüntüsü, TAP bloğu
-kullanan bütün cerrahilerde gösterilir. Yani aşağıdaki 13 dosya tüm uygulamayı
-kapsar.
+kullanan bütün cerrahilerde gösterilir. Güncel liste kod içinde tutulur ve
+buradaki bir tabloya kopyalandığında hemen eskir; bu yüzden listeyi script'ten
+alın:
 
-### Ultrason
+```bash
+npm run image:add -- --list
+```
 
-| Anahtar (dosya adı) | İçerik | Hangi cerrahilerde görünür |
-| --- | --- | --- |
-| `usg-adductor-canal` | Femoral arter, safen sinir, sartorius | TKA, ACL |
-| `usg-interscalene` | C5-C6-C7 kökleri, skalen kaslar | Omuz artroskopisi |
-| `usg-supraclavicular` | Subklavyen arter, pleksus, 1. kot, plevra | El/önkol |
-| `usg-infraclavicular` | Aksiller arter, üç kord | El/önkol, dirsek |
-| `usg-popliteal-sciatic` | Siyatik sinirin ayrılma noktası | Ayak/ayak bileği, diz altı amputasyon |
-| `usg-tap` | Üç karın duvarı kası | Apendektomi, sezaryen, herni, jinekolojik laparoskopi |
-| `usg-peng` | İliopubik eminens, psoas tendonu | THA, kalça kırığı |
-| `usg-fascia-iliaca` | Sartorius, iliakus, fasya iliaka | THA, kalça kırığı |
-| `usg-esp` | Transvers çıkıntı, erektor spina | Torakotomi, lomber omurga |
-| `usg-pecs2` | Pektoralis majör/minör, serratus | Meme cerrahisi |
-| `usg-spinal` | Spinöz çıkıntılar, interlaminar pencere | TKA, THA, sezaryen |
-
-### Anatomi
-
-| Anahtar (dosya adı) | İçerik |
-| --- | --- |
-| `anatomy-dermatome-anterior` | Dermatomlar, ön görünüm |
-| `anatomy-dermatome-posterior` | Dermatomlar, arka görünüm |
-
-Dermatom plakaları için Gray's Anatomy'nin 1918 baskısı kamu malıdır ve
-doğrudan kullanılabilir; kaynak satırına `Gray's Anatomy (1918), public domain`
-yazmak yeterlidir.
+Anatomi plakaları (`anatomy-dermatome-anterior`, `anatomy-dermatome-posterior`)
+için Gray's Anatomy'nin 1918 baskısı kamu malıdır ve doğrudan kullanılabilir;
+kaynak satırına `Gray's Anatomy (1918), public domain` yazmak yeterlidir.

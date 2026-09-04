@@ -55,9 +55,11 @@ netleştirin; gerekirse mevzuat danışmanına sorun. Pratikte iki yol vardır:
 - Yaş sınırı **17+**, "Medical/Treatment Information" seçilir.
 - Açıklamada uygulamanın **sağlık profesyonelleri için referans** olduğu ve
   klinik karar aracı olmadığı açıkça yazılmalıdır.
-- İnceleme ekibi doz veren uygulamalarda kaynak sorabilir. Kaynaklar zaten
-  uygulama içinde görünür (ESRA/ASRA 2018, SFAR/ADARPEF, ISNCSCI, makale
-  atıfları) — inceleme notuna bunu yazın.
+- İnceleme ekibi doz veren uygulamalarda kaynak sorabilir. Kaynakların tamamı
+  uygulama içindeki **Yasal Bilgi** ekranında listelenir (ESRA/ASRA 2018,
+  SFAR/ADARPEF, ASRA LAST, ISNCSCI, makale atıfları) — inceleme notuna
+  "Yasal Bilgi → Kaynaklar" diye yazın. İlk açılışta bir kez gösterilen onay
+  penceresi de aynı ekrana bağlanır.
 - Uygulama **hiçbir veri toplamıyor**: ağırlık/yaş ve favoriler yalnızca cihazda
   saklanır, ağ isteği yoktur. App Privacy formunda "Data Not Collected"
   işaretlenir. Bu doğru beyandır, kod bunu destekler.
@@ -132,8 +134,10 @@ eas build --platform ios --profile preview
      iPad destekli olduğu için 12.9" iPad görüntüleri de gerekir
      (`app.json` içinde `supportsTablet: true`).
    - **Açıklama, anahtar kelimeler, destek URL'i, gizlilik politikası URL'i.**
-     Gizlilik politikası veri toplanmasa bile zorunludur; tek sayfalık
-     "hiçbir veri toplanmaz, her şey cihazda kalır" metni yeterlidir.
+     Gizlilik politikası veri toplanmasa bile zorunludur ve **web'de erişilebilir
+     bir URL** olmalıdır; uygulama içindeki ekran tek başına yetmez. Metni
+     sıfırdan yazmayın: `src/data/legal.ts` içindeki `PRIVACY_SECTION` bunun
+     için hazırdır, bir GitHub Pages sayfasına veya Gist'e koyup URL'i girin.
    - **Yaş sınırı** anketi → Medical/Treatment Information.
 3. Yükleme:
 
@@ -158,6 +162,7 @@ npm run audit         # veri seti çapraz referansları eksiksiz
 npx expo export --platform ios   # native bundle sorunsuz derleniyor
 ```
 
+- [ ] Yasal Bilgi ekranında "kaynağı girilmemiş görsel" kutusu yok
 - [ ] Ücretli/reklamlı ise NC görseller çıkarıldı
 - [ ] Mevzuat sorusu netleştirildi
 - [ ] `app.json` içindeki `version` doğru

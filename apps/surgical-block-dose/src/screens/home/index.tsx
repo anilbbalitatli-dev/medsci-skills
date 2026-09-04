@@ -123,6 +123,13 @@ export function Home() {
       ListEmptyComponent={
         <Text style={styles.empty}>Eşleşen cerrahi bulunamadı.</Text>
       }
+      ListFooterComponent={
+        <Link href="/legal" asChild>
+          <Pressable style={({ pressed }) => pressed && { opacity: 0.6 }}>
+            <Text style={styles.legalLink}>Yasal bilgi · kaynaklar · gizlilik</Text>
+          </Pressable>
+        </Link>
+      }
       keyboardShouldPersistTaps="handled"
     />
   );
@@ -215,6 +222,13 @@ const styles = StyleSheet.create({
   },
   chipRow: {
     gap: spacing.sm,
+  },
+  legalLink: {
+    ...type.caption,
+    color: colors.textMuted,
+    textAlign: "center",
+    textDecorationLine: "underline",
+    marginTop: spacing.lg,
   },
   empty: {
     ...type.body,

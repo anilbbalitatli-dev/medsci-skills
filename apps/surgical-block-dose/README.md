@@ -126,6 +126,33 @@ Yeni bir teknik eklerken `TECHNIQUES` girdisinin yanına `TECHNIQUE_NERVES`
 girdisini de eklemek gerekir; aksi hâlde teknik kombinasyon analizinde sinirsiz
 görünür.
 
+## Yasal metinler ve görsel kaynakları
+
+`src/data/legal.ts` — kullanım amacı, sorumluluk, içeriğin bilinen sınırları,
+gizlilik beyanı, veri kaynakları ve görsel lisansları. Uygulamada
+`/legal` ekranında (ana ekrandaki uyarı banner'ına dokununca) görünür; aynı
+metinler App Store gizlilik beyanı ve `THIRD-PARTY-LICENSES.md` için de
+kullanılır. Üçü ayrışmasın diye tek yerde tutulur.
+
+Yasal ekrandaki görsel listesi elle yazılmaz: kayıt dosyasından
+(`block-images.ts`) okunur, lisans grubuyla eşleştirilir ve kaynağı
+girilmemiş olanlar kırmızı kutuda ayrıca listelenir. Yani atıfsız bir görsel
+sessizce yayına çıkamaz.
+
+İlk açılışta bir kez onay penceresi gösterilir (`first-run-disclaimer.tsx`).
+Onay yalnızca cihazda saklanır; anahtar sürüm numarası taşır, koşullar esaslı
+biçimde değişirse `-v2` yapılıp onay yeniden istenir.
+
+### Görsel ekleme
+
+```bash
+npm run image:add -- --list                       # boş yuvalar
+npm run image:add -- foto.jpg --key usg-tap --credit "Kendi arşivim, 2026"
+```
+
+Dosya kopyalama, `require()` kaydı ve kaynak alanı tek komutta yapılır;
+`--credit` zorunludur. Ayrıntılar: `assets/reference/README.md`.
+
 ## Web artifact üretimi
 
 ```bash

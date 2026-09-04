@@ -14,7 +14,7 @@ import { BlockOption, ReferenceImage } from "./types";
  * is added; the placeholder below is deliberately loud so an uncredited image
  * cannot ship unnoticed.
  */
-const CREDIT_PENDING = "⚠ Kaynak/lisans bilgisi girilmedi";
+export const CREDIT_PENDING = "⚠ Kaynak/lisans bilgisi girilmedi";
 
 /**
  * Muse et al. is CC BY 4.0, so unlike the CC BY-NC images elsewhere in this
