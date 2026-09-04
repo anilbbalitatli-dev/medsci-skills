@@ -231,39 +231,19 @@ function main() {
   // with no slot at all was invisible to it — which is how twelve new blocks
   // shipped with nothing to look at. Checked per technique now.
   //
-  // Landmark techniques are exempt: drawing an "ultrasound view" of a block
-  // performed by palpation would invent a picture that does not exist.
-  const NO_ULTRASOUND_VIEW = new Set([
-    "ivra",
-    "digital",
-    "scalp-block",
-    "pudendal",
-    "genicular",
-    "port-site",
-    "wound-infiltration",
-    "tumescent",
-    "penile",
-    "ankle-block",
-    "caudal",
-    "saphenous",
-    "ipack",
-    "ilioinguinal",
-    "rectus-sheath",
-    "scpb",
-    "suprascapular",
-    "axillary-nerve",
-    "axillary-plexus",
-  ]);
+  // The exemption comes from the technique's own `guidance` field, not from a
+  // list kept here. An earlier hardcoded list quietly mixed two different
+  // things: blocks that genuinely have no ultrasound view (digital, scalp) and
+  // blocks that simply had not been drawn yet (saphenous, rectus sheath,
+  // axillary plexus — all routinely ultrasound-guided). Undrawn work was hiding
+  // behind undrawable work, which is exactly what an audit should not allow.
   const { imagesForTechnique } = load("reference-images");
   for (const t of TECHNIQUES) {
-    if (NO_ULTRASOUND_VIEW.has(t.id)) continue;
+    if (t.guidance === "landmark") continue;
     const slots = imagesForTechnique(t.id);
-    if (slots.length === 0) {
-      add("warn", "görsel", `${t.id} (${t.name}) hiçbir görsel yuvası tanımlamıyor`);
-      continue;
-    }
-    if (!slots.some((s) => sonoKeys.has(s.key) || registered.has(s.key))) {
-      add("warn", "görsel", `${t.id} yuvası var ama ne çizim ne gerçek görüntü içeriyor`);
+    const illustrated = slots.some((s) => sonoKeys.has(s.key) || registered.has(s.key));
+    if (!illustrated) {
+      add("info", "sonoanatomi", `${t.id} (${t.name}) — USG ile yapılır ama şematik çizimi yok`);
     }
   }
 

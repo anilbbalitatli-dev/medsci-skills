@@ -154,6 +154,67 @@ export const USG: Record<string, ReferenceImage> = {
     caption: "USG — Torasik paramedian oblik: laminalar, interlaminar pencere ve epidural aralık",
     credit: CREDIT_PENDING,
   },
+
+  ipack: {
+    key: "usg-ipack",
+    caption: "USG — IPACK: popliteal arter, femur posterior korteksi ve aradaki hedef aralık",
+    credit: CREDIT_PENDING,
+  },
+  saphenous: {
+    key: "usg-saphenous",
+    caption: "USG — Safen sinir: sartorius, femoral arter ve vasto-adduktor membran",
+    credit: CREDIT_PENDING,
+  },
+  ankleBlock: {
+    key: "usg-ankle-block",
+    caption: "USG — Ayak bileği: tibial sinir ve posterior tibial arter, medial malleol arkası",
+    credit: CREDIT_PENDING,
+  },
+  caudal: {
+    key: "usg-caudal",
+    caption: "USG — Sakral hiatus: kornualar, sakrokoksigeal ligaman ve sakral kanal",
+    credit: CREDIT_PENDING,
+  },
+  genicular: {
+    key: "usg-genicular",
+    caption: "USG — Genikular: femur metafiz korteksi ve genikular arter",
+    credit: CREDIT_PENDING,
+  },
+  suprascapular: {
+    key: "usg-suprascapular",
+    caption: "USG — Suprascapular: supraspinöz fossa tabanı, çentik ve arter",
+    credit: CREDIT_PENDING,
+  },
+  axillaryNerve: {
+    key: "usg-axillary-nerve",
+    caption: "USG — Aksiller sinir: humerus boynu ve posterior sirkumfleks humeral arter",
+    credit: CREDIT_PENDING,
+  },
+  axillaryPlexus: {
+    key: "usg-axillary-plexus",
+    caption: "USG — Aksiller pleksus: aksiller arter çevresinde median, ulnar, radial ve muskülokutanöz",
+    credit: CREDIT_PENDING,
+  },
+  rectusSheath: {
+    key: "usg-rectus-sheath",
+    caption: "USG — Rektus kılıfı: rektus kası, arka kılıf düzlemi ve epigastrik damarlar",
+    credit: CREDIT_PENDING,
+  },
+  ilioinguinal: {
+    key: "usg-ilioinguinal",
+    caption: "USG — İlioinguinal/iliohipogastrik: ASIS medialinde iki sinir, kas katmanları arasında",
+    credit: CREDIT_PENDING,
+  },
+  scpb: {
+    key: "usg-scpb",
+    caption: "USG — Yüzeyel servikal pleksus: SCM arka kenarı ve yüzeyel fasya altı",
+    credit: CREDIT_PENDING,
+  },
+  pudendal: {
+    key: "usg-pudendal",
+    caption: "USG — Pudendal: iskial spina, sakrospinöz ligaman ve internal pudendal arter",
+    credit: CREDIT_PENDING,
+  },
 };
 
 /** Anatomical plates for the dermatome reference screen. */
@@ -218,6 +279,20 @@ const BY_TECHNIQUE: Record<string, ReferenceImage[]> = {
   pecs2: [USG.pecs2],
   pecs1: [USG.pecs1],
   parasternal: [USG.parasternal],
+
+  // Kalan USG teknikleri
+  ipack: [USG.ipack],
+  saphenous: [USG.saphenous],
+  "ankle-block": [USG.ankleBlock],
+  caudal: [USG.caudal],
+  genicular: [USG.genicular],
+  suprascapular: [USG.suprascapular],
+  "axillary-nerve": [USG.axillaryNerve],
+  "axillary-plexus": [USG.axillaryPlexus],
+  "rectus-sheath": [USG.rectusSheath],
+  ilioinguinal: [USG.ilioinguinal],
+  scpb: [USG.scpb],
+  pudendal: [USG.pudendal],
 };
 
 export function imagesForTechnique(techniqueId: string): ReferenceImage[] {

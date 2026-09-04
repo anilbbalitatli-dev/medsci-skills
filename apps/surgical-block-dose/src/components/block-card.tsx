@@ -4,7 +4,8 @@ import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
 import { SonoAnatomyView } from "@/components/sono-anatomy";
-import { techniqueForBlock } from "@/data/block-technique";
+import { TechniqueNervesPanel } from "@/components/technique-nerves-panel";
+import { BLOCK_TECHNIQUE, techniqueForBlock } from "@/data/block-technique";
 import { imagesForBlock } from "@/data/reference-images";
 import { sonoSpecFor } from "@/data/sono-anatomy";
 import { BlockOption } from "@/data/types";
@@ -18,6 +19,7 @@ export function BlockCard({ block }: { block: BlockOption }) {
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
   const roleStyle = role[block.role];
   const landmarkNote = block.landmarkNote ?? techniqueForBlock(block.id)?.landmark;
+  const techniqueId = BLOCK_TECHNIQUE[block.id];
 
   return (
     <View style={styles.card}>
@@ -64,6 +66,11 @@ export function BlockCard({ block }: { block: BlockOption }) {
         {landmarkNote ? <Text style={styles.landmark}>{landmarkNote}</Text> : null}
 
         <CoverageInfo coverage={block.coverage} />
+
+        {/* The nerve breakdown sits between the lumped coverage above and the
+            pictures below, because it explains the first and stands in for the
+            second wherever there is no ultrasound view to draw. */}
+        {techniqueId ? <TechniqueNervesPanel techniqueId={techniqueId} /> : null}
 
         <ReferenceImageList images={images} />
 

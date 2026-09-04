@@ -33,6 +33,17 @@ export interface Technique {
    * drift between the four operations that list it.
    */
   landmark?: string;
+  /**
+   * How the block is found in practice.
+   *
+   * `landmark` means there is no ultrasound view to draw — the needle is placed
+   * by palpation, by surface anatomy, or into a field rather than at a nerve.
+   * Everything else is ultrasound-guided, and a missing schematic there is a
+   * backlog item rather than a property of the technique. Keeping the two apart
+   * matters: an exemption list that quietly mixes them lets undrawn blocks hide
+   * behind blocks that genuinely cannot be drawn.
+   */
+  guidance?: "ultrasound" | "landmark";
 }
 
 export const TECHNIQUES: Technique[] = [
@@ -205,6 +216,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "digital",
+    guidance: "landmark",
     name: "Dijital Blok (parmak)",
     region: "Üst Ekstremite",
     typical: { drug: "Lidokain (epinefrinsiz)", concentrationPercent: 1, volumeMlRange: [2, 4] },
@@ -290,6 +302,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "ivra",
+    guidance: "landmark",
     name: "Bier Bloğu (IVRA)",
     region: "Üst Ekstremite",
     typical: { drug: "Lidokain (epinefrinsiz)", concentrationPercent: 0.5, volumeMlRange: [40, 50] },
@@ -331,6 +344,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "port-site",
+    guidance: "landmark",
     name: "Port Yeri İnfiltrasyonu",
     region: "Karın Duvarı",
     typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [3, 5] },
@@ -400,6 +414,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "wound-infiltration",
+    guidance: "landmark",
     name: "Cerrahi Yara İnfiltrasyonu",
     region: "Omurga",
     typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [15, 20] },
@@ -419,6 +434,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "tumescent",
+    guidance: "landmark",
     name: "Tümesan Anestezi",
     region: "Alt Ekstremite",
     typical: { drug: "Lidokain", concentrationPercent: 0.1, volumeMlRange: [200, 400] },
@@ -440,6 +456,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "scalp-block",
+    guidance: "landmark",
     name: "Skalp Bloğu",
     region: "Baş-Boyun",
     typical: { drug: "Ropivakain", concentrationPercent: 0.5, volumeMlRange: [20, 30] },
@@ -461,6 +478,7 @@ export const TECHNIQUES: Technique[] = [
   },
   {
     id: "penile",
+    guidance: "landmark",
     name: "Dorsal Penil Sinir Bloğu",
     region: "Ürogenital",
     typical: { drug: "Lidokain (epinefrinsiz)", concentrationPercent: 1, volumeMlRange: [2, 5] },
