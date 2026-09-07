@@ -60,24 +60,28 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
   const stroke = STROKE[status];
   const dashed = status === "partial" ? "3 2" : undefined;
 
+  // Kökler hiçbir zaman dolu boyanmaz. Hiçbir yaklaşım kökü hedeflemiyor —
+  // dolu bir kök, iğnenin kendi seviye çizgisinin proksimaline ulaştığını
+  // söylerdi ki bu yanlış. Lifleri bloklanan bir yapıya gidiyorsa yalnızca
+  // çerçevesi renklenir.
   if (node.column === "root") {
+    const live = status !== "none";
     return (
       <G>
         <Circle
           cx={node.x}
           cy={node.y}
           r={12}
-          fill={fill}
-          stroke={stroke}
-          strokeWidth={1.2}
-          strokeDasharray={dashed}
+          fill={colors.surface}
+          stroke={live ? colors.primary : colors.borderStrong}
+          strokeWidth={live ? 2 : 1.2}
         />
         <SvgText
           x={node.x}
           y={node.y + 3.4}
           fontSize={9.5}
           fontWeight="700"
-          fill={INNER_TEXT[status]}
+          fill={live ? colors.primaryStrong : colors.textMuted}
           textAnchor="middle"
         >
           {node.label}
@@ -204,7 +208,7 @@ function Diagram({
               />
               <SvgText
                 x={8}
-                y={(a.y ?? 0) - 4}
+                y={(a.y ?? 0) - 6}
                 fontSize={8.5}
                 fontWeight="700"
                 fill={active ? colors.primary : colors.textFaint}
@@ -320,9 +324,10 @@ export function BrachialPlexusDiagram({
         </View>
       </View>
       <Text style={styles.note}>
-        Renk, bloğun ulaştığı yapıları gösterir. Kökler besledikleri trunkus bloklandığında
-        renklenir; kord düzeyindeki bir blokta renksiz kalırlar, çünkü iğne o düzeyin
-        distalindedir. Kesikli çizgiler yaklaşımların çalıştığı seviyelerdir.
+        Dolu renk, bloğun ulaştığı yapıdır; kesikli kenar, liflerinin bir bölümü bloklanmamış
+        bir kökten gelmeye devam eden yapıdır. Kökler dolu boyanmaz — hiçbir yaklaşım kökü
+        hedeflemez; lifleri bloklanan bir yapıya gidiyorsa yalnızca çerçeveleri renklenir.
+        Yatay kesikli çizgiler yaklaşımların çalıştığı seviyelerdir.
       </Text>
     </View>
   );

@@ -75,14 +75,21 @@ export function closureFor(techniqueId: string): Map<string, Reached> {
       if (out.has(nerve.id)) continue;
       const parents = nerve.parents ?? [];
       if (parents.length === 0) continue;
-      const covered = parents.filter((p) => out.get(p)?.status === "full");
-      if (covered.length === 0) continue;
+      const full = parents.filter((p) => out.get(p)?.status === "full");
+      // Kısmi bloklanan bir ebeveyn de lif taşır. Eskiden yalnızca tam bloke
+      // ebeveynler sayılıyordu; bu, kısmi bir düğümün altındaki her şeyi
+      // listeden tamamen düşürüyordu. İnterskalen blokta posterior kord üç
+      // trunkustan ikisiyle beslendiği için kısmi kalıyor, aksiller ve radial
+      // sinir de "hiç kapsanmıyor" görünüyordu — oysa omuz bloğunun çalışma
+      // sebebi tam olarak o iki sinirin C5–C6 liflerinin kesilmesidir.
+      const reached = parents.filter((p) => out.has(p));
+      if (reached.length === 0) continue;
 
-      const from = out.get(covered[0])!;
+      const from = out.get(full[0] ?? reached[0])!;
       out.set(nerve.id, {
-        // Fibres that reach this nerve through an unblocked parent are still
-        // conducting, so a nerve is only fully blocked when every parent is.
-        status: covered.length === parents.length ? "full" : "partial",
+        // Bloklanmamış bir ebeveyn üzerinden gelen lifler iletmeye devam eder;
+        // bu yüzden ancak bütün ebeveynleri tam bloke ise sinir tam bloke olur.
+        status: full.length === parents.length ? "full" : "partial",
         direct: false,
         reliability: from.reliability,
         incidental: from.incidental,
@@ -426,7 +433,14 @@ export function analyzeCombination(techniqueIds: string[]): CombinationAnalysis 
         if (other.id === t.id) return false;
         if (complementaryPairs.has([t.id, other.id].sort().join("|"))) return false;
         const theirs = closures.get(other.id)!;
-        return [...closures.get(t.id)!.keys()].every((n) => theirs.has(n));
+        // Kısmi kapsama, tam kapsamanın yerini tutmaz: bir sinirin liflerinin
+        // yalnızca bir bölümünü tutan blok, o siniri tam bloklayan bloğu
+        // gereksiz kılmaz.
+        return [...closures.get(t.id)!.entries()].every(([nerveId, hit]) => {
+          const match = theirs.get(nerveId);
+          if (!match) return false;
+          return match.status === "full" || hit.status === "partial";
+        });
       });
       if (subsumers.length === 0) continue;
       if (findings.some((f) => f.severity !== "complementary" && f.techniqueIds.includes(t.id)))
