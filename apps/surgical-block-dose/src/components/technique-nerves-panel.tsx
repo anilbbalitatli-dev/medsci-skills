@@ -3,8 +3,8 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { BrachialPlexusDiagram } from "@/components/brachial-plexus-diagram";
-import { PLEXUS_TECHNIQUE_IDS } from "@/data/brachial-plexus-diagram";
+import { PlexusDiagramView } from "@/components/plexus-diagram";
+import { PLEXUS_TECHNIQUE_IDS } from "@/data/plexus-diagrams";
 import { NerveCoverage, analyzeCombination } from "@/data/combination-analysis";
 import { CoverageNode, buildCoverageTree } from "@/data/nerve-tree";
 import { NerveModality, rootsLabel } from "@/data/nerves";
@@ -212,12 +212,12 @@ export function TechniqueNervesPanel({ techniqueId }: { techniqueId: string }) {
         </Text>
       ) : null}
 
-      {/* Üst ekstremite bloklarında asıl soru "iğne pleksusun neresinde" —
-          sinir listesinden önce şema onu gösteriyor. */}
+      {/* Pleksus bloklarında asıl soru "iğne zincirin neresinde" — sinir
+          listesinden önce şema onu gösteriyor. */}
       {PLEXUS_TECHNIQUE_IDS.has(techniqueId) ? (
         <View style={styles.plexusBlock}>
-          <BrachialPlexusDiagram techniqueId={techniqueId} />
-          <Link href="/brachial-plexus" asChild>
+          <PlexusDiagramView techniqueId={techniqueId} />
+          <Link href="/plexus" asChild>
             <Pressable hitSlop={6} style={({ pressed }) => pressed && styles.pressed}>
               <View style={styles.plexusLink}>
                 <Text style={styles.plexusLinkText}>Yaklaşımları karşılaştır</Text>

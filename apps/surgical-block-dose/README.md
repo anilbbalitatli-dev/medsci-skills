@@ -126,19 +126,21 @@ Yeni bir teknik eklerken `TECHNIQUES` girdisinin yanına `TECHNIQUE_NERVES`
 girdisini de eklemek gerekir; aksi hâlde teknik kombinasyon analizinde sinirsiz
 görünür.
 
-## Brakiyal pleksus şeması
+## Pleksus şemaları
 
-`src/data/brachial-plexus-diagram.ts` + `components/brachial-plexus-diagram.tsx`
-— kök → trunkus → divizyon → kord → uç sinir zinciri, üzerine her yaklaşımın
-çalıştığı seviye çizilir. `/brachial-plexus` ekranında yaklaşımlar arasında
-geçiş yapılır; blok kartında ise o bloğun seviyesi sabit gösterilir.
+`src/data/plexus-diagrams.ts` + `components/plexus-diagram.tsx` — brakiyal,
+lomber ve sakral pleksus. Her şema kökten uca zinciri çizer, üzerine her
+yaklaşımın çalıştığı seviyeyi (yatay çizgi) veya tek tek hedeflerini (halka)
+koyar. `/plexus` ekranında pleksuslar ve yaklaşımlar arasında geçiş yapılır;
+blok kartında o bloğun kendi şeması sabit gösterilir.
 
 Renkler şemanın kendi verisinden değil `closureFor(techniqueId)` çıktısından
 gelir; bir tekniğin hedefleri değişirse şema da onunla değişir. Koordinatlar
 elle verilir, çünkü `nerves.ts` çizgesi neyin neyi blokladığını bilir ama
-yapıların nerede durduğunu bilmez. Kökler ve divizyonlar çizgede yoktur (hiçbir
-teknik tek bir divizyonu bloklamaz) — şemada çizim için vardır ve renklerini
-besledikleri trunkustan alır.
+yapıların nerede durduğunu bilmez. Çizgede olmayan ara basamaklar (brakiyal
+divizyonlar, spinal kökler) şemada çizim için vardır ve rengini besledikleri
+yapıdan alır. `npm run audit` her düğümün, bağlantının ve yaklaşımın gerçek bir
+sinire/tekniğe çözüldüğünü doğrular.
 
 ## Yasal metinler ve görsel kaynakları
 

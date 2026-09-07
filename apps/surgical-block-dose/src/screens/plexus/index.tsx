@@ -1,19 +1,25 @@
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BrachialPlexusDiagram } from "@/components/brachial-plexus-diagram";
+import { PlexusDiagramView } from "@/components/plexus-diagram";
+import { PLEXUS_DIAGRAMS, PlexusId } from "@/data/plexus-diagrams";
 import { colors, radius, spacing, type } from "@/theme";
 
 /**
  * Yaklaşımları yan yana koyan ekran.
  *
  * Blok kartındaki şema tek bir bloğu anlatır; buradaki, aralarındaki farkı.
- * Üst ekstremite bloklarının tamamı aynı zincirin farklı yerlerine iğne
+ * Bir ekstremitenin bloklarının tamamı aynı zincirin farklı yerlerine iğne
  * koymaktan ibarettir ve seçim çoğunlukla "hangi dallar enjeksiyon noktasının
  * proksimalinde kalıyor" sorusuyla belirlenir.
  */
-export function BrachialPlexus() {
+export function Plexus() {
   const insets = useSafeAreaInsets();
+  // Ders kutusu seçili pleksusla değişir; şema bileşeni kendi seçimini tutuyor,
+  // burada yalnızca hangi pleksusun anlatıldığını bilmek yetiyor.
+  const [plexusId, setPlexusId] = useState<PlexusId>("brachial");
+  const diagram = PLEXUS_DIAGRAMS[plexusId];
 
   return (
     <ScrollView
@@ -21,36 +27,27 @@ export function BrachialPlexus() {
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <Text style={styles.intro}>
-        Brakiyal pleksus kökten uca doğru aynı sırayı izler:{" "}
-        <Text style={styles.bold}>kök → trunkus → divizyon → kord → uç sinir</Text>. Üst ekstremite
-        bloklarının hepsi bu zincirin bir yerine iğne koyar; kapsamı belirleyen de iğnenin
-        seviyesidir. Enjeksiyon noktasının proksimalinde ayrılmış bir dal, ne kadar hacim verilirse
-        verilsin kapsanmaz.
+        Bir pleksus, kökten uca doğru hep aynı sırayı izler. Blokların hepsi bu zincirin bir
+        yerine iğne koyar; kapsamı belirleyen de iğnenin seviyesidir.{" "}
+        <Text style={styles.bold}>
+          Enjeksiyon noktasının proksimalinde ayrılmış bir dal, ne kadar hacim verilirse verilsin
+          kapsanmaz.
+        </Text>
       </Text>
 
-      <BrachialPlexusDiagram selectable />
+      <PlexusDiagramView selectable onPlexusChange={setPlexusId} />
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Şemanın söylediği üç şey</Text>
-        <Text style={styles.item}>
-          <Text style={styles.bold}>İnterskalen ulnar tarafı açık bırakır.</Text> İğne kök/üst
-          trunkus düzeyindedir; alt trunkus (C8–T1) çoğu zaman korunur. Omuz için doğru, el için
-          değil.
-        </Text>
-        <Text style={styles.item}>
-          <Text style={styles.bold}>Suprascapular sinir trunkustan ayrılır.</Text> Kordların
-          proksimalinde olduğu için infraklaviküler blok onu kaçırır — omuz kapsülünün büyük
-          bölümü açık kalır.
-        </Text>
-        <Text style={styles.item}>
-          <Text style={styles.bold}>Aksiller blok uç sinir düzeyindedir.</Text> Muskülokutanöz
-          sinir korakobrakiyalis içinde ayrı seyrettiği için ayrı enjeksiyon ister; omuz ve
-          aksilla hiç kapsanmaz.
-        </Text>
+        {diagram.lessons.map((lesson) => (
+          <Text key={lesson.title} style={styles.item}>
+            <Text style={styles.bold}>{lesson.title}</Text> {lesson.detail}
+          </Text>
+        ))}
       </View>
 
       <Text style={styles.footnote}>
-        Şema öğretim amaçlı bir basitleştirmedir: pleksusun ön ekleri (prefiksasyon/postfiksasyon),
+        Şemalar öğretim amaçlı basitleştirmedir: pleksusun ön ekleri (prefiksasyon/postfiksasyon),
         dalların çıkış düzeyleri ve blok yayılımı kişiden kişiye değişir.
       </Text>
     </ScrollView>

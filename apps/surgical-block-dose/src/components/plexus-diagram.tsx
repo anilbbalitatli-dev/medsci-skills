@@ -4,27 +4,27 @@ import Svg, { Circle, G, Line, Rect, Text as SvgText } from "react-native-svg";
 
 import { closureFor } from "@/data/combination-analysis";
 import {
-  PLEXUS_APPROACHES,
-  PLEXUS_EDGES,
-  PLEXUS_NODES,
-  PLEXUS_VIEWBOX,
+  PLEXUS_DIAGRAMS,
+  PLEXUS_ORDER,
   PlexusApproach,
+  PlexusDiagram,
+  PlexusId,
   PlexusNode,
   approachFor,
-} from "@/data/brachial-plexus-diagram";
+  diagramForTechnique,
+} from "@/data/plexus-diagrams";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { colors, radius, spacing, type } from "@/theme";
 
 /**
- * Brakiyal pleksus şeması: hangi blok hangi seviyede çalışır.
+ * Pleksus şeması: hangi blok hangi seviyede çalışır.
  *
  * Renkler `closureFor` çıktısından gelir — şemanın kendi doğruluk kaynağı
  * yoktur. Böylece bir tekniğin hedefleri değiştirilirse şema da onunla birlikte
  * değişir; iki yerde ayrı ayrı bakım gerektiren bir çizim olmaz.
  */
 type NodeStatus = "full" | "partial" | "none";
-
-const NODE_BY_ID = new Map(PLEXUS_NODES.map((n) => [n.id, n]));
+type Closure = Map<string, { status: "full" | "partial"; reliability: "consistent" | "variable" }>;
 
 const FILL: Record<NodeStatus, string> = {
   full: colors.primary,
@@ -47,11 +47,15 @@ const OUTER_TEXT: Record<NodeStatus, string> = {
   none: colors.textMuted,
 };
 
-function statusOf(node: PlexusNode, closure: Map<string, { status: "full" | "partial" }>): NodeStatus {
+function statusOf(node: PlexusNode, closure: Closure): NodeStatus {
   const id = node.nerveId ?? node.statusVia;
   if (!id) return "none";
   const hit = closure.get(id);
   if (!hit) return "none";
+  // "Değişken" bir hedef kapanışta tam sayılır — orada niyet kaydediliyor.
+  // Resimde ise dolu boyamak fazlasını söyler: fasya iliaka bloğu obturatoru
+  // klasik olarak iddia eder ama sıklıkla tutmaz, açıklaması da bunu yazar.
+  if (hit.status === "full" && hit.reliability === "variable") return "partial";
   return hit.status;
 }
 
@@ -64,7 +68,7 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
   // dolu bir kök, iğnenin kendi seviye çizgisinin proksimaline ulaştığını
   // söylerdi ki bu yanlış. Lifleri bloklanan bir yapıya gidiyorsa yalnızca
   // çerçevesi renklenir.
-  if (node.column === "root") {
+  if (node.shape === "root") {
     const live = status !== "none";
     return (
       <G>
@@ -90,8 +94,8 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
     );
   }
 
-  if (node.column === "trunk" || node.column === "cord") {
-    const w = node.column === "cord" ? 72 : 62;
+  if (node.shape === "hub") {
+    const w = node.width ?? 70;
     return (
       <G>
         <Rect
@@ -119,10 +123,12 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
     );
   }
 
-  // Divizyon ve uç sinirler: küçük daire, etiketi dışarıda.
-  const r = node.column === "division" ? 6 : 7;
-  const labelY = node.labelBeside ? node.y + 3 : node.labelAbove ? node.y - 11 : node.y + r + 9;
-  // Yan etiket düğümden uzaklaşır; alt/üst etiket düğümle aynı eksende kalır.
+  // Ara basamaklar ve uç dallar: küçük daire, etiketi dışarıda.
+  const pip = node.shape === "pip";
+  const r = pip ? 6 : 7;
+  // +11: işaretli bloklarda düğümün etrafına halka çiziliyor; etiket 9'da
+  // halkanın altına giriyordu.
+  const labelY = node.labelBeside ? node.y + 3 : node.labelAbove ? node.y - 13 : node.y + r + 11;
   // Yan etiket, tek dalı işaretleyen halkanın (r=13) dışında kalacak kadar
   // uzağa konur; yoksa "Suprascapular" halkanın içine girer.
   const labelX = node.labelBeside
@@ -145,9 +151,9 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
       <SvgText
         x={labelX}
         y={labelY}
-        fontSize={node.column === "division" ? 7.5 : 8.5}
-        fontWeight={node.column === "division" ? "400" : "700"}
-        fill={node.column === "division" ? colors.textFaint : OUTER_TEXT[status]}
+        fontSize={pip ? 7.5 : 8.5}
+        fontWeight={pip ? "400" : "700"}
+        fill={pip ? colors.textFaint : OUTER_TEXT[status]}
         textAnchor={node.anchor ?? "middle"}
       >
         {node.label}
@@ -156,28 +162,33 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
   );
 }
 
-function Diagram({
+function Canvas({
+  diagram,
   closure,
   approach,
 }: {
-  closure: Map<string, { status: "full" | "partial" }>;
+  diagram: PlexusDiagram;
+  closure: Closure;
   approach?: PlexusApproach;
 }) {
-  const statuses = new Map(PLEXUS_NODES.map((n) => [n.id, statusOf(n, closure)]));
+  const byId = useMemo(
+    () => new Map(diagram.nodes.map((n) => [n.id, n])),
+    [diagram]
+  );
+  const statuses = new Map(diagram.nodes.map((n) => [n.id, statusOf(n, closure)]));
 
   return (
-    <View style={styles.canvas}>
+    <View style={[styles.canvas, { aspectRatio: diagram.viewBox.width / diagram.viewBox.height }]}>
       <Svg
         width="100%"
         height="100%"
-        viewBox={`0 0 ${PLEXUS_VIEWBOX.width} ${PLEXUS_VIEWBOX.height}`}
+        viewBox={`0 0 ${diagram.viewBox.width} ${diagram.viewBox.height}`}
       >
         {/* Bağlantılar önce çizilir; düğümler üstlerine oturur. */}
-        {PLEXUS_EDGES.map((edge) => {
-          const from = NODE_BY_ID.get(edge.from)!;
-          const to = NODE_BY_ID.get(edge.to)!;
-          const live =
-            statuses.get(edge.from) !== "none" && statuses.get(edge.to) !== "none";
+        {diagram.edges.map((edge) => {
+          const from = byId.get(edge.from)!;
+          const to = byId.get(edge.to)!;
+          const live = statuses.get(edge.from) !== "none" && statuses.get(edge.to) !== "none";
           return (
             <Line
               key={`${edge.from}-${edge.to}`}
@@ -193,96 +204,142 @@ function Diagram({
         })}
 
         {/* Seviye çizgileri: iğnenin pleksusun neresinde olduğu. */}
-        {PLEXUS_APPROACHES.filter((a) => a.y !== undefined).map((a) => {
-          const active = approach?.techniqueId === a.techniqueId;
-          return (
-            <G key={a.techniqueId}>
-              <Line
-                x1={6}
-                y1={a.y}
-                x2={PLEXUS_VIEWBOX.width - 6}
-                y2={a.y}
-                stroke={active ? colors.primary : colors.borderStrong}
-                strokeWidth={active ? 1.6 : 0.8}
-                strokeDasharray={active ? undefined : "4 4"}
-              />
-              <SvgText
-                x={8}
-                y={(a.y ?? 0) - 6}
-                fontSize={8.5}
-                fontWeight="700"
-                fill={active ? colors.primary : colors.textFaint}
-              >
-                {a.label}
-              </SvgText>
-            </G>
-          );
-        })}
+        {diagram.approaches
+          .filter((a) => a.y !== undefined)
+          .map((a) => {
+            const active = approach?.techniqueId === a.techniqueId;
+            return (
+              <G key={a.techniqueId}>
+                <Line
+                  x1={6}
+                  y1={a.y}
+                  x2={diagram.viewBox.width - 6}
+                  y2={a.y}
+                  stroke={active ? colors.primary : colors.borderStrong}
+                  strokeWidth={active ? 1.6 : 0.8}
+                  strokeDasharray={active ? undefined : "4 4"}
+                />
+                <SvgText
+                  x={8}
+                  y={(a.y ?? 0) - 6}
+                  fontSize={8.5}
+                  fontWeight="700"
+                  fill={active ? colors.primary : colors.textFaint}
+                >
+                  {a.label}
+                </SvgText>
+              </G>
+            );
+          })}
 
-        {PLEXUS_NODES.map((node) => (
+        {diagram.nodes.map((node) => (
           <NodeShape key={node.id} node={node} status={statuses.get(node.id)!} />
         ))}
 
-        {/* Tek bir dalı hedefleyen bloklarda seviye çizgisi yerine halka. */}
-        {approach?.markNode ? (
-          <Circle
-            cx={NODE_BY_ID.get(approach.markNode)!.x}
-            cy={NODE_BY_ID.get(approach.markNode)!.y}
-            r={13}
-            fill="none"
-            stroke={colors.primary}
-            strokeWidth={1.6}
-          />
-        ) : null}
+        {/* Tek tek yapıları hedefleyen bloklarda seviye çizgisi yerine halka. */}
+        {(approach?.markNodes ?? []).map((id) => {
+          const node = byId.get(id);
+          if (!node) return null;
+          return (
+            <Circle
+              key={`mark-${id}`}
+              cx={node.x}
+              cy={node.y}
+              r={12}
+              fill="none"
+              stroke={colors.primary}
+              strokeWidth={1.6}
+            />
+          );
+        })}
       </Svg>
     </View>
   );
 }
 
-export function BrachialPlexusDiagram({
+export function PlexusDiagramView({
   techniqueId,
+  plexusId,
   selectable = false,
+  onPlexusChange,
 }: {
   /** Sabit bir blok için şema (blok kartı). */
   techniqueId?: string;
-  /** Yaklaşımlar arasında geçiş yapılabilsin (karşılaştırma ekranı). */
+  /** Başlangıçta gösterilecek pleksus; yalnızca `selectable` ile anlamlı. */
+  plexusId?: PlexusId;
+  /** Pleksuslar ve yaklaşımlar arasında geçiş yapılabilsin. */
   selectable?: boolean;
+  /** Sekme değişince haber verir; ekranın ders kutusu buna bağlı. */
+  onPlexusChange?: (id: PlexusId) => void;
 }) {
-  const [picked, setPicked] = useState<string | undefined>(techniqueId);
-  const active = selectable ? picked : techniqueId;
+  const fixed = techniqueId ? diagramForTechnique(techniqueId) : undefined;
+  const [pickedPlexus, setPickedPlexus] = useState<PlexusId>(
+    plexusId ?? fixed?.id ?? "brachial"
+  );
+  const [pickedApproach, setPickedApproach] = useState<string | undefined>(techniqueId);
+
+  const diagram = fixed ?? PLEXUS_DIAGRAMS[pickedPlexus];
+  const active = selectable ? pickedApproach : techniqueId;
   const closure = useMemo(
-    () => (active ? closureFor(active) : new Map()),
+    () => (active ? (closureFor(active) as Closure) : (new Map() as Closure)),
     [active]
-  ) as Map<string, { status: "full" | "partial" }>;
-  const approach = active ? approachFor(active) : undefined;
+  );
+  const approach = active ? approachFor(diagram, active) : undefined;
   const segments = active ? TECHNIQUE_NERVES[active]?.segments : undefined;
 
   return (
     <View style={styles.wrapper}>
       {selectable ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-        >
-          {PLEXUS_APPROACHES.map((a) => {
-            const on = picked === a.techniqueId;
-            return (
-              <Pressable
-                key={a.techniqueId}
-                onPress={() => setPicked(on ? undefined : a.techniqueId)}
-                hitSlop={4}
-              >
-                <View style={[styles.chip, on && styles.chipOn]}>
-                  <Text style={[styles.chipText, on && styles.chipTextOn]}>{a.label}</Text>
-                </View>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+        <>
+          <View style={styles.plexusRow}>
+            {PLEXUS_ORDER.map((id) => {
+              const on = pickedPlexus === id;
+              return (
+                <Pressable
+                  key={id}
+                  style={styles.plexusTabWrap}
+                  onPress={() => {
+                    setPickedPlexus(id);
+                    // Yaklaşım seçimi şemaya özgüdür; pleksus değişince
+                    // taşınamaz.
+                    setPickedApproach(undefined);
+                    onPlexusChange?.(id);
+                  }}
+                >
+                  <View style={[styles.plexusTab, on && styles.plexusTabOn]}>
+                    <Text style={[styles.plexusTabText, on && styles.plexusTabTextOn]}>
+                      {PLEXUS_DIAGRAMS[id].label}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={styles.summary}>{diagram.summary}</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
+            {diagram.approaches.map((a) => {
+              const on = pickedApproach === a.techniqueId;
+              return (
+                <Pressable
+                  key={a.techniqueId}
+                  onPress={() => setPickedApproach(on ? undefined : a.techniqueId)}
+                  hitSlop={4}
+                >
+                  <View style={[styles.chip, on && styles.chipOn]}>
+                    <Text style={[styles.chipText, on && styles.chipTextOn]}>{a.label}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </>
       ) : null}
 
-      <Diagram closure={closure} approach={approach} />
+      <Canvas diagram={diagram} closure={closure} approach={approach} />
 
       {approach ? (
         <View style={styles.captionBlock}>
@@ -337,12 +394,28 @@ const styles = StyleSheet.create({
   wrapper: { gap: spacing.sm },
   canvas: {
     width: "100%",
-    aspectRatio: PLEXUS_VIEWBOX.width / PLEXUS_VIEWBOX.height,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
   },
+  plexusRow: {
+    flexDirection: "row",
+    gap: 4,
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.md,
+    padding: 3,
+  },
+  plexusTabWrap: { flex: 1 },
+  plexusTab: {
+    paddingVertical: 7,
+    borderRadius: radius.sm,
+    alignItems: "center",
+  },
+  plexusTabOn: { backgroundColor: colors.surface },
+  plexusTabText: { ...type.subheading, color: colors.textMuted },
+  plexusTabTextOn: { color: colors.primaryStrong },
+  summary: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
   chipRow: { gap: 6, paddingVertical: 2 },
   chip: {
     backgroundColor: colors.chip,

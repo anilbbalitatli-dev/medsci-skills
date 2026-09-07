@@ -28,8 +28,8 @@ export default function RootLayout() {
         <Stack.Screen name="dermatome-blocks" options={{ title: "Dermatoma Göre Blok" }} />
         <Stack.Screen name="legal" options={{ title: "Yasal Bilgi", presentation: "modal" }} />
         <Stack.Screen
-          name="brachial-plexus"
-          options={{ title: "Brakiyal Pleksus", presentation: "modal" }}
+          name="plexus"
+          options={{ title: "Pleksus Şemaları", presentation: "modal" }}
         />
       </Stack>
     </SafeAreaProvider>

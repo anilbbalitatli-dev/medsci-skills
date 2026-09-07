@@ -32,6 +32,7 @@ function compile() {
     "src/data/nerves.ts",
     "src/data/block-finder.ts",
     "src/data/block-technique.ts",
+    "src/data/plexus-diagrams.ts",
   ];
   execFileSync(
     "npx",
@@ -70,6 +71,7 @@ function main() {
   const { TECHNIQUE_CATEGORY } = load("pediatric-dosing");
   const { NERVES } = load("nerves");
   const { SURGERIES } = load("surgeries");
+  const { PLEXUS_DIAGRAMS, PLEXUS_ORDER } = load("plexus-diagrams");
   const { USG } = load("reference-images");
   const sono = load("sono-anatomy");
 
@@ -125,6 +127,43 @@ function main() {
     }
     if (!n.structural && !n.sensory && !n.motor) {
       add("warn", "sinir", `${n.id} (${n.name}) ne duyu ne motor alan tanımlıyor`);
+    }
+  }
+
+  // ---- Pleksus şemaları: çizim ile çizge aynı yapılardan söz etmeli ----
+  // Şema elle yerleştirilen koordinatlardan oluşuyor ama renklerini sinir
+  // çizgesinden alıyor. Bir sinir yeniden adlandırıldığında şema sessizce
+  // boş kalır — bu kontrol o sessizliği engelliyor.
+  for (const plexusId of PLEXUS_ORDER) {
+    const diagram = PLEXUS_DIAGRAMS[plexusId];
+    const nodeIds = new Set(diagram.nodes.map((n) => n.id));
+    for (const node of diagram.nodes) {
+      const ref = node.nerveId ?? node.statusVia;
+      if (!ref) {
+        add("error", "pleksus şeması", `${plexusId}/${node.id} hiçbir sinire bağlı değil`);
+      } else if (!nerveIds.has(ref)) {
+        add("error", "pleksus şeması", `${plexusId}/${node.id} → tanımsız sinir '${ref}'`);
+      }
+    }
+    for (const edge of diagram.edges) {
+      for (const end of [edge.from, edge.to]) {
+        if (!nodeIds.has(end)) {
+          add("error", "pleksus şeması", `${plexusId} bağlantısı tanımsız düğüme gidiyor: '${end}'`);
+        }
+      }
+    }
+    for (const a of diagram.approaches) {
+      if (!techIds.has(a.techniqueId)) {
+        add("error", "pleksus şeması", `${plexusId} yaklaşımı '${a.techniqueId}' diye bir teknik yok`);
+      }
+      for (const id of a.markNodes ?? []) {
+        if (!nodeIds.has(id)) {
+          add("error", "pleksus şeması", `${plexusId}/${a.techniqueId} tanımsız düğümü işaretliyor: '${id}'`);
+        }
+      }
+      if (a.y === undefined && (a.markNodes ?? []).length === 0) {
+        add("info", "pleksus şeması", `${plexusId}/${a.techniqueId} şemada işaretlenmiyor (yalnızca açıklama)`);
+      }
     }
   }
 
