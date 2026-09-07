@@ -1,7 +1,10 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { BrachialPlexusDiagram } from "@/components/brachial-plexus-diagram";
+import { PLEXUS_TECHNIQUE_IDS } from "@/data/brachial-plexus-diagram";
 import { NerveCoverage, analyzeCombination } from "@/data/combination-analysis";
 import { CoverageNode, buildCoverageTree } from "@/data/nerve-tree";
 import { NerveModality, rootsLabel } from "@/data/nerves";
@@ -209,6 +212,22 @@ export function TechniqueNervesPanel({ techniqueId }: { techniqueId: string }) {
         </Text>
       ) : null}
 
+      {/* Üst ekstremite bloklarında asıl soru "iğne pleksusun neresinde" —
+          sinir listesinden önce şema onu gösteriyor. */}
+      {PLEXUS_TECHNIQUE_IDS.has(techniqueId) ? (
+        <View style={styles.plexusBlock}>
+          <BrachialPlexusDiagram techniqueId={techniqueId} />
+          <Link href="/brachial-plexus" asChild>
+            <Pressable hitSlop={6} style={({ pressed }) => pressed && styles.pressed}>
+              <View style={styles.plexusLink}>
+                <Text style={styles.plexusLinkText}>Yaklaşımları karşılaştır</Text>
+                <Ionicons name="chevron-forward" size={13} color={colors.primary} />
+              </View>
+            </Pressable>
+          </Link>
+        </View>
+      ) : null}
+
       {analysis.coverage.length === 0 ? (
         <Text style={styles.fieldNote}>
           Adlandırılmış bir siniri hedeflemez — uç dallara alan infiltrasyonu yapılır. Kapsama,
@@ -283,6 +302,9 @@ const styles = StyleSheet.create({
   },
   branchChipText: { fontSize: 9.5, fontWeight: "700", color: colors.primaryStrong, ...numeric },
   branchHint: { fontSize: 10.5, color: colors.textFaint, lineHeight: 15, fontStyle: "italic" },
+  plexusBlock: { gap: 6, marginTop: 2 },
+  plexusLink: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 3 },
+  plexusLinkText: { ...type.caption, color: colors.primary, fontWeight: "700" },
   pressed: { opacity: 0.6 },
   nerveName: { ...type.subheading, fontSize: 12.5, color: colors.text, flexShrink: 1 },
   roots: { ...type.caption, ...numeric, color: colors.textMuted, fontWeight: "700" },

@@ -27,6 +27,10 @@ export default function RootLayout() {
         <Stack.Screen name="combination-builder" options={{ title: "Kombinasyon Oluşturucu" }} />
         <Stack.Screen name="dermatome-blocks" options={{ title: "Dermatoma Göre Blok" }} />
         <Stack.Screen name="legal" options={{ title: "Yasal Bilgi", presentation: "modal" }} />
+        <Stack.Screen
+          name="brachial-plexus"
+          options={{ title: "Brakiyal Pleksus", presentation: "modal" }}
+        />
       </Stack>
     </SafeAreaProvider>
   );

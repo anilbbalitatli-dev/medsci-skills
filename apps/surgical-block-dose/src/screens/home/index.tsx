@@ -83,6 +83,17 @@ export function Home() {
               </View>
             </Pressable>
           </Link>
+          {/* Üst ekstremite bloklarının hepsi aynı zincirin farklı yerleri;
+              şema tek başına da aranan bir referans. */}
+          <Link href="/brachial-plexus" asChild>
+            <Pressable>
+              <View style={styles.pedButton}>
+                <Ionicons name="git-network-outline" size={17} color={colors.primary} />
+                <Text style={styles.pedButtonText}>Brakiyal pleksus şeması</Text>
+                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+              </View>
+            </Pressable>
+          </Link>
           <TextInput
             value={query}
             onChangeText={setQuery}

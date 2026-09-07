@@ -126,6 +126,20 @@ Yeni bir teknik eklerken `TECHNIQUES` girdisinin yanına `TECHNIQUE_NERVES`
 girdisini de eklemek gerekir; aksi hâlde teknik kombinasyon analizinde sinirsiz
 görünür.
 
+## Brakiyal pleksus şeması
+
+`src/data/brachial-plexus-diagram.ts` + `components/brachial-plexus-diagram.tsx`
+— kök → trunkus → divizyon → kord → uç sinir zinciri, üzerine her yaklaşımın
+çalıştığı seviye çizilir. `/brachial-plexus` ekranında yaklaşımlar arasında
+geçiş yapılır; blok kartında ise o bloğun seviyesi sabit gösterilir.
+
+Renkler şemanın kendi verisinden değil `closureFor(techniqueId)` çıktısından
+gelir; bir tekniğin hedefleri değişirse şema da onunla değişir. Koordinatlar
+elle verilir, çünkü `nerves.ts` çizgesi neyin neyi blokladığını bilir ama
+yapıların nerede durduğunu bilmez. Kökler ve divizyonlar çizgede yoktur (hiçbir
+teknik tek bir divizyonu bloklamaz) — şemada çizim için vardır ve renklerini
+besledikleri trunkustan alır.
+
 ## Yasal metinler ve görsel kaynakları
 
 `src/data/legal.ts` — kullanım amacı, sorumluluk, içeriğin bilinen sınırları,
