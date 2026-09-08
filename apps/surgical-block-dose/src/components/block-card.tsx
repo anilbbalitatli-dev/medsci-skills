@@ -4,6 +4,7 @@ import { BlockDoseTable } from "@/components/block-dose-table";
 import { ComplicationPanel } from "@/components/complication-panel";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
+import { RescuePanel } from "@/components/rescue-panel";
 import { ScoreBadges } from "@/components/score-badges";
 import { SonoAnatomyView } from "@/components/sono-anatomy";
 import { TechniqueNervesPanel } from "@/components/technique-nerves-panel";
@@ -54,6 +55,9 @@ export function BlockCard({ block }: { block: BlockOption }) {
         {/* Riskler sinir dökümünden sonra: önce ne bloklanıyor, sonra neye
             hazırlıklı olunmalı. */}
         {techniqueId ? <ComplicationPanel techniqueId={techniqueId} /> : null}
+
+        {/* Risklerden sonra: blok beklendiği gibi gitmezse ne eklenir. */}
+        {techniqueId ? <RescuePanel techniqueId={techniqueId} /> : null}
 
         <ReferenceImageList images={images} />
 
