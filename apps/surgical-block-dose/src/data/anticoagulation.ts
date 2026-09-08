@@ -12,14 +12,14 @@
  *    yüzden burada gerekçesiyle birlikte veriliyor: okuyan kişi katılmadığı
  *    yeri görebilsin.
  *
- * 2. **İlaç bekleme süreleri** — HENÜZ GİRİLMEDİ. Bu sayılar hastanın felç
- *    olup olmayacağını belirleyen sayılardır ve hafızadan yazılmaz. Her satır
- *    kaynağı girilene kadar "kaynak bekliyor" olarak görünür; uygulama eksik
- *    olanı gizlemek yerine gösterir.
+ * 2. **İlaç bekleme süreleri** — ASRA'nın 5. baskısından (Kopp ve ark., Reg
+ *    Anesth Pain Med 2025) alınmıştır. Bu sayılar hastanın felç olup
+ *    olmayacağını belirlediği için hafızadan yazılmaz; her satırda kaynak ve
+ *    kılavuzun kendi öneri derecesi durur. Kaynağı yazılmamış bir değer
+ *    denetimden geçmez.
  *
- * Değerleri girmek için: her ilacın `intervals` alanını doldurun ve `source`
- * satırına hangi kılavuzun hangi baskısından alındığını yazın. Kaynak
- * yazılmadan girilen bir değer denetimde hata verir.
+ * Sayılar olgudur ve telif kapsamına girmez; kılavuzun cümleleri girer. Bu
+ * yüzden değerler alınmış, ifadeler yeniden yazılmıştır — tablo kopyalanmadı.
  */
 
 export type BleedingRiskTier = "high" | "intermediate" | "low";
@@ -35,7 +35,7 @@ export const BLEEDING_RISK_TIERS: Record<BleedingRiskTier, BleedingRiskInfo> = {
     tier: "high",
     label: "Yüksek riskli grup",
     rule:
-      "Nöraksiyel bloklarla aynı kurallar uygulanır: kanama basıyla durdurulamaz ve kapalı bir aralıkta sinir basısı yapar. Antikoagülan zamanlaması burada kesin belirleyicidir; kateter çekimi de aynı kurallara tabidir.",
+      "Nöraksiyel bloklarla aynı kurallar uygulanır: kanama basıyla durdurulamaz ve kapalı bir aralıkta sinir basısı yapar. ASRA'nın 5. baskısı bekleme sürelerini yalnızca nöraksiyel için değil, derin pleksus ve derin periferik bloklar için de veriyor — aşağıdaki süreler bu grupta işler. Kateter çekimi de aynı kurallara tabidir.",
   },
   intermediate: {
     tier: "intermediate",
@@ -150,46 +150,241 @@ export interface AnticoagulantAgent {
   note?: string;
 }
 
+const ASRA = "ASRA PM 5. baskı — Kopp SL ve ark. Reg Anesth Pain Med 2025, doi:10.1136/rapm-2024-105766";
+
 /**
- * İlaçlar listelenmiştir, süreler değil.
+ * Süreler ASRA'nın 5. baskısından alınmıştır (Kopp ve ark., 2025).
  *
- * Liste tam olsun diye Türkiye'de yaygın kullanılan ajanlar yazıldı; süreler
- * ASRA/ESRA tablosundan girilecek. Boş bırakmak kasıtlıdır: yaklaşık bir sayı
- * yazmak, hiç sayı yazmamaktan daha tehlikelidir.
+ * Değerler olgu olarak alınmış, ifadeler kılavuzdan kopyalanmamıştır; kılavuz
+ * metni yayıncının telifi altındadır, sayının kendisi değil. Her satırda
+ * kaynak ve — kılavuzun kendi ağırlık derecesi bilgi taşıdığı için — öneri
+ * derecesi yazılıdır.
+ *
+ * Kılavuzun bu baskısındaki en önemli yapısal nokta: kurallar yalnızca
+ * nöraksiyel bloklar için değil, **derin pleksus ve derin periferik bloklar**
+ * için de geçerlidir. Uygulamanın "yüksek riskli grup" sınıflaması bu yüzden
+ * boş bir başlık değil; o gruptaki bloklarda aşağıdaki süreler işler.
  */
 export const AGENTS: AnticoagulantAgent[] = [
-  { id: "asa", name: "Asetilsalisilik asit", agentClass: "antiplatelet" },
-  { id: "clopidogrel", name: "Klopidogrel", agentClass: "antiplatelet" },
-  { id: "ticagrelor", name: "Tikagrelor", agentClass: "antiplatelet" },
-  { id: "prasugrel", name: "Prasugrel", agentClass: "antiplatelet" },
-  { id: "nsaid", name: "NSAİİ", agentClass: "antiplatelet" },
+  {
+    id: "asa",
+    name: "Asetilsalisilik asit",
+    agentClass: "antiplatelet",
+    intervals: {
+      beforeBlock: "Bekleme gerekmez.",
+      afterBlock: "Bekleme gerekmez.",
+      withCatheter: "Kateter tutulabilir; çekim zamanlaması için kısıt yok.",
+    },
+    source: `${ASRA} (derece IC)`,
+    note: "Tek başına NSAİİ/aspirin, blok yapılmasını engelleyecek bir risk düzeyi oluşturmaz. Başka bir antitrombotikle birlikteyse o ilacın kuralı işler.",
+  },
+  {
+    id: "nsaid",
+    name: "NSAİİ",
+    agentClass: "antiplatelet",
+    intervals: {
+      beforeBlock: "Bekleme gerekmez.",
+      afterBlock: "Bekleme gerekmez.",
+      withCatheter: "Kateter tutulabilir.",
+    },
+    source: `${ASRA} (derece IC)`,
+  },
+  {
+    id: "clopidogrel",
+    name: "Klopidogrel",
+    agentClass: "antiplatelet",
+    intervals: {
+      beforeBlock: "5–7 gün.",
+      afterBlock: "Yükleme dozu verilmeyecekse hemen; yükleme dozu verilecekse kateter çekiminden 6 saat sonra.",
+      withCatheter: "Etkisi ani başlamadığı için kateter 1–2 gün tutulabilir (yükleme dozu verilmemek kaydıyla).",
+    },
+    source: `${ASRA} (derece IIC)`,
+    note: "Kısa uçta trombosit işlevi kısmen düzelmiş olur; kanama riski yüksek hastada uzun uç tercih edilir.",
+  },
+  {
+    id: "prasugrel",
+    name: "Prasugrel",
+    agentClass: "antiplatelet",
+    intervals: {
+      beforeBlock: "7–10 gün.",
+      afterBlock: "Yükleme dozu yoksa hemen; yükleme dozu verilecekse çekimden 6 saat sonra.",
+      withCatheter: "Kateter tutulmaz — etkisi hızlı başlar.",
+    },
+    source: `${ASRA} (derece IIC)`,
+  },
+  {
+    id: "ticagrelor",
+    name: "Tikagrelor",
+    agentClass: "antiplatelet",
+    intervals: {
+      beforeBlock: "5 gün.",
+      afterBlock: "Yükleme dozu yoksa hemen; yükleme dozu verilecekse çekimden 6 saat sonra.",
+      withCatheter: "Kateter tutulmaz — etkisi hızlı başlar.",
+    },
+    source: `${ASRA} (derece 2C)`,
+    note: "Önceki baskıdaki 5–7 gün, trombosit işlevinin geri dönüş verilerine göre 5 güne indirildi.",
+  },
   {
     id: "enoxaparin-prophylactic",
     name: "Enoksaparin — profilaktik doz",
     agentClass: "lmwh",
+    intervals: {
+      beforeBlock: "Son dozdan en az 12 saat sonra.",
+      afterBlock:
+        "Günde iki doz şemasında ilk doz ertesi gün ve girişimden en az 12 saat sonra; kateter çekimini izleyen en az 4 saat beklenir. Günde tek doz şemasında ilk doz girişimden ≥12 saat, ikinci doz ilkinden ≥24 saat sonra.",
+      withCatheter:
+        "Günde tek doz şemasında kateter tutulabilir; son dozdan 12 saat sonra çekilir. Günde iki doz şemasında kateter, ilaca başlanmadan önce çekilir.",
+      renal: "12 saatten kısa sürede girişim gerekiyorsa anti-Xa düzeyi düşünülür; ≤0,1 IU/mL önerilir.",
+    },
+    source: `${ASRA} (derece IC)`,
+    note: "Kanlı/travmatik girişimde ilk doz 24 saat ertelenir. LMWH 4 günden uzun sürdüyse girişim öncesi trombosit sayısı bakılır.",
   },
   {
     id: "enoxaparin-therapeutic",
     name: "Enoksaparin — tedavi dozu",
     agentClass: "lmwh",
+    intervals: {
+      beforeBlock: "Son dozdan en az 24 saat sonra.",
+      afterBlock:
+        "Kanama riski düşük/orta cerrahide 24 saat, yüksek riskli cerrahide 48–72 saat sonra yeniden başlanır. İlk doz girişimden en az 24 saat sonra olmalıdır.",
+      withCatheter: "Kateter, ilk postoperatif dozdan 4 saat önce çekilir.",
+      renal:
+        "24 saatten kısa sürede girişim gerekiyorsa — özellikle 75 yaş üstü ve KrKl ≤30 mL/dk — anti-Xa düzeyi düşünülür; ≤0,1 IU/mL önerilir.",
+    },
+    source: `${ASRA} (derece IC)`,
   },
-  { id: "ufh-sc", name: "Standart heparin — subkutan profilaksi", agentClass: "ufh" },
-  { id: "ufh-iv", name: "Standart heparin — intravenöz infüzyon", agentClass: "ufh" },
-  { id: "rivaroxaban", name: "Rivaroksaban", agentClass: "doac" },
-  { id: "apixaban", name: "Apiksaban", agentClass: "doac" },
-  { id: "edoxaban", name: "Edoksaban", agentClass: "doac" },
-  { id: "dabigatran", name: "Dabigatran", agentClass: "doac" },
-  { id: "warfarin", name: "Varfarin", agentClass: "vka" },
-  { id: "fondaparinux", name: "Fondaparinuks", agentClass: "lmwh" },
-  { id: "alteplase", name: "Alteplaz / trombolitik", agentClass: "thrombolytic" },
-  { id: "herbal", name: "Sarımsak, ginkgo, ginseng", agentClass: "herbal" },
+  {
+    id: "ufh-sc",
+    name: "Standart heparin — subkutan",
+    agentClass: "ufh",
+    intervals: {
+      beforeBlock:
+        "Düşük doz (5000 U, günde 2–3 kez): 4–6 saat veya normal koagülasyon. 7500–10 000 U günde iki kez ya da günlük ≤20 000 U: 12 saat. Doz başına >10 000 U ya da günlük >20 000 U: 24 saat.",
+      afterBlock: "Düşük dozda kateter çekiminden hemen sonra verilebilir.",
+      withCatheter: "Düşük dozda kateter tutulabilir; son dozdan en az 4–6 saat sonra çekilir.",
+    },
+    source: `${ASRA} (derece IIC)`,
+    note: "Yüksek dozlarda girişim öncesi koagülasyon durumu (aPTT) doğrulanmalıdır.",
+  },
+  {
+    id: "ufh-iv",
+    name: "Standart heparin — intravenöz infüzyon",
+    agentClass: "ufh",
+    intervals: {
+      beforeBlock: "İnfüzyon en az 4–6 saat durdurulur ve koagülasyon normale döner.",
+      afterBlock: "İğne yerleştirmeden en az 1 saat sonra; kateter çekiminden 1 saat sonra yeniden heparinize edilir.",
+      withCatheter: "Kateter, son dozdan 4–6 saat sonra ve koagülasyon değerlendirildikten sonra çekilir.",
+    },
+    source: `${ASRA} (derece IA)`,
+    note: "Tam antikoagülasyon altındaki kalp cerrahisinde nöraksiyel/derin pleksus kateteri tutulmaması önerilir.",
+  },
+  {
+    id: "rivaroxaban",
+    name: "Rivaroksaban",
+    agentClass: "doac",
+    intervals: {
+      beforeBlock: "Yüksek dozda en az 72 saat; düşük dozda en az 24 saat.",
+      afterBlock: "Kanama riski düşük/orta girişimden 24 saat, yüksek riskli girişimden 48–72 saat sonra.",
+      renal: "Düşük dozda KrKl <30 mL/dk ise 30 saat.",
+    },
+    source: `${ASRA} (derece IIC)`,
+    note: "Süre kısaltılacaksa plazma düzeyi <30 ng/mL veya anti-Xa ≤0,1 IU/mL kabul edilebilir sayılır. Travmatik girişimde bir sonraki doz 24 saat ertelenir.",
+  },
+  {
+    id: "apixaban",
+    name: "Apiksaban",
+    agentClass: "doac",
+    intervals: {
+      beforeBlock: "Yüksek dozda en az 72 saat; düşük dozda en az 36 saat.",
+      afterBlock: "Kanama riski düşük/orta girişimden 24 saat, yüksek riskli girişimden 48–72 saat sonra.",
+    },
+    source: `${ASRA} (derece IIC)`,
+    note: "Plazma düzeyi <30 ng/mL veya anti-Xa ≤0,1 IU/mL kabul edilebilir sayılır. Travmatik girişimde bir sonraki doz 48 saat ertelenir.",
+  },
+  {
+    id: "edoxaban",
+    name: "Edoksaban",
+    agentClass: "doac",
+    intervals: {
+      beforeBlock: "Yüksek dozda en az 72 saat.",
+      afterBlock: "Kanama riski düşük/orta girişimden 24 saat, yüksek riskli girişimden 48–72 saat sonra.",
+    },
+    source: `${ASRA} (derece IIC)`,
+    note: "Kılavuz düşük doz için ayrı bir süre vermiyor. Plazma düzeyi <30 ng/mL veya anti-Xa ≤0,1 IU/mL kabul edilebilir sayılır.",
+  },
+  {
+    id: "dabigatran",
+    name: "Dabigatran",
+    agentClass: "doac",
+    intervals: {
+      beforeBlock: "Yüksek dozda (KrKl ≥50 mL/dk) en az 72 saat; düşük dozda en az 48 saat.",
+      afterBlock: "Kanama riski düşük/orta girişimden 24 saat, yüksek riskli girişimden 48–72 saat sonra.",
+      renal:
+        "KrKl 30–49 mL/dk ise yüksek dozda 120 saat. KrKl <30 mL/dk ise plazma düzeyi <30 ng/mL gösterilmedikçe blok önerilmez.",
+    },
+    source: `${ASRA} (derece IIC)`,
+  },
+  {
+    id: "warfarin",
+    name: "Varfarin",
+    agentClass: "vka",
+    intervals: {
+      beforeBlock: "5 gün önce kesilir ve INR normale döndüğü doğrulanır.",
+      afterBlock: "Çekimden sonra en az 48 saat nörolojik izlem sürdürülür.",
+      withCatheter:
+        "Kateter INR <1,5 iken çekilir. INR 1,5–3 arasında risk bilinmiyor; dikkatle tutulabilir ya da çekilebilir. INR >3 ise doz azaltılır veya atlanır.",
+    },
+    source: `${ASRA} (derece IB / IIC)`,
+    note: "Epidural analjezi sırasında düşük doz varfarin alan hastada INR günlük izlenir.",
+  },
+  {
+    id: "fondaparinux",
+    name: "Fondaparinuks",
+    agentClass: "lmwh",
+    intervals: {
+      beforeBlock:
+        "Düşük dozda (2,5 mg/gün) böbrek işlevi normalse genç hastada 36, yaşlı hastada 42 saat.",
+      afterBlock: "Kateter çekimi sonrası zamanlama için kılavuzda ayrı bir süre verilmiyor.",
+      renal: "KrKl 30–50 mL/dk ise en az 58 saat.",
+    },
+    source: `${ASRA} (derece IIC)`,
+  },
+  {
+    id: "alteplase",
+    name: "Alteplaz / trombolitik",
+    agentClass: "thrombolytic",
+    intervals: {
+      beforeBlock: "Kılavuz güvenli bir aralık tanımlamıyor; blok yapılmaması esastır.",
+      afterBlock: "Son dozdan sonra en az 48 saat, 2 saatte bir nörolojik izlem.",
+      withCatheter:
+        "Beklenmedik biçimde trombolitik verilirse kateter çekim zamanı için kesin öneri yok; rezidüel etkiyi göstermek için fibrinojen düzeyi bakılması önerilir.",
+    },
+    source: `${ASRA} (derece IA / IC)`,
+    note: "Kateter infüzyonu, nörolojik değerlendirmeyi bozmayacak en düşük konsantrasyonda sürdürülür.",
+  },
+  {
+    id: "herbal",
+    name: "Sarımsak, ginkgo, ginseng",
+    agentClass: "herbal",
+    intervals: {
+      beforeBlock: "Kesilmesi gerekmez.",
+      afterBlock: "Kısıt yok.",
+      withCatheter: "Kısıt yok.",
+    },
+    source: `${ASRA} (derece IC)`,
+    note: "Başka bir nedenle kesilecekse hemostazın normale dönmesi: sarımsak ~7 gün, ginkgo ~36 saat, ginseng ~24 saat.",
+  },
 ];
 
 export const SOURCE_PENDING_NOTE =
-  "Bekleme süreleri henüz girilmedi. Bu sayılar hafızadan yazılmaz: ASRA Regional Anesthesia and Pain Medicine antikoagülasyon kılavuzundan veya ESRA'nın güncel tablosundan, baskı bilgisiyle birlikte girilmelidir.";
+  "Bekleme süreleri henüz girilmedi. Bu sayılar hafızadan yazılmaz: ASRA veya ESRA kılavuzundan, baskı bilgisiyle birlikte girilmelidir.";
 
 export const HOW_TO_FILL =
   "src/data/anticoagulation.ts içindeki AGENTS listesinde her ilacın intervals ve source alanlarını doldurun; kaynağı yazılmamış bir değer denetimden geçmez.";
+
+/** Süreler girildiğinde ekranın başında gösterilen kaynak satırı. */
+export const INTERVALS_SOURCE_NOTE =
+  "Süreler ASRA PM 5. baskısından (Kopp SL ve ark., Reg Anesth Pain Med 2025) alınmış, kendi ifademizle yazılmıştır. Kılavuz bu önerileri nöraksiyel bloklarla birlikte derin pleksus ve derin periferik bloklar için de veriyor. Hasta başında kılavuzun kendi metni ve kurum protokolünüz esastır.";
 
 /** Girilmiş süresi olan ilaç var mı — ekranın hangi durumu göstereceğini belirler. */
 export function hasIntervals(): boolean {

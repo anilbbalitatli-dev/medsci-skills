@@ -9,6 +9,7 @@ import {
   BLEEDING_RISK,
   BLEEDING_RISK_TIERS,
   BleedingRiskTier,
+  INTERVALS_SOURCE_NOTE,
   SOURCE_PENDING_NOTE,
   hasIntervals,
 } from "@/data/anticoagulation";
@@ -91,6 +92,8 @@ export function Anticoagulation() {
       ))}
 
       <Text style={styles.sectionTitle}>İlaç bekleme süreleri</Text>
+      {filled ? <Text style={styles.sourceNote}>{INTERVALS_SOURCE_NOTE}</Text> : null}
+
       {!filled ? (
         <View style={[styles.card, styles.pendingCard]}>
           <View style={styles.pendingHead}>
@@ -136,6 +139,7 @@ export function Anticoagulation() {
                         {agent.intervals.renal}
                       </Text>
                     ) : null}
+                    {agent.note ? <Text style={styles.agentNote}>{agent.note}</Text> : null}
                     {agent.source ? <Text style={styles.agentSource}>{agent.source}</Text> : null}
                   </>
                 ) : (
@@ -185,7 +189,9 @@ const useStyles = makeStyles((colors) => ({
   agentName: { ...type.subheading, fontSize: 12.5, color: colors.text },
   agentInterval: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
   agentLabel: { fontWeight: "700", color: colors.text },
+  agentNote: { ...type.caption, color: colors.warning, lineHeight: 16 },
   agentSource: { fontSize: 10, color: colors.textFaint, fontStyle: "italic" },
+  sourceNote: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
   agentPending: { fontSize: 11, color: colors.warning, fontStyle: "italic" },
   footnote: { ...type.caption, color: colors.textFaint, lineHeight: 16, fontStyle: "italic" },
 }));
