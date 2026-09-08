@@ -35,6 +35,7 @@ function compile() {
     "src/data/plexus-diagrams.ts",
     "src/data/complications.ts",
     "src/data/adjuvants.ts",
+    "src/data/anticoagulation.ts",
     "src/data/mixture.ts",
   ];
   execFileSync(
@@ -77,6 +78,7 @@ function main() {
   const { PLEXUS_DIAGRAMS, PLEXUS_ORDER } = load("plexus-diagrams");
   const { COMPLICATIONS, ABSORPTION } = load("complications");
   const { ADJUVANT_DOSES } = load("adjuvants");
+  const { BLEEDING_RISK, AGENTS } = load("anticoagulation");
   const { STOCK_SOLUTIONS } = load("mixture");
   const { USG } = load("reference-images");
   const sono = load("sono-anatomy");
@@ -203,6 +205,23 @@ function main() {
     const routes = ADJUVANT_DOSES.filter((d) => d.stockId === stock.id).map((d) => d.route);
     if (routes.length === 0) {
       add("warn", "adjuvan", `${stock.id} için hiçbir yolda doz aralığı yok`);
+    }
+  }
+
+  // ---- Antikoagülasyon ----
+  for (const id of Object.keys(BLEEDING_RISK)) {
+    if (!techIds.has(id)) add("error", "kanama riski", `'${id}' diye bir teknik yok`);
+  }
+  for (const t of TECHNIQUES) {
+    if (!BLEEDING_RISK[t.id]) add("warn", "kanama riski", `${t.id} hiçbir gruba konmamış`);
+  }
+  for (const agent of AGENTS) {
+    // Kaynaksız bir bekleme süresi, süre olmamasından daha tehlikelidir.
+    if (agent.intervals && !agent.source) {
+      add("error", "antikoagülan", `${agent.id} için süre girilmiş ama kaynak yazılmamış`);
+    }
+    if (!agent.intervals) {
+      add("info", "antikoagülan", `${agent.id} — süreler kaynak bekliyor`);
     }
   }
 

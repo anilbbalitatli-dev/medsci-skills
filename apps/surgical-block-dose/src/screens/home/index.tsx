@@ -83,6 +83,17 @@ export function Home() {
               </View>
             </Pressable>
           </Link>
+          {/* Antikoagülan sorusu blok seçilmeden önce sorulur; bu yüzden
+              cerrahi listesinden bağımsız bir giriş. */}
+          <Link href="/anticoagulation" asChild>
+            <Pressable>
+              <View style={styles.pedButton}>
+                <Ionicons name="water-outline" size={17} color={colors.primary} />
+                <Text style={styles.pedButtonText}>Antikoagülan alan hastada blok</Text>
+                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+              </View>
+            </Pressable>
+          </Link>
           {/* Bir ekstremitenin bloklarının hepsi aynı zincirin farklı yerleri;
               şema tek başına da aranan bir referans. */}
           <Link href="/plexus" asChild>

@@ -1,6 +1,10 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Link } from "expo-router";
+import { Pressable } from "react-native";
+
+import { bleedingRiskFor } from "@/data/anticoagulation";
 import { ComplicationSeverity, absorptionFor, complicationsFor } from "@/data/complications";
 import { colors, radius, spacing, type } from "@/theme";
 
@@ -22,6 +26,17 @@ const SEVERITY: Record<ComplicationSeverity, { color: string; bg: string; icon: 
   nuisance: { color: colors.textMuted, bg: colors.surfaceAlt, icon: "information-circle-outline" },
 };
 
+const BLEEDING_BG = {
+  high: colors.dangerBg,
+  intermediate: colors.warningBg,
+  low: colors.primaryMuted,
+} as const;
+const BLEEDING_FG = {
+  high: colors.danger,
+  intermediate: colors.warning,
+  low: colors.primaryStrong,
+} as const;
+
 const TIER_STYLE = {
   highest: { color: colors.danger, bg: colors.dangerBg },
   high: { color: colors.warning, bg: colors.warningBg },
@@ -32,7 +47,8 @@ const TIER_STYLE = {
 export function ComplicationPanel({ techniqueId }: { techniqueId: string }) {
   const complications = complicationsFor(techniqueId);
   const absorption = absorptionFor(techniqueId);
-  if (complications.length === 0 && !absorption) return null;
+  const bleeding = bleedingRiskFor(techniqueId);
+  if (complications.length === 0 && !absorption && !bleeding) return null;
 
   return (
     <View style={styles.card}>
@@ -48,6 +64,24 @@ export function ComplicationPanel({ techniqueId }: { techniqueId: string }) {
           </Text>
           <Text style={styles.absorptionDetail}>{absorption.detail}</Text>
         </View>
+      ) : null}
+
+      {/* Antikoagülan alan hastada ilk soru bloğun hangi grupta olduğudur;
+          süreler ayrı ekranda. */}
+      {bleeding ? (
+        <Link href="/anticoagulation" asChild>
+          <Pressable style={({ pressed }) => pressed && { opacity: 0.6 }}>
+            <View style={[styles.bleeding, { backgroundColor: BLEEDING_BG[bleeding.tier] }]}>
+              <View style={styles.bleedingHead}>
+                <Text style={[styles.bleedingLabel, { color: BLEEDING_FG[bleeding.tier] }]}>
+                  Kanama riski: {bleeding.label.toLowerCase()}
+                </Text>
+                <Ionicons name="chevron-forward" size={12} color={BLEEDING_FG[bleeding.tier]} />
+              </View>
+              <Text style={styles.bleedingWhy}>{bleeding.why}</Text>
+            </View>
+          </Pressable>
+        </Link>
       ) : null}
 
       {complications.map((c) => {
@@ -84,6 +118,10 @@ const styles = StyleSheet.create({
   absorption: { borderRadius: radius.sm, padding: 8, gap: 2 },
   absorptionLabel: { ...type.caption, fontWeight: "700" },
   absorptionDetail: { fontSize: 11.5, color: colors.textMuted, lineHeight: 16 },
+  bleeding: { borderRadius: radius.sm, padding: 8, gap: 2 },
+  bleedingHead: { flexDirection: "row", alignItems: "center", gap: 4 },
+  bleedingLabel: { ...type.caption, fontWeight: "700", flex: 1 },
+  bleedingWhy: { fontSize: 11.5, color: colors.textMuted, lineHeight: 16 },
   row: { flexDirection: "row", gap: 6, alignItems: "flex-start" },
   icon: { marginTop: 2 },
   rowTitle: { ...type.subheading, fontSize: 12.5 },
