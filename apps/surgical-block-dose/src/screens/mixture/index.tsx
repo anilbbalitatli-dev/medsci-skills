@@ -4,6 +4,13 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PatientBar } from "@/components/patient-bar";
+import {
+  ADJUVANT_ROUTES,
+  ADJUVANT_SOURCE_NOTE,
+  AdjuvantRoute,
+  adjuvantDose,
+  checkRange,
+} from "@/data/adjuvants";
 import { ceilingMg } from "@/data/age-dosing";
 import {
   computeMixture,
@@ -49,6 +56,9 @@ export function MixtureCalculator() {
   const [patient] = usePatient();
   const [items, setItems] = useState<MixtureItem[]>(DEFAULT_ITEMS);
   const [picking, setPicking] = useState(false);
+  // Adjuvan aralıkları yola göre değişir — 100 µg morfin intratekal olağan bir
+  // doz, perinöral ise anlamsız. Bu yüzden aralık göstermeden önce yol sorulur.
+  const [route, setRoute] = useState<AdjuvantRoute>("perineural");
 
   const result = useMemo(() => computeMixture(items), [items]);
 
@@ -80,6 +90,25 @@ export function MixtureCalculator() {
       </View>
 
       <PatientBar />
+
+      <View style={styles.routeCard}>
+        <Text style={styles.routeTitle}>Adjuvan yolu</Text>
+        <View style={styles.routeRow}>
+          {ADJUVANT_ROUTES.map((r) => {
+            const on = route === r.id;
+            return (
+              <Pressable key={r.id} style={{ flex: 1 }} onPress={() => setRoute(r.id)}>
+                <View style={[styles.routeTab, on && styles.routeTabOn]}>
+                  <Text style={[styles.routeTabText, on && styles.routeTabTextOn]}>{r.label}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={styles.routeNote}>
+          {ADJUVANT_ROUTES.find((r) => r.id === route)?.note}
+        </Text>
+      </View>
 
       <Text style={styles.sectionTitle}>Karışım</Text>
       <View style={styles.card}>
@@ -146,23 +175,81 @@ export function MixtureCalculator() {
 
         {result.components
           .filter((c) => c.amount !== undefined)
-          .map((c, i) => (
-            <View key={`${c.stock.id}-${i}`} style={styles.resultRow}>
-              <Text style={styles.resultName}>{c.stock.label}</Text>
-              <Text style={styles.resultDetail}>
-                {fmt(c.volumeMl)} mL ={" "}
-                <Text style={styles.resultAmount}>
-                  {fmt(c.amount!, c.unit === "µg" ? 0 : 1)} {c.unit}
+          .map((c, i) => {
+            const dose = c.stock.kind === "adjuvant" ? adjuvantDose(c.stock.id, route) : undefined;
+            const check =
+              c.stock.kind === "adjuvant"
+                ? checkRange(dose, c.amount!, patient.hasWeight ? patient.weightKg : undefined)
+                : undefined;
+            const verdict = check?.verdict;
+            return (
+              <View key={`${c.stock.id}-${i}`} style={styles.resultRow}>
+                <Text style={styles.resultName}>{c.stock.label}</Text>
+                <Text style={styles.resultDetail}>
+                  {fmt(c.volumeMl)} mL ={" "}
+                  <Text style={styles.resultAmount}>
+                    {fmt(c.amount!, c.unit === "µg" ? 0 : 1)} {c.unit}
+                  </Text>
+                  {c.finalPerMl !== undefined ? (
+                    <Text>
+                      {"  ·  şırıngada "}
+                      {fmt(c.finalPerMl, c.unit === "µg" ? 1 : 2)} {c.unit}/mL
+                    </Text>
+                  ) : null}
                 </Text>
-                {c.finalPerMl !== undefined ? (
-                  <Text>
-                    {"  ·  şırıngada "}
-                    {fmt(c.finalPerMl, c.unit === "µg" ? 1 : 2)} {c.unit}/mL
+
+                {dose ? (
+                  <View style={styles.adjuvantBlock}>
+                    <View style={styles.adjuvantHead}>
+                      {check?.rangeLabel ? (
+                        <View
+                          style={[
+                            styles.rangeTag,
+                            verdict === "inRange" && styles.rangeOk,
+                            (verdict === "above" || verdict === "below") && styles.rangeOff,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.rangeTagText,
+                              verdict === "inRange" && styles.rangeOkText,
+                              (verdict === "above" || verdict === "below") && styles.rangeOffText,
+                            ]}
+                          >
+                            {verdict === "inRange"
+                              ? `Olağan aralıkta · ${check!.rangeLabel}`
+                              : verdict === "above"
+                                ? `Aralığın üstünde · ${check!.rangeLabel}`
+                                : `Aralığın altında · ${check!.rangeLabel}`}
+                          </Text>
+                        </View>
+                      ) : verdict === "unknown" ? (
+                        <Text style={styles.rangeUnknown}>
+                          Aralık kiloya bağlı — hesap için ağırlık girin.
+                        </Text>
+                      ) : null}
+                      {dose.offLabel ? (
+                        <View style={[styles.rangeTag, styles.rangeOff]}>
+                          <Text style={[styles.rangeTagText, styles.rangeOffText]}>
+                            endikasyon dışı / kanıt sınırlı
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                    <Text style={styles.adjuvantEffect}>{dose.effect}</Text>
+                    {dose.caution ? (
+                      <Text style={styles.adjuvantCaution}>{dose.caution}</Text>
+                    ) : null}
+                  </View>
+                ) : c.stock.kind === "adjuvant" ? (
+                  <Text style={styles.adjuvantCaution}>
+                    Bu adjuvan için {ADJUVANT_ROUTES.find((r) => r.id === route)?.label.toLowerCase()}{" "}
+                    yolda olağan bir aralık tanımlanmadı.
                   </Text>
                 ) : null}
-              </Text>
-            </View>
-          ))}
+              </View>
+            );
+          })}
 
         {result.laTotals.length > 0 ? (
           <View style={styles.finalBlock}>
@@ -209,6 +296,8 @@ export function MixtureCalculator() {
         )}
       </View>
 
+      <Text style={styles.adjuvantSource}>{ADJUVANT_SOURCE_NOTE}</Text>
+
       <Text style={styles.disclaimer}>
         Hesap yalnızca aritmetiktir: girilen stok konsantrasyonlarını ve hacimleri kullanır, ilaç
         seçimini veya endikasyonu değerlendirmez. Ampul etiketindeki konsantrasyonu her zaman
@@ -224,6 +313,33 @@ const styles = StyleSheet.create({
   introText: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
   bold: { fontWeight: "700", color: colors.text },
   sectionTitle: { ...type.heading, color: colors.text, marginTop: spacing.sm },
+  routeCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    gap: 6,
+  },
+  routeTitle: { ...type.subheading, color: colors.text },
+  routeRow: { flexDirection: "row", gap: 4, backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: 3 },
+  routeTab: { paddingVertical: 7, borderRadius: radius.sm, alignItems: "center" },
+  routeTabOn: { backgroundColor: colors.surface },
+  routeTabText: { ...type.caption, fontWeight: "700", color: colors.textMuted },
+  routeTabTextOn: { color: colors.primaryStrong },
+  routeNote: { ...type.caption, color: colors.textFaint },
+  adjuvantBlock: { gap: 3, marginTop: 3 },
+  adjuvantHead: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
+  rangeTag: { borderRadius: radius.pill, paddingHorizontal: 7, paddingVertical: 2, backgroundColor: colors.surfaceAlt },
+  rangeTagText: { fontSize: 10, fontWeight: "700", color: colors.textMuted },
+  rangeOk: { backgroundColor: colors.primaryMuted },
+  rangeOkText: { color: colors.primaryStrong },
+  rangeOff: { backgroundColor: colors.warningBg },
+  rangeOffText: { color: colors.warning },
+  rangeUnknown: { fontSize: 10.5, color: colors.textFaint, fontStyle: "italic" },
+  adjuvantEffect: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
+  adjuvantCaution: { fontSize: 11, color: colors.warning, lineHeight: 15 },
+  adjuvantSource: { fontSize: 10.5, color: colors.textFaint, lineHeight: 15, fontStyle: "italic" },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,

@@ -34,6 +34,8 @@ function compile() {
     "src/data/block-technique.ts",
     "src/data/plexus-diagrams.ts",
     "src/data/complications.ts",
+    "src/data/adjuvants.ts",
+    "src/data/mixture.ts",
   ];
   execFileSync(
     "npx",
@@ -74,6 +76,8 @@ function main() {
   const { SURGERIES } = load("surgeries");
   const { PLEXUS_DIAGRAMS, PLEXUS_ORDER } = load("plexus-diagrams");
   const { COMPLICATIONS, ABSORPTION } = load("complications");
+  const { ADJUVANT_DOSES } = load("adjuvants");
+  const { STOCK_SOLUTIONS } = load("mixture");
   const { USG } = load("reference-images");
   const sono = load("sono-anatomy");
 
@@ -181,6 +185,25 @@ function main() {
     // emilen bir bölgede tek başına güvence değil. Eksik kalan teknik, blok
     // kartında bu uyarıyı hiç göstermez.
     if (!ABSORPTION[t.id]) add("warn", "emilim", `${t.id} için emilim basamağı yok`);
+  }
+
+  // ---- Adjuvan dozları stok listesine bağlanmalı ----
+  const stockIds = new Set(STOCK_SOLUTIONS.map((s) => s.id));
+  const adjuvantStocks = STOCK_SOLUTIONS.filter((s) => s.kind === "adjuvant");
+  for (const d of ADJUVANT_DOSES) {
+    if (!stockIds.has(d.stockId)) {
+      add("error", "adjuvan", `'${d.stockId}' diye bir stok solüsyonu yok`);
+    }
+    const stock = STOCK_SOLUTIONS.find((s) => s.id === d.stockId);
+    if (stock && stock.unit && stock.unit !== d.unit) {
+      add("error", "adjuvan", `${d.stockId} (${d.route}) birimi ${d.unit}, stok birimi ${stock.unit}`);
+    }
+  }
+  for (const stock of adjuvantStocks) {
+    const routes = ADJUVANT_DOSES.filter((d) => d.stockId === stock.id).map((d) => d.route);
+    if (routes.length === 0) {
+      add("warn", "adjuvan", `${stock.id} için hiçbir yolda doz aralığı yok`);
+    }
   }
 
   // ---- Category ids must be real techniques ----
