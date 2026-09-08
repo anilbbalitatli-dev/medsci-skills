@@ -12,15 +12,17 @@ import { BLOCK_TECHNIQUE, techniqueForBlock } from "@/data/block-technique";
 import { imagesForBlock } from "@/data/reference-images";
 import { sonoSpecFor } from "@/data/sono-anatomy";
 import { BlockOption } from "@/data/types";
-import { colors, elevation, numeric, radius, role, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, roleStyles, spacing, type, useColors } from "@/theme";
 import { volumeRangeToMgRange } from "@/utils/dose-math";
 
 export function BlockCard({ block }: { block: BlockOption }) {
+  const colors = useColors();
+  const styles = useStyles();
   const images = imagesForBlock(block);
   const sonoSpecs = images
     .map((img) => sonoSpecFor(img.key))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  const roleStyle = role[block.role];
+  const roleStyle = roleStyles(colors)[block.role];
   const landmarkNote = block.landmarkNote ?? techniqueForBlock(block.id)?.landmark;
   const techniqueId = BLOCK_TECHNIQUE[block.id];
   const technique = techniqueForBlock(block.id);
@@ -83,7 +85,7 @@ export function BlockCard({ block }: { block: BlockOption }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     flexDirection: "row",
     backgroundColor: colors.surface,
@@ -210,4 +212,4 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     flex: 1,
   },
-});
+}));

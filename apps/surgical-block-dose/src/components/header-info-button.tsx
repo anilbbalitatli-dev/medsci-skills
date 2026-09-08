@@ -1,11 +1,14 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, spacing } from "@/theme";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function HeaderInfoButton() {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
+      <ThemeToggle />
       <Link href="/dermatome-map" asChild>
         <Pressable hitSlop={8}>
           <View style={[styles.button, styles.mapButton]}>
@@ -34,7 +37,7 @@ export function HeaderInfoButton() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: "row",
     gap: spacing.xs,
@@ -69,4 +72,4 @@ const styles = StyleSheet.create({
   lastText: {
     color: colors.danger,
   },
-});
+}));

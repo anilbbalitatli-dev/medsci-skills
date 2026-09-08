@@ -14,7 +14,7 @@ import {
   diagramForTechnique,
 } from "@/data/plexus-diagrams";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
-import { colors, radius, spacing, type } from "@/theme";
+import { Palette, makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Pleksus şeması: hangi blok hangi seviyede çalışır.
@@ -26,26 +26,16 @@ import { colors, radius, spacing, type } from "@/theme";
 type NodeStatus = "full" | "partial" | "none";
 type Closure = Map<string, { status: "full" | "partial"; reliability: "consistent" | "variable" }>;
 
-const FILL: Record<NodeStatus, string> = {
-  full: colors.primary,
-  partial: colors.primaryMuted,
-  none: colors.surface,
-};
-const STROKE: Record<NodeStatus, string> = {
-  full: colors.primaryStrong,
-  partial: colors.primary,
-  none: colors.borderStrong,
-};
-const INNER_TEXT: Record<NodeStatus, string> = {
-  full: "#FFFFFF",
-  partial: colors.primaryStrong,
-  none: colors.textMuted,
-};
-const OUTER_TEXT: Record<NodeStatus, string> = {
-  full: colors.primaryStrong,
-  partial: colors.primaryStrong,
-  none: colors.textMuted,
-};
+// Renkler palete bağlı; "dolu / kesikli / boş" ayrımı iki temada da aynı
+// anlamı taşısın diye biçim değil yalnızca renk değişiyor.
+function statusColors(colors: Palette) {
+  return {
+    fill: { full: colors.primary, partial: colors.primaryMuted, none: colors.surface },
+    stroke: { full: colors.primaryStrong, partial: colors.primary, none: colors.borderStrong },
+    innerText: { full: colors.onPrimary, partial: colors.primaryStrong, none: colors.textMuted },
+    outerText: { full: colors.primaryStrong, partial: colors.primaryStrong, none: colors.textMuted },
+  } as const;
+}
 
 function statusOf(node: PlexusNode, closure: Closure): NodeStatus {
   const id = node.nerveId ?? node.statusVia;
@@ -60,8 +50,10 @@ function statusOf(node: PlexusNode, closure: Closure): NodeStatus {
 }
 
 function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
-  const fill = FILL[status];
-  const stroke = STROKE[status];
+  const colors = useColors();
+  const palette = statusColors(colors);
+  const fill = palette.fill[status];
+  const stroke = palette.stroke[status];
   const dashed = status === "partial" ? "3 2" : undefined;
 
   // Kökler hiçbir zaman dolu boyanmaz. Hiçbir yaklaşım kökü hedeflemiyor —
@@ -114,7 +106,7 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
           y={node.y + 3.4}
           fontSize={9.5}
           fontWeight="700"
-          fill={INNER_TEXT[status]}
+          fill={palette.innerText[status]}
           textAnchor="middle"
         >
           {node.label}
@@ -153,7 +145,7 @@ function NodeShape({ node, status }: { node: PlexusNode; status: NodeStatus }) {
         y={labelY}
         fontSize={pip ? 7.5 : 8.5}
         fontWeight={pip ? "400" : "700"}
-        fill={pip ? colors.textFaint : OUTER_TEXT[status]}
+        fill={pip ? colors.textFaint : palette.outerText[status]}
         textAnchor={node.anchor ?? "middle"}
       >
         {node.label}
@@ -171,6 +163,8 @@ function Canvas({
   closure: Closure;
   approach?: PlexusApproach;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const byId = useMemo(
     () => new Map(diagram.nodes.map((n) => [n.id, n])),
     [diagram]
@@ -272,6 +266,8 @@ export function PlexusDiagramView({
   /** Sekme değişince haber verir; ekranın ders kutusu buna bağlı. */
   onPlexusChange?: (id: PlexusId) => void;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const fixed = techniqueId ? diagramForTechnique(techniqueId) : undefined;
   const [pickedPlexus, setPickedPlexus] = useState<PlexusId>(
     plexusId ?? fixed?.id ?? "brachial"
@@ -390,7 +386,7 @@ export function PlexusDiagramView({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrapper: { gap: spacing.sm },
   canvas: {
     width: "100%",
@@ -425,7 +421,7 @@ const styles = StyleSheet.create({
   },
   chipOn: { backgroundColor: colors.primary },
   chipText: { ...type.caption, fontWeight: "700", color: colors.textMuted },
-  chipTextOn: { color: "#FFFFFF" },
+  chipTextOn: { color: colors.onPrimary },
   captionBlock: { gap: 2 },
   captionTitle: { ...type.subheading, color: colors.text },
   captionSegments: { ...type.caption, color: colors.primary, fontWeight: "700" },
@@ -435,4 +431,4 @@ const styles = StyleSheet.create({
   swatch: { width: 11, height: 11, borderRadius: 3 },
   legendText: { fontSize: 10.5, color: colors.textMuted, fontWeight: "700" },
   note: { fontSize: 10, color: colors.textFaint, lineHeight: 14, fontStyle: "italic" },
-});
+}));

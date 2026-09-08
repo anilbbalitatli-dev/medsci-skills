@@ -3,12 +3,14 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { FirstRunDisclaimer } from "@/components/first-run-disclaimer";
-import { colors } from "@/theme";
+import { makeStyles, useColors, useIsDark } from "@/theme";
 
 export default function RootLayout() {
+  const colors = useColors();
+  const isDark = useIsDark();
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <FirstRunDisclaimer />
       <Stack
         screenOptions={{

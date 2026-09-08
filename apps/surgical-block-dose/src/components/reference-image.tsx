@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getReferenceImage } from "@/data/block-images";
 import { ReferenceImage as ReferenceImageData } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 function PendingSlot({ caption }: { caption: string }) {
+  const colors = useColors();
+  const styles = useStyles();
   return (
     <View style={styles.pending}>
       <Ionicons name="image-outline" size={20} color={colors.textMuted} />
@@ -26,6 +28,7 @@ function Lightbox({
   data: ReferenceImageData;
   onClose: () => void;
 }) {
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
 
   return (
@@ -64,6 +67,7 @@ export function ReferenceImageView({
   /** Render a labelled placeholder when the file isn't registered yet. */
   showPending?: boolean;
 }) {
+  const styles = useStyles();
   const [open, setOpen] = useState(false);
   const image = getReferenceImage(data.key);
 
@@ -89,6 +93,7 @@ export function ReferenceImageView({
 }
 
 export function ReferenceImageList({ images }: { images?: ReferenceImageData[] }) {
+  const styles = useStyles();
   const available = (images ?? []).filter((img) => getReferenceImage(img.key));
   if (available.length === 0) return null;
 
@@ -101,7 +106,7 @@ export function ReferenceImageList({ images }: { images?: ReferenceImageData[] }
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   list: {
     gap: spacing.sm,
     marginTop: spacing.xs,
@@ -188,4 +193,4 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.65)",
     fontSize: 11.5,
   },
-});
+}));

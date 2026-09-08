@@ -1,6 +1,6 @@
 import { DimensionValue, StyleSheet, Text, View } from "react-native";
 
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { Palette, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Dose meter.
@@ -18,7 +18,7 @@ import { colors, numeric, radius, spacing, type } from "@/theme";
 const SCALE_MAX = 1.5;
 const CEILING_POS = 1 / SCALE_MAX;
 
-function toneFor(fractionHigh: number): string {
+function toneFor(fractionHigh: number, colors: Palette): string {
   if (fractionHigh >= 1) return colors.danger;
   if (fractionHigh >= 0.75) return colors.warning;
   return colors.primary;
@@ -33,7 +33,9 @@ export function DoseMeter({
   fractionHigh: number;
   compact?: boolean;
 }) {
-  const tone = toneFor(fractionHigh);
+  const colors = useColors();
+  const styles = useStyles();
+  const tone = toneFor(fractionHigh, colors);
   const overflow = fractionHigh > SCALE_MAX;
 
   const lo = Math.min(fractionLow, SCALE_MAX) / SCALE_MAX;
@@ -77,7 +79,9 @@ export function DoseMeterRow({
   fractionLow: number;
   fractionHigh: number;
 }) {
-  const tone = toneFor(fractionHigh);
+  const colors = useColors();
+  const styles = useStyles();
+  const tone = toneFor(fractionHigh, colors);
   return (
     <View style={styles.row}>
       <View style={styles.rowHeader}>
@@ -92,7 +96,7 @@ export function DoseMeterRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { gap: 3 },
   track: {
     height: 12,
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   overflowText: {
-    color: "#FFFFFF",
+    color: colors.onPrimary,
     fontSize: 11,
     fontWeight: "800",
   },
@@ -168,4 +172,4 @@ const styles = StyleSheet.create({
     ...numeric,
     color: colors.textMuted,
   },
-});
+}));

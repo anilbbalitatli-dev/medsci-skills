@@ -6,7 +6,7 @@ import { Pressable } from "react-native";
 
 import { bleedingRiskFor } from "@/data/anticoagulation";
 import { ComplicationSeverity, absorptionFor, complicationsFor } from "@/data/complications";
-import { colors, radius, spacing, type } from "@/theme";
+import { Palette, makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Bu bloğa özgü riskler.
@@ -20,34 +20,43 @@ import { colors, radius, spacing, type } from "@/theme";
  * söylemez: tavanın altında kalan bir interkostal blok, aynı mg'ın femoral
  * bloğundan daha yüksek plazma düzeyi yapar.
  */
-const SEVERITY: Record<ComplicationSeverity, { color: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = {
-  critical: { color: colors.danger, bg: colors.dangerBg, icon: "alert-circle" },
-  notable: { color: colors.warning, bg: colors.warningBg, icon: "warning-outline" },
-  nuisance: { color: colors.textMuted, bg: colors.surfaceAlt, icon: "information-circle-outline" },
-};
+type SeverityStyle = { color: string; icon: keyof typeof Ionicons.glyphMap };
 
-const BLEEDING_BG = {
-  high: colors.dangerBg,
-  intermediate: colors.warningBg,
-  low: colors.primaryMuted,
-} as const;
-const BLEEDING_FG = {
-  high: colors.danger,
-  intermediate: colors.warning,
-  low: colors.primaryStrong,
-} as const;
+// Renk paletten geliyor, ikon değil: biçim temaya bağlı, anlam değil.
+function severityStyles(colors: Palette): Record<ComplicationSeverity, SeverityStyle> {
+  return {
+    critical: { color: colors.danger, icon: "alert-circle" },
+    notable: { color: colors.warning, icon: "warning-outline" },
+    nuisance: { color: colors.textMuted, icon: "information-circle-outline" },
+  };
+}
 
-const TIER_STYLE = {
-  highest: { color: colors.danger, bg: colors.dangerBg },
-  high: { color: colors.warning, bg: colors.warningBg },
-  moderate: { color: colors.textMuted, bg: colors.surfaceAlt },
-  low: { color: colors.primaryStrong, bg: colors.primaryMuted },
-} as const;
+function bleedingStyles(colors: Palette) {
+  return {
+    high: { fg: colors.danger, bg: colors.dangerBg },
+    intermediate: { fg: colors.warning, bg: colors.warningBg },
+    low: { fg: colors.primaryStrong, bg: colors.primaryMuted },
+  } as const;
+}
+
+function absorptionStyles(colors: Palette) {
+  return {
+    highest: { color: colors.danger, bg: colors.dangerBg },
+    high: { color: colors.warning, bg: colors.warningBg },
+    moderate: { color: colors.textMuted, bg: colors.surfaceAlt },
+    low: { color: colors.primaryStrong, bg: colors.primaryMuted },
+  } as const;
+}
 
 export function ComplicationPanel({ techniqueId }: { techniqueId: string }) {
+  const colors = useColors();
+  const styles = useStyles();
   const complications = complicationsFor(techniqueId);
   const absorption = absorptionFor(techniqueId);
   const bleeding = bleedingRiskFor(techniqueId);
+  const SEVERITY = severityStyles(colors);
+  const BLEEDING = bleedingStyles(colors);
+  const TIER_STYLE = absorptionStyles(colors);
   if (complications.length === 0 && !absorption && !bleeding) return null;
 
   return (
@@ -71,12 +80,12 @@ export function ComplicationPanel({ techniqueId }: { techniqueId: string }) {
       {bleeding ? (
         <Link href="/anticoagulation" asChild>
           <Pressable style={({ pressed }) => pressed && { opacity: 0.6 }}>
-            <View style={[styles.bleeding, { backgroundColor: BLEEDING_BG[bleeding.tier] }]}>
+            <View style={[styles.bleeding, { backgroundColor: BLEEDING[bleeding.tier].bg }]}>
               <View style={styles.bleedingHead}>
-                <Text style={[styles.bleedingLabel, { color: BLEEDING_FG[bleeding.tier] }]}>
+                <Text style={[styles.bleedingLabel, { color: BLEEDING[bleeding.tier].fg }]}>
                   Kanama riski: {bleeding.label.toLowerCase()}
                 </Text>
-                <Ionicons name="chevron-forward" size={12} color={BLEEDING_FG[bleeding.tier]} />
+                <Ionicons name="chevron-forward" size={12} color={BLEEDING[bleeding.tier].fg} />
               </View>
               <Text style={styles.bleedingWhy}>{bleeding.why}</Text>
             </View>
@@ -105,7 +114,7 @@ export function ComplicationPanel({ techniqueId }: { techniqueId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.background,
     borderRadius: radius.sm,
@@ -127,4 +136,4 @@ const styles = StyleSheet.create({
   rowTitle: { ...type.subheading, fontSize: 12.5 },
   rowDetail: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
   footnote: { fontSize: 10, color: colors.textFaint, fontStyle: "italic", lineHeight: 14 },
-});
+}));

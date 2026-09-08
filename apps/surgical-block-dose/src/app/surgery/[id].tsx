@@ -5,10 +5,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { HeaderInfoButton } from "@/components/header-info-button";
 import { SURGERIES } from "@/data/surgeries";
 import { SurgeryDetail } from "@/screens/surgery-detail";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 import { recordRecentlyViewed } from "@/utils/recently-viewed";
 
 export default function SurgeryDetailRoute() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const surgery = SURGERIES.find((s) => s.id === id);
 
@@ -32,7 +33,7 @@ export default function SurgeryDetailRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   notFound: {
     flex: 1,
     alignItems: "center",
@@ -43,4 +44,4 @@ const styles = StyleSheet.create({
   notFoundText: {
     color: colors.textMuted,
   },
-});
+}));

@@ -3,9 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ScoreBadges } from "@/components/score-badges";
 import { BlockCombination, BlockOption } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function CombinationCard({ combination, blocks }: { combination: BlockCombination; blocks: BlockOption[] }) {
+  const styles = useStyles();
   const blockNames = combination.blockIds
     .map((id) => blocks.find((b) => b.id === id)?.name)
     .filter((n): n is string => Boolean(n));
@@ -22,7 +23,7 @@ export function CombinationCard({ combination, blocks }: { combination: BlockCom
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: 14,
@@ -51,4 +52,4 @@ const styles = StyleSheet.create({
     color: colors.warning,
     marginTop: spacing.xs,
   },
-});
+}));

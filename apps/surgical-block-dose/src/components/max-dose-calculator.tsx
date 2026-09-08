@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { ceilingMg } from "@/data/age-dosing";
 import { findMaxDose } from "@/data/max-doses";
 import { BlockOption, DrugMaxDose } from "@/data/types";
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 /**
@@ -38,6 +38,7 @@ function uniqueMaxDoses(blocks: BlockOption[]): DrugMaxDose[] {
  * arriving here first.
  */
 export function MaxDoseCalculator({ blocks }: { blocks: BlockOption[] }) {
+  const styles = useStyles();
   const [patient] = usePatient();
   const maxDoses = useMemo(() => uniqueMaxDoses(blocks), [blocks]);
 
@@ -99,7 +100,7 @@ export function MaxDoseCalculator({ blocks }: { blocks: BlockOption[] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -124,4 +125,4 @@ const styles = StyleSheet.create({
   bold: { fontWeight: "700" },
   bandNote: { ...type.caption, color: colors.warning, lineHeight: 16 },
   pedNote: { ...type.caption, color: colors.warning, lineHeight: 16 },
-});
+}));

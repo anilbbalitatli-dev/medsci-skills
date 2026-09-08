@@ -2,9 +2,10 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Surgery } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function SurgeryChip({ surgery }: { surgery: Surgery }) {
+  const styles = useStyles();
   return (
     <Link href={{ pathname: "/surgery/[id]", params: { id: surgery.id } }} asChild>
       <Pressable>
@@ -18,7 +19,7 @@ export function SurgeryChip({ surgery }: { surgery: Surgery }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   chip: {
     backgroundColor: colors.chip,
     borderRadius: 999,
@@ -34,4 +35,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.text,
   },
-});
+}));

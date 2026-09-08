@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 /**
  * Kısa uyarı, tam metnin kapısıdır.
@@ -13,6 +13,8 @@ import { colors, spacing } from "@/theme";
  * lisansları) dokununca açılan yasal ekranda duruyor.
  */
 export function DisclaimerBanner() {
+  const colors = useColors();
+  const styles = useStyles();
   return (
     <Link href="/legal" asChild>
       <Pressable style={({ pressed }) => pressed && styles.pressed}>
@@ -33,7 +35,7 @@ export function DisclaimerBanner() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     backgroundColor: colors.warningBg,
     borderColor: colors.warningBorder,
@@ -67,4 +69,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textDecorationLine: "underline",
   },
-});
+}));

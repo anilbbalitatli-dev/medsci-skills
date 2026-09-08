@@ -2,7 +2,7 @@ import { Link, usePathname } from "expo-router";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, radius, spacing, type } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors } from "@/theme";
 import { useStorage } from "@/utils/use-storage";
 
 /**
@@ -21,6 +21,7 @@ const POINTS = [
 ];
 
 export function FirstRunDisclaimer() {
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [acknowledged, setAcknowledged] = useStorage<boolean>(ACK_KEY, false);
   const pathname = usePathname();
@@ -67,7 +68,7 @@ export function FirstRunDisclaimer() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(10,20,26,0.55)",
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     ...type.heading,
-    color: "#FFFFFF",
+    color: colors.onPrimary,
   },
   pressed: {
     opacity: 0.75,
@@ -130,4 +131,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
-});
+}));

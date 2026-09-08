@@ -4,10 +4,12 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { getRegionStyle } from "@/data/region-icons";
 import { Surgery } from "@/data/types";
-import { colors, elevation, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, radius, spacing, type, useColors } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 
 export function SurgeryCard({ surgery }: { surgery: Surgery }) {
+  const colors = useColors();
+  const styles = useStyles();
   const primaryBlock = surgery.blocks.find((b) => b.role === "primary") ?? surgery.blocks[0];
   const regionStyle = getRegionStyle(surgery.region);
   const [favoriteIds, toggleFavorite] = useFavorites();
@@ -66,7 +68,7 @@ export function SurgeryCard({ surgery }: { surgery: Surgery }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     flexDirection: "row",
     alignItems: "stretch",
@@ -132,4 +134,4 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     marginLeft: spacing.sm,
   },
-});
+}));

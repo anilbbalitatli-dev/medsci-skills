@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { RESCUE_REASON_LABEL, rescueFor } from "@/data/rescue";
-import { colors, radius, spacing, type } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * "Blok tutmadı, ne ekleyeyim?"
@@ -13,6 +13,8 @@ import { colors, radius, spacing, type } from "@/theme";
  * kenarı açıksa cevap safen bloğudur, femoral bloğun tamamı değil.
  */
 export function RescuePanel({ techniqueId }: { techniqueId: string }) {
+  const colors = useColors();
+  const styles = useStyles();
   const options = useMemo(() => rescueFor(techniqueId), [techniqueId]);
   if (options.length === 0) return null;
 
@@ -43,7 +45,7 @@ export function RescuePanel({ techniqueId }: { techniqueId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.background,
     borderRadius: radius.sm,
@@ -59,4 +61,4 @@ const styles = StyleSheet.create({
   nerves: { ...type.caption, color: colors.text, lineHeight: 16 },
   reason: { fontSize: 10.5, color: colors.textFaint, fontStyle: "italic" },
   footnote: { fontSize: 10, color: colors.textFaint, lineHeight: 14, fontStyle: "italic" },
-});
+}));

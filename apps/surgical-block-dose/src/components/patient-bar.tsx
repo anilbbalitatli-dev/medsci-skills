@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { AGE_BANDS } from "@/data/age-dosing";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 /**
@@ -15,6 +15,8 @@ import { usePatient } from "@/utils/patient";
  * asking a question the user has not answered yet.
  */
 export function PatientBar() {
+  const colors = useColors();
+  const styles = useStyles();
   const [patient, setPatient] = usePatient();
   const [open, setOpen] = useState(!patient.hasWeight);
 
@@ -93,7 +95,7 @@ export function PatientBar() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
@@ -137,8 +139,8 @@ const styles = StyleSheet.create({
   },
   chipOn: { backgroundColor: colors.primary },
   chipText: { fontSize: 12, color: colors.text },
-  chipTextOn: { color: "#FFFFFF", fontWeight: "700" },
+  chipTextOn: { color: colors.onPrimary, fontWeight: "700" },
   toggleRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   toggleText: { ...type.bodySm, color: colors.text },
   modifierNote: { ...type.caption, color: colors.warning, lineHeight: 16 },
-});
+}));

@@ -12,7 +12,7 @@ import {
   SPINAL_BUPIVACAINE_SOURCE,
   BlockCategory,
 } from "@/data/pediatric-dosing";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * The paediatric guideline tables, reproduced rather than summarised.
@@ -37,6 +37,8 @@ function formatRange(low: number | undefined, high: number): string {
 }
 
 export function PediatricDosing() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
 
   return (
@@ -188,7 +190,7 @@ export function PediatricDosing() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { backgroundColor: colors.primaryMuted, borderRadius: radius.md, padding: spacing.md },
   introText: { ...type.bodySm, color: colors.primaryStrong, lineHeight: 19 },
@@ -253,4 +255,4 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: spacing.sm,
   },
-});
+}));

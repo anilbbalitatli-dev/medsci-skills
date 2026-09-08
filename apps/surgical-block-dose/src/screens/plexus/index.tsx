@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PlexusDiagramView } from "@/components/plexus-diagram";
 import { PLEXUS_DIAGRAMS, PlexusId } from "@/data/plexus-diagrams";
-import { colors, radius, spacing, type } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Yaklaşımları yan yana koyan ekran.
@@ -15,6 +15,8 @@ import { colors, radius, spacing, type } from "@/theme";
  * proksimalinde kalıyor" sorusuyla belirlenir.
  */
 export function Plexus() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   // Ders kutusu seçili pleksusla değişir; şema bileşeni kendi seçimini tutuyor,
   // burada yalnızca hangi pleksusun anlatıldığını bilmek yetiyor.
@@ -54,7 +56,7 @@ export function Plexus() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { ...type.body, color: colors.text, lineHeight: 20 },
   bold: { fontWeight: "700", color: colors.text },
@@ -69,4 +71,4 @@ const styles = StyleSheet.create({
   cardTitle: { ...type.heading, color: colors.text },
   item: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
   footnote: { ...type.caption, color: colors.textFaint, lineHeight: 16, fontStyle: "italic" },
-});
+}));

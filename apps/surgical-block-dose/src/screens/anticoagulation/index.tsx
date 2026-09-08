@@ -13,14 +13,16 @@ import {
   hasIntervals,
 } from "@/data/anticoagulation";
 import { techniqueById } from "@/data/techniques";
-import { colors, radius, spacing, type } from "@/theme";
+import { Palette, makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 const TIER_ORDER: BleedingRiskTier[] = ["high", "intermediate", "low"];
-const TIER_COLOR: Record<BleedingRiskTier, { text: string; bg: string }> = {
-  high: { text: colors.danger, bg: colors.dangerBg },
-  intermediate: { text: colors.warning, bg: colors.warningBg },
-  low: { text: colors.primaryStrong, bg: colors.primaryMuted },
-};
+function tierColors(colors: Palette): Record<BleedingRiskTier, { text: string; bg: string }> {
+  return {
+    high: { text: colors.danger, bg: colors.dangerBg },
+    intermediate: { text: colors.warning, bg: colors.warningBg },
+    low: { text: colors.primaryStrong, bg: colors.primaryMuted },
+  };
+}
 
 const CLASS_ORDER: AgentClass[] = [
   "antiplatelet",
@@ -41,8 +43,11 @@ const CLASS_ORDER: AgentClass[] = [
  * tehlikelidir.
  */
 export function Anticoagulation() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const filled = hasIntervals();
+  const TIER_COLOR = tierColors(colors);
 
   const byTier = TIER_ORDER.map((tier) => ({
     tier,
@@ -151,7 +156,7 @@ export function Anticoagulation() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { ...type.body, color: colors.text, lineHeight: 20 },
   bold: { fontWeight: "700", color: colors.text },
@@ -183,4 +188,4 @@ const styles = StyleSheet.create({
   agentSource: { fontSize: 10, color: colors.textFaint, fontStyle: "italic" },
   agentPending: { fontSize: 11, color: colors.warning, fontStyle: "italic" },
   footnote: { ...type.caption, color: colors.textFaint, lineHeight: 16, fontStyle: "italic" },
-});
+}));

@@ -21,7 +21,7 @@ import {
   StockKind,
 } from "@/data/mixture";
 import { findMaxDose } from "@/data/max-doses";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 /**
@@ -52,6 +52,8 @@ function fmt(n: number, digits = 1): string {
 }
 
 export function MixtureCalculator() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [patient] = usePatient();
   const [items, setItems] = useState<MixtureItem[]>(DEFAULT_ITEMS);
@@ -307,7 +309,7 @@ export function MixtureCalculator() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { backgroundColor: colors.chip, borderRadius: radius.md, padding: spacing.md },
   introText: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
@@ -427,4 +429,4 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: spacing.sm,
   },
-});
+}));

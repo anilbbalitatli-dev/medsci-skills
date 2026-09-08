@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect, Text as SvgText } from "react-native-svg";
 
 import { SonoShape, SonoSpec, Tissue } from "@/data/sono-anatomy";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 const SCREEN_BG = "#0E1418";
 
@@ -50,6 +50,8 @@ function needleHead(from: [number, number], to: [number, number]): string {
 }
 
 export function SonoAnatomyView({ spec }: { spec: SonoSpec }) {
+  const colors = useColors();
+  const styles = useStyles();
   const labelled = spec.shapes.filter((s) => s.label);
 
   return (
@@ -163,7 +165,7 @@ export function SonoAnatomyView({ spec }: { spec: SonoSpec }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     backgroundColor: colors.background,
     borderRadius: 10,
@@ -239,4 +241,4 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginTop: 2,
   },
-});
+}));

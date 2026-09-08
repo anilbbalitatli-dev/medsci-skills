@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { TechniqueScore } from "@/data/types";
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 const SEGMENTS = 5;
 
@@ -11,6 +11,8 @@ const SEGMENTS = 5;
  * ambiguous. Colour shifts only at the low end, where the caveat matters.
  */
 function Meter({ label, value }: { label: string; value: number }) {
+  const colors = useColors();
+  const styles = useStyles();
   const tone = value <= 2 ? colors.warning : value === 3 ? colors.primaryStrong : colors.primary;
 
   return (
@@ -33,6 +35,7 @@ function Meter({ label, value }: { label: string; value: number }) {
 }
 
 export function ScoreBadges({ score }: { score: TechniqueScore }) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Meter label="Güvenlik" value={score.safety} />
@@ -42,7 +45,7 @@ export function ScoreBadges({ score }: { score: TechniqueScore }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     gap: 6,
     marginTop: spacing.xs,
@@ -84,4 +87,4 @@ const styles = StyleSheet.create({
     lineHeight: 16.5,
     marginTop: 1,
   },
-});
+}));

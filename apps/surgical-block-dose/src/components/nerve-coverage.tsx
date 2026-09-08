@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { NerveCoverage } from "@/data/combination-analysis";
 import { CoverageNode, buildCoverageTree } from "@/data/nerve-tree";
 import { NerveModality, rootsLabel } from "@/data/nerves";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 const MODALITY: Record<NerveModality, { label: string; color: string }> = {
   sensory: { label: "Duyusal", color: "#3B6EA5" },
@@ -31,6 +31,8 @@ function NerveRow({
   open: boolean;
   onToggle: () => void;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { nerve, status, sources, duplicated } = entry;
   const modality = MODALITY[nerve.modality];
   const roots = rootsLabel(nerve);
@@ -129,6 +131,7 @@ function NerveBranch({
   openIds: Set<string>;
   onToggle: (id: string) => void;
 }) {
+  const styles = useStyles();
   const open = openIds.has(node.entry.nerve.id);
 
   return (
@@ -162,6 +165,8 @@ function NerveBranch({
 }
 
 export function NerveCoverageList({ coverage }: { coverage: NerveCoverage[] }) {
+  const colors = useColors();
+  const styles = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const tree = useMemo(() => buildCoverageTree(coverage), [coverage]);
@@ -245,7 +250,7 @@ export function NerveCoverageList({ coverage }: { coverage: NerveCoverage[] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
@@ -321,4 +326,4 @@ const styles = StyleSheet.create({
   moreText: { ...type.caption, color: colors.primary, fontWeight: "700" },
   legend: { fontSize: 10.5, color: colors.textFaint, lineHeight: 15, fontStyle: "italic" },
   empty: { ...type.bodySm, color: colors.textMuted },
-});
+}));

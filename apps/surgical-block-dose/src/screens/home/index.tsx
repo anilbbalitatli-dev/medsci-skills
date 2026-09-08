@@ -10,7 +10,7 @@ import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { SurgeryCard } from "@/components/surgery-card";
 import { SurgeryChip } from "@/components/surgery-chip";
 import { SURGERIES, searchSurgeries } from "@/data/surgeries";
-import { colors, elevation, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, radius, spacing, type, useColors } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 import { useRecentlyViewed } from "@/utils/recently-viewed";
 
@@ -21,6 +21,8 @@ function bySurgeryIds(ids: string[]) {
 }
 
 export function Home() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const results = useMemo(() => searchSurgeries(query), [query]);
@@ -44,7 +46,7 @@ export function Home() {
             <Pressable>
               <View style={styles.builderButton}>
                 <View style={styles.builderIcon}>
-                  <Ionicons name="git-merge-outline" size={19} color="#FFFFFF" />
+                  <Ionicons name="git-merge-outline" size={19} color={colors.onPrimary} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
@@ -52,7 +54,7 @@ export function Home() {
                     2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.85)" />
+                <Ionicons name="chevron-forward" size={18} color={colors.onPrimary} />
               </View>
             </Pressable>
           </Link>
@@ -61,14 +63,14 @@ export function Home() {
           <Link href="/dermatome-blocks" asChild>
             <Pressable>
               <View style={styles.finderButton}>
-                <Ionicons name="body" size={17} color="#FFFFFF" />
+                <Ionicons name="body" size={17} color={colors.onPrimary} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.finderTitle}>Dermatoma Göre Blok</Text>
                   <Text style={styles.finderSub}>
                     Kapsanmasını istediğin segmentleri seç · uygun blokları ve taşmayı gör
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.85)" />
+                <Ionicons name="chevron-forward" size={16} color={colors.onPrimary} />
               </View>
             </Pressable>
           </Link>
@@ -157,7 +159,7 @@ export function Home() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: {
     padding: spacing.lg,
   },
@@ -185,12 +187,13 @@ const styles = StyleSheet.create({
   },
   builderTitle: {
     ...type.heading,
-    color: "#FFFFFF",
+    color: colors.onPrimary,
   },
   builderSub: {
     ...type.caption,
     fontSize: 11,
-    color: "rgba(255,255,255,0.82)",
+    color: colors.onPrimary,
+    opacity: 0.82,
     marginTop: 1,
     lineHeight: 15,
   },
@@ -203,11 +206,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 11,
   },
-  finderTitle: { ...type.subheading, color: "#FFFFFF" },
+  finderTitle: { ...type.subheading, color: colors.onPrimary },
   finderSub: {
     ...type.caption,
     fontSize: 11,
-    color: "rgba(255,255,255,0.82)",
+    color: colors.onPrimary,
+    opacity: 0.82,
     marginTop: 1,
     lineHeight: 15,
   },
@@ -258,4 +262,4 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: spacing.xl,
   },
-});
+}));

@@ -7,7 +7,7 @@ import {
   RESUSCITATION_NOTES,
   lipidPlan,
 } from "@/data/last-dosing";
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 /**
@@ -18,6 +18,8 @@ import { usePatient } from "@/utils/patient";
  * gerekmez.
  */
 export function LastDoseCalculator() {
+  const colors = useColors();
+  const styles = useStyles();
   const [patient] = usePatient();
   const plan = patient.hasWeight ? lipidPlan(patient.weightKg) : undefined;
 
@@ -102,7 +104,7 @@ export function LastDoseCalculator() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
@@ -149,4 +151,4 @@ const styles = StyleSheet.create({
   noteTitle: { ...type.subheading, fontSize: 12.5, color: colors.text },
   noteTitleAvoid: { color: colors.danger },
   noteDetail: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
-});
+}));

@@ -14,7 +14,7 @@ import {
   sortLevels,
 } from "@/data/block-finder";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * The app's other direction: pick the territory, get the blocks.
@@ -26,6 +26,7 @@ import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
  * it is "the knee".
  */
 function LevelPills({ levels, tone }: { levels: string[]; tone: "ok" | "missing" | "extra" }) {
+  const styles = useStyles();
   if (levels.length === 0) return null;
   const style =
     tone === "ok" ? styles.pillOk : tone === "missing" ? styles.pillMissing : styles.pillExtra;
@@ -47,6 +48,7 @@ function LevelPills({ levels, tone }: { levels: string[]; tone: "ok" | "missing"
 }
 
 function OvershootNote({ overshoot }: { overshoot: string[] }) {
+  const styles = useStyles();
   if (overshoot.length === 0) {
     return <Text style={styles.exactNote}>Seçimin dışına taşmıyor.</Text>;
   }
@@ -68,6 +70,7 @@ function OvershootNote({ overshoot }: { overshoot: string[] }) {
 }
 
 function MatchCard({ match }: { match: BlockMatch }) {
+  const styles = useStyles();
   const { technique, covered, missing, overshoot, complete } = match;
   return (
     <View style={[styles.card, complete && styles.cardComplete]}>
@@ -107,6 +110,8 @@ function MatchCard({ match }: { match: BlockMatch }) {
 }
 
 function PairCard({ pair }: { pair: PairMatch }) {
+  const colors = useColors();
+  const styles = useStyles();
   const [a, b] = pair.techniques;
   const endorsed = pair.findings.find((f) => f.severity === "complementary");
   const caution = pair.findings.find((f) => f.severity === "caution");
@@ -159,6 +164,8 @@ function PairCard({ pair }: { pair: PairMatch }) {
 }
 
 export function DermatomeBlocks() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -303,7 +310,7 @@ export function DermatomeBlocks() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { backgroundColor: colors.chip, borderRadius: radius.md, padding: spacing.md },
   introText: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
@@ -319,7 +326,7 @@ const styles = StyleSheet.create({
   },
   chipOn: { backgroundColor: colors.primary },
   chipText: { fontSize: 12.5, color: colors.text },
-  chipTextOn: { color: "#FFFFFF", fontWeight: "700" },
+  chipTextOn: { color: colors.onPrimary, fontWeight: "700" },
   levelChip: {
     backgroundColor: colors.chip,
     borderRadius: radius.sm,
@@ -358,7 +365,7 @@ const styles = StyleSheet.create({
   badge: { borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 2 },
   badgeText: { fontSize: 10, fontWeight: "700" },
   badgeComplete: { backgroundColor: colors.primary },
-  badgeCompleteText: { color: "#FFFFFF" },
+  badgeCompleteText: { color: colors.onPrimary },
   badgePartial: { backgroundColor: colors.surfaceAlt },
   badgePartialText: { color: colors.textMuted },
   sub: { ...type.label, fontSize: 9.5, color: colors.textFaint, marginTop: 3 },
@@ -396,4 +403,4 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: spacing.sm,
   },
-});
+}));

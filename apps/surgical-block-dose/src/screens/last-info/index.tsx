@@ -10,9 +10,11 @@ import {
   LAST_MANAGEMENT,
   LAST_SOURCE_NOTE,
 } from "@/data/last";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function LastInfo() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
 
   return (
@@ -80,7 +82,7 @@ export function LastInfo() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: {
     padding: spacing.lg,
     gap: spacing.md,
@@ -152,4 +154,4 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: spacing.sm,
   },
-});
+}));

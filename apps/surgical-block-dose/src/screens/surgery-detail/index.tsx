@@ -9,10 +9,12 @@ import { MaxDoseCalculator } from "@/components/max-dose-calculator";
 import { PatientBar } from "@/components/patient-bar";
 import { getRegionStyle } from "@/data/region-icons";
 import { Surgery } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 
 export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const regionStyle = getRegionStyle(surgery.region);
   const [favoriteIds, toggleFavorite] = useFavorites();
@@ -76,7 +78,7 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: {
     padding: spacing.lg,
     gap: spacing.md,
@@ -130,4 +132,4 @@ const styles = StyleSheet.create({
   blockList: {
     gap: spacing.md,
   },
-});
+}));

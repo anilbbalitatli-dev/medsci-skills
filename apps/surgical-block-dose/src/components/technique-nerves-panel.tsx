@@ -10,7 +10,7 @@ import { CoverageNode, buildCoverageTree } from "@/data/nerve-tree";
 import { NerveModality, rootsLabel } from "@/data/nerves";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { techniqueById } from "@/data/techniques";
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Which nerves this one block reaches, and the segments each of them carries.
@@ -47,6 +47,8 @@ function PanelRow({
   open: boolean;
   onToggle: () => void;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const { nerve, status, sources } = entry;
   const modality = MODALITY[nerve.modality];
   const roots = rootsLabel(nerve);
@@ -147,6 +149,7 @@ function PanelBranch({
   openIds: Set<string>;
   onToggle: (id: string) => void;
 }) {
+  const styles = useStyles();
   const open = openIds.has(node.entry.nerve.id);
   return (
     <View>
@@ -178,6 +181,8 @@ function PanelBranch({
 }
 
 export function TechniqueNervesPanel({ techniqueId }: { techniqueId: string }) {
+  const colors = useColors();
+  const styles = useStyles();
   const technique = techniqueById(techniqueId);
   const map = TECHNIQUE_NERVES[techniqueId];
   const analysis = useMemo(() => analyzeCombination([techniqueId]), [techniqueId]);
@@ -268,7 +273,7 @@ export function TechniqueNervesPanel({ techniqueId }: { techniqueId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.background,
     borderRadius: radius.sm,
@@ -326,4 +331,4 @@ const styles = StyleSheet.create({
   },
   levelText: { ...numeric, fontSize: 10, fontWeight: "700", color: colors.primaryStrong },
   missedNote: { fontSize: 10.5, color: colors.textFaint, fontStyle: "italic", lineHeight: 15 },
-});
+}));

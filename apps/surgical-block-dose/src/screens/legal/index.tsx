@@ -14,7 +14,7 @@ import {
   SCHEMATIC_NOTE,
 } from "@/data/legal";
 import { ANATOMY, CREDIT_PENDING, USG } from "@/data/reference-images";
-import { colors, radius, spacing, type } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Hangi görsellerin gerçekten uygulamayla birlikte geldiği, kayıt dosyasından
@@ -36,6 +36,7 @@ function shippedImages() {
 }
 
 function Section({ section }: { section: LegalSection }) {
+  const styles = useStyles();
   return (
     <View style={[styles.card, section.emphasis && styles.cardEmphasis]}>
       <Text style={[styles.cardTitle, section.emphasis && styles.textEmphasis]}>
@@ -57,6 +58,8 @@ function Section({ section }: { section: LegalSection }) {
 }
 
 export function Legal() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const images = shippedImages();
   const uncredited = images.filter((img) => img.credit === CREDIT_PENDING);
@@ -144,7 +147,7 @@ export function Legal() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: {
     padding: spacing.lg,
     gap: spacing.md,
@@ -237,4 +240,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: spacing.sm,
   },
-});
+}));

@@ -18,7 +18,7 @@ import {
   POSTERIOR_LEVELS,
   PosteriorLevel,
 } from "@/data/dermatome-figure";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 const ATTRIBUTION =
   "Dermatom şekilleri: Rick Hansen Institute ISNCSCI UI (Apache-2.0) temel alınarak uyarlanmıştır.";
@@ -40,6 +40,7 @@ function AnteriorFigure({
   showLabels: boolean;
   onLevelPress: LevelPress;
 }) {
+  const colors = useColors();
   return (
     <Svg viewBox={DERMATOME_VIEWBOX} width="100%" height={height}>
       <Path d={HEAD_PATH} fill={colors.chip} stroke={colors.border} strokeWidth={1} />
@@ -92,6 +93,7 @@ function PosteriorFigure({
   showLabels: boolean;
   onLevelPress: LevelPress;
 }) {
+  const colors = useColors();
   return (
     <Svg viewBox={DERMATOME_POSTERIOR_VIEWBOX} width="100%" height={height}>
       {POSTERIOR_EXTRAS.map((d, i) => (
@@ -155,6 +157,7 @@ export function DermatomeFigureCard({
    */
   onLevelPress?: (level: string) => void;
 }) {
+  const styles = useStyles();
   const active = new Set<string>(levels);
   // While picking, the posterior view has to stay put: it holds L2–S3, and
   // hiding it the moment the selection has no such level would make those
@@ -192,7 +195,7 @@ export function DermatomeFigureCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.background,
     borderRadius: 10,
@@ -224,4 +227,4 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontStyle: "italic",
   },
-});
+}));

@@ -6,7 +6,7 @@ import {
   CATEGORY_LABELS,
   PediatricBlockCheck,
 } from "@/data/pediatric-dosing";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Per-block paediatric ceilings, checked against what the guidelines state.
@@ -17,6 +17,8 @@ import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
  * them would let a house rule borrow a guideline's credibility.
  */
 function VerdictTag({ check }: { check: PediatricBlockCheck }) {
+  const colors = useColors();
+  const styles = useStyles();
   if (check.verdict === "no-guideline") {
     return (
       <View style={[styles.tag, styles.tagNeutral]}>
@@ -46,6 +48,8 @@ export function PediatricLimitList({
   checks: PediatricBlockCheck[];
   weightKg: number;
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   if (checks.length === 0) return null;
   const anyInferred = checks.some((c) => c.basis === "inferred" && c.limit);
   const anyMissing = checks.some((c) => c.verdict === "no-guideline");
@@ -140,7 +144,7 @@ export function PediatricLimitList({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
@@ -198,4 +202,4 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   linkText: { ...type.caption, color: colors.primary, fontWeight: "700", flex: 1 },
-});
+}));

@@ -2,9 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { Coverage } from "@/data/types";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function CoverageInfo({ coverage }: { coverage: Coverage }) {
+  const styles = useStyles();
   const levels = coverage.levels ?? [];
 
   return (
@@ -28,7 +29,7 @@ export function CoverageInfo({ coverage }: { coverage: Coverage }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     backgroundColor: colors.background,
     borderRadius: 10,
@@ -52,4 +53,4 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 17,
   },
-});
+}));

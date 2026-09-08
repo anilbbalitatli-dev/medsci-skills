@@ -5,9 +5,11 @@ import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { ReferenceImageView } from "@/components/reference-image";
 import { getReferenceImage } from "@/data/block-images";
 import { ANATOMY } from "@/data/reference-images";
-import { colors, spacing } from "@/theme";
+import { makeStyles, spacing, useColors } from "@/theme";
 
 export function DermatomeMap() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const plates = [ANATOMY.dermatomeAnterior, ANATOMY.dermatomePosterior];
   const hasPlates = plates.some((p) => getReferenceImage(p.key));
@@ -47,7 +49,7 @@ export function DermatomeMap() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: {
     padding: spacing.lg,
     gap: spacing.md,
@@ -70,4 +72,4 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     lineHeight: 19,
   },
-});
+}));

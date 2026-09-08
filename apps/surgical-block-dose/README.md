@@ -142,6 +142,24 @@ divizyonlar, spinal kökler) şemada çizim için vardır ve rengini besledikler
 yapıdan alır. `npm run audit` her düğümün, bağlantının ve yaklaşımın gerçek bir
 sinire/tekniğe çözüldüğünü doğrular.
 
+## Tema
+
+`src/theme.ts` iki palet tutar (`LIGHT`, `DARK`) ve stiller `makeStyles` ile
+palete bağlı üretilir. `StyleSheet.create` çağrıldığı anda renkleri dondurduğu
+için modül düzeyinde bir kez değil, palet başına bir kez çalışır; iki palet
+olduğundan önbellek en fazla iki giriş tutar.
+
+Statik `colors` dışa aktarımı bilerek kaldırıldı: kalan her kullanım yeri
+derleyici hatası verdiği için geçiş yarım kalamaz. Renk gerektiren bileşen
+`useColors()`, stil gerektiren `useStyles()` çağırır; modül düzeyindeki renk
+haritaları (`severityStyles`, `statusColors`, `roleStyles`) palet alan
+fonksiyonlara dönüştürüldü.
+
+Varsayılan mod cihazın ayarını izler; başlıktaki düğme sistem → açık → koyu
+sırasıyla döner ve seçim cihazda saklanır. `onPrimary` ayrı bir token: vurgu
+renginin üstündeki metin açık temada beyaz, koyu temada koyudur — koyu temada
+vurgu açıldığı için beyaz metin orada okunmaz.
+
 ## Yasal metinler ve görsel kaynakları
 
 `src/data/legal.ts` — kullanım amacı, sorumluluk, içeriğin bilinen sınırları,

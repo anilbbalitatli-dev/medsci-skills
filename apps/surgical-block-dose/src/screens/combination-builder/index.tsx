@@ -14,7 +14,7 @@ import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
 import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
-import { colors, elevation, numeric, radius, spacing, type } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 const MAX_SELECTION = 3;
@@ -50,6 +50,7 @@ function VerdictBanner({
   low: number;
   high: number;
 }) {
+  const styles = useStyles();
   const style =
     verdict === "exceeds" ? styles.verdictBad : verdict === "caution" ? styles.verdictWarn : styles.verdictOk;
   const textStyle =
@@ -86,6 +87,8 @@ function VerdictBanner({
 }
 
 export function CombinationBuilder() {
+  const colors = useColors();
+  const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<string[]>([]);
   // Weight and age band belong to the session, not to this screen — see
@@ -451,7 +454,7 @@ export function CombinationBuilder() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   content: { padding: spacing.lg, gap: spacing.md },
   intro: { backgroundColor: colors.chip, borderRadius: 12, padding: spacing.md },
   introText: { fontSize: 13, color: colors.textMuted, lineHeight: 19 },
@@ -535,4 +538,4 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: spacing.sm,
   },
-});
+}));

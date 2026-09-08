@@ -7,7 +7,7 @@ import { findMaxDose } from "@/data/max-doses";
 import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { Technique } from "@/data/techniques";
 import { LocalAnestheticChoice } from "@/data/types";
-import { colors, numeric, radius, spacing, type } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 /**
@@ -36,6 +36,8 @@ export function BlockDoseTable({
   /** The catalogue's own entries, kept for the notes authored on them. */
   curated: LocalAnestheticChoice[];
 }) {
+  const colors = useColors();
+  const styles = useStyles();
   const [patient] = usePatient();
   const choices = technique ? laChoicesFor(technique) : [];
 
@@ -188,7 +190,7 @@ export function BlockDoseTable({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   table: { gap: 1, borderRadius: radius.sm, overflow: "hidden", marginTop: spacing.xs },
   headRow: {
     flexDirection: "row",
@@ -240,4 +242,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: 4,
   },
-});
+}));

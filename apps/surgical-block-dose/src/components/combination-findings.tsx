@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Finding, FindingSeverity } from "@/data/combination-analysis";
-import { colors, elevation, radius, spacing, type } from "@/theme";
+import { Palette, elevation, makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
  * Verdicts on a block combination.
@@ -14,10 +14,11 @@ import { colors, elevation, radius, spacing, type } from "@/theme";
  * can confirm a good pairing instead of only ever complaining — a reference
  * that speaks up only to object teaches nothing about what to do instead.
  */
-const TONES: Record<
-  FindingSeverity,
-  { bg: string; border: string; fg: string; icon: keyof typeof Ionicons.glyphMap; label: string }
-> = {
+type Tone = { bg: string; border: string; fg: string; icon: keyof typeof Ionicons.glyphMap; label: string };
+
+// Etiket ve ikon temadan bağımsız; yalnızca renkler palete bağlanır.
+function tones(colors: Palette): Record<FindingSeverity, Tone> {
+  return {
   avoid: {
     bg: colors.dangerBg,
     border: colors.danger,
@@ -47,8 +48,12 @@ const TONES: Record<
     label: "Birbirini tamamlıyor",
   },
 };
+}
 
 export function CombinationFindings({ findings }: { findings: Finding[] }) {
+  const colors = useColors();
+  const TONES = tones(colors);
+  const styles = useStyles();
   if (findings.length === 0) {
     return (
       <View style={styles.empty}>
@@ -83,7 +88,7 @@ export function CombinationFindings({ findings }: { findings: Finding[] }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   list: { gap: spacing.sm },
   card: {
     flexDirection: "row",
@@ -107,4 +112,4 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   emptyText: { ...type.caption, color: colors.textMuted, lineHeight: 17, flex: 1 },
-});
+}));
