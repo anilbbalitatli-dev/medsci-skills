@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PlexusDiagramView } from "@/components/plexus-diagram";
-import { PLEXUS_DIAGRAMS, PlexusId } from "@/data/plexus-diagrams";
+import { PLEXUS_DIAGRAMS, PlexusId, diagramForTechnique } from "@/data/plexus-diagrams";
 import { makeStyles, radius, spacing, type, useColors } from "@/theme";
 
 /**
@@ -14,13 +14,15 @@ import { makeStyles, radius, spacing, type, useColors } from "@/theme";
  * koymaktan ibarettir ve seçim çoğunlukla "hangi dallar enjeksiyon noktasının
  * proksimalinde kalıyor" sorusuyla belirlenir.
  */
-export function Plexus() {
+export function Plexus({ techniqueId }: { techniqueId?: string }) {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   // Ders kutusu seçili pleksusla değişir; şema bileşeni kendi seçimini tutuyor,
   // burada yalnızca hangi pleksusun anlatıldığını bilmek yetiyor.
-  const [plexusId, setPlexusId] = useState<PlexusId>("brachial");
+  const [plexusId, setPlexusId] = useState<PlexusId>(
+    diagramForTechnique(techniqueId ?? "")?.id ?? "brachial"
+  );
   const diagram = PLEXUS_DIAGRAMS[plexusId];
 
   return (
@@ -37,7 +39,7 @@ export function Plexus() {
         </Text>
       </Text>
 
-      <PlexusDiagramView selectable onPlexusChange={setPlexusId} />
+      <PlexusDiagramView selectable initialTechniqueId={techniqueId} onPlexusChange={setPlexusId} />
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Şemanın söylediği üç şey</Text>

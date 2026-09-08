@@ -3,7 +3,6 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { PlexusDiagramView } from "@/components/plexus-diagram";
 import { PLEXUS_TECHNIQUE_IDS } from "@/data/plexus-diagrams";
 import { NerveCoverage, analyzeCombination } from "@/data/combination-analysis";
 import { CoverageNode, buildCoverageTree } from "@/data/nerve-tree";
@@ -217,20 +216,19 @@ export function TechniqueNervesPanel({ techniqueId }: { techniqueId: string }) {
         </Text>
       ) : null}
 
-      {/* Pleksus bloklarında asıl soru "iğne zincirin neresinde" — sinir
-          listesinden önce şema onu gösteriyor. */}
+      {/* Şemanın kendisi her blok kartında tekrarlanmıyor: kırk kartta kırk
+          kez aynı çizim, kartı uzatmaktan başka bir şey yapmıyordu. Kalan tek
+          satır, o bloğun kendi seviyesi işaretli olarak şemayı açıyor. */}
       {PLEXUS_TECHNIQUE_IDS.has(techniqueId) ? (
-        <View style={styles.plexusBlock}>
-          <PlexusDiagramView techniqueId={techniqueId} />
-          <Link href="/plexus" asChild>
-            <Pressable hitSlop={6} style={({ pressed }) => pressed && styles.pressed}>
-              <View style={styles.plexusLink}>
-                <Text style={styles.plexusLinkText}>Yaklaşımları karşılaştır</Text>
-                <Ionicons name="chevron-forward" size={13} color={colors.primary} />
-              </View>
-            </Pressable>
-          </Link>
-        </View>
+        <Link href={{ pathname: "/plexus", params: { technique: techniqueId } }} asChild>
+          <Pressable hitSlop={6} style={({ pressed }) => pressed && styles.pressed}>
+            <View style={styles.plexusLink}>
+              <Ionicons name="git-network-outline" size={13} color={colors.primary} />
+              <Text style={styles.plexusLinkText}>Pleksus şemasında gör</Text>
+              <Ionicons name="chevron-forward" size={13} color={colors.primary} />
+            </View>
+          </Pressable>
+        </Link>
       ) : null}
 
       {analysis.coverage.length === 0 ? (
@@ -307,8 +305,17 @@ const useStyles = makeStyles((colors) => ({
   },
   branchChipText: { fontSize: 9.5, fontWeight: "700", color: colors.primaryStrong, ...numeric },
   branchHint: { fontSize: 10.5, color: colors.textFaint, lineHeight: 15, fontStyle: "italic" },
-  plexusBlock: { gap: 6, marginTop: 2 },
-  plexusLink: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 3 },
+  plexusLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    backgroundColor: colors.primaryMuted,
+    borderRadius: radius.pill,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    marginTop: 2,
+  },
   plexusLinkText: { ...type.caption, color: colors.primary, fontWeight: "700" },
   pressed: { opacity: 0.6 },
   nerveName: { ...type.subheading, fontSize: 12.5, color: colors.text, flexShrink: 1 },

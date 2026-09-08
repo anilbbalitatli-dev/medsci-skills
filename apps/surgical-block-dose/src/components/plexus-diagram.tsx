@@ -253,12 +253,15 @@ function Canvas({
 
 export function PlexusDiagramView({
   techniqueId,
+  initialTechniqueId,
   plexusId,
   selectable = false,
   onPlexusChange,
 }: {
   /** Sabit bir blok için şema (blok kartı). */
   techniqueId?: string;
+  /** Seçilebilir şemada başlangıçta işaretli yaklaşım. */
+  initialTechniqueId?: string;
   /** Başlangıçta gösterilecek pleksus; yalnızca `selectable` ile anlamlı. */
   plexusId?: PlexusId;
   /** Pleksuslar ve yaklaşımlar arasında geçiş yapılabilsin. */
@@ -269,10 +272,11 @@ export function PlexusDiagramView({
   const colors = useColors();
   const styles = useStyles();
   const fixed = techniqueId ? diagramForTechnique(techniqueId) : undefined;
+  const opening = techniqueId ?? initialTechniqueId;
   const [pickedPlexus, setPickedPlexus] = useState<PlexusId>(
-    plexusId ?? fixed?.id ?? "brachial"
+    plexusId ?? fixed?.id ?? (opening ? diagramForTechnique(opening)?.id : undefined) ?? "brachial"
   );
-  const [pickedApproach, setPickedApproach] = useState<string | undefined>(techniqueId);
+  const [pickedApproach, setPickedApproach] = useState<string | undefined>(opening);
 
   const diagram = fixed ?? PLEXUS_DIAGRAMS[pickedPlexus];
   const active = selectable ? pickedApproach : techniqueId;
