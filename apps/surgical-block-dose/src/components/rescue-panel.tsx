@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from "expo-router";
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { RESCUE_REASON_LABEL, rescueFor } from "@/data/rescue";
 import { makeStyles, radius, spacing, type, useColors } from "@/theme";
@@ -27,10 +28,20 @@ export function RescuePanel({ techniqueId }: { techniqueId: string }) {
 
       {options.map((option) => (
         <View key={option.technique.id} style={styles.row}>
-          <View style={styles.rowHead}>
-            <Ionicons name="add-circle-outline" size={13} color={colors.primaryStrong} />
-            <Text style={styles.techniqueName}>{option.technique.name}</Text>
-          </View>
+          {/* Kurtarma bloğunun adı artık bir çıkmaz değil: dozunu ve
+              komplikasyonlarını görmek için kendi sayfasına gider. */}
+          <Link
+            href={{ pathname: "/technique/[id]", params: { id: option.technique.id } }}
+            asChild
+          >
+            <Pressable>
+              <View style={styles.rowHead}>
+                <Ionicons name="add-circle-outline" size={13} color={colors.primaryStrong} />
+                <Text style={styles.techniqueName}>{option.technique.name}</Text>
+                <Ionicons name="chevron-forward" size={12} color={colors.primaryStrong} />
+              </View>
+            </Pressable>
+          </Link>
           <Text style={styles.nerves}>{option.nerves.map((n) => n.name).join(", ")}</Text>
           <Text style={styles.reason}>{RESCUE_REASON_LABEL[option.reason]}</Text>
         </View>

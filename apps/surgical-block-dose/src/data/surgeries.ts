@@ -1412,11 +1412,6 @@ export const SURGERIES: Surgery[] = [
   },
 ];
 
-export function searchSurgeries(query: string): Surgery[] {
-  const q = query.trim().toLocaleLowerCase("tr");
-  if (!q) return SURGERIES;
-  return SURGERIES.filter((s) => {
-    const haystack = [s.name, s.category, s.region, ...s.aliases].join(" ").toLocaleLowerCase("tr");
-    return haystack.includes(q);
-  });
-}
+// Cerrahi araması `data/search.ts` içindeki genel aramaya taşındı. Buradaki
+// eski sürüm aksan duyarlıydı ve yalnızca cerrahi biliyordu; iki arama işlevi
+// bırakmak, ileride yanlış olanın çağrılması demekti.

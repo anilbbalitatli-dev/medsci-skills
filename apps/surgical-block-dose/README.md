@@ -42,11 +42,13 @@ gözden geçirilmesi önerilir.
 src/
   app/                # Expo Router route'ları (yalnızca route dosyaları)
     _layout.tsx
-    index.tsx          # Cerrahi listesi
+    index.tsx          # Cerrahi listesi + genel arama
     surgery/[id].tsx    # Cerrahi detay/blok önerisi
+    technique/[id].tsx  # Tek bloğun referans sayfası
   screens/             # Ekran gövdeleri
     home/
     surgery-detail/
+    technique-detail/
   components/          # Yeniden kullanılabilir UI (kart, uyarı banner'ı, doz hesaplayıcı)
   data/                # Cerrahi/blok/doz referans veri seti + tipler
   utils/                # Doz hesaplama yardımcıları
@@ -56,6 +58,31 @@ src/
 Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
+
+### Genel arama
+
+`src/data/search.ts` — ana ekrandaki kutu cerrahi, blok, sinir, lokal
+anestezik ve dermatom seviyesinde birlikte arar. Sonuçlar tek listeye değil
+türlerine göre gruplanır, çünkü her tür başka bir soruya cevap verir: cerrahi
+kendi sayfasına, blok kendi sayfasına, sinir onu **tam bloklayan tekniklere**,
+seviye de dermatom arayüzüne (`/dermatome-blocks?levels=L3`) götürür.
+
+Eşleşme Türkçe'ye göre katlanır: önce `tr` yerel ayarıyla küçük harfe çevrilir,
+sonra `ı → i` ve aksanlar düşürülür. Böylece "buyuk" ile "büyük", "iliaka" ile
+"İliaka" aynı sonucu verir — kullanıcının Türkçe klavyeyle yazması gerekmez.
+İlaçların İngilizce yazılışları (`ropivacaine`) ayrı bir takma ad tablosundan
+gelir; harf dönüşümüyle otomatik yapmak alakasız kelimeleri birbirine
+yaklaştırıyordu.
+
+Sinir → onu bloklayan teknikler indeksi bir kez kurulur. Her tuşa basışta 44
+tekniğin kapanışını yeniden çıkarmak yüzlerce graf yürüyüşü demekti; katalog
+çalışma sırasında değişmiyor.
+
+`npm run audit`, kataloğun her cerrahisini, bloğunu, sinirini, ilacını ve
+dermatom seviyesini **kendi adıyla aratıp** sonucun geldiğini doğrular.
+Aramanın bozulma biçimleri veriye bakınca görünmez (eşikten kısa ad, grup
+başına düşen sonuç sınırı, harf katlaması), o yüzden denetim tabloyu değil
+davranışı yoklar.
 
 ### Dermatoma göre blok arama
 

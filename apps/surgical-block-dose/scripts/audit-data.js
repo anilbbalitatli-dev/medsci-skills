@@ -37,6 +37,7 @@ function compile() {
     "src/data/adjuvants.ts",
     "src/data/anticoagulation.ts",
     "src/data/mixture.ts",
+    "src/data/search.ts",
   ];
   execFileSync(
     "npx",
@@ -369,6 +370,70 @@ function main() {
     const illustrated = slots.some((s) => sonoKeys.has(s.key) || registered.has(s.key));
     if (!illustrated) {
       add("info", "sonoanatomi", `${t.id} (${t.name}) — USG ile yapılır ama şematik çizimi yok`);
+    }
+  }
+
+  // ---- Everything in the catalogue can be found by typing its own name ----
+  //
+  // Checked through the real search rather than by inspecting its tables,
+  // because the ways it can fail are behavioural: a name shorter than the
+  // minimum query length, a name that folds to something else, or an entry
+  // pushed out of its group by the per-group cap. None of those are visible in
+  // the data. An item nobody can search for is, for a reference app, missing.
+  const { searchEverything, MIN_QUERY_LENGTH } = load("search");
+
+  const findable = (query, group, id) =>
+    searchEverything(query)[group].some((r) => r.id === id);
+
+  for (const s of SURGERIES) {
+    if (!findable(s.name, "surgeries", s.id)) {
+      add("error", "arama", `"${s.name}" cerrahisi kendi adıyla aranınca bulunmuyor`);
+    }
+  }
+  for (const t of TECHNIQUES) {
+    if (!findable(t.name, "techniques", t.id)) {
+      add("error", "arama", `"${t.name}" bloğu kendi adıyla aranınca bulunmuyor`);
+    }
+  }
+  for (const n of NERVES) {
+    if (n.structural) continue;
+    if (!findable(n.name, "nerves", n.id)) {
+      add("error", "arama", `"${n.name}" siniri kendi adıyla aranınca bulunmuyor`);
+    }
+  }
+
+  // İlaçların İngilizce yazılışı da bulmalı: literatürden gelen kişi
+  // "ropivacaine" yazar. Takma ad tablosundaki bir yazım hatası sessizce
+  // aramayı bozar, veriye bakınca görünmez.
+  const { LOCAL_ANESTHETICS } = load("local-anesthetics");
+  const LATIN = {
+    Ropivakain: "ropivacaine",
+    Levobupivakain: "levobupivacaine",
+    Bupivakain: "bupivacaine",
+    Lidokain: "lidocaine",
+    Mepivakain: "mepivacaine",
+    Prilokain: "prilocaine",
+  };
+  for (const la of LOCAL_ANESTHETICS) {
+    if (!findable(la.label, "drugs", la.drug)) {
+      add("error", "arama", `"${la.label}" ilacı kendi adıyla aranınca bulunmuyor`);
+    }
+    const latin = LATIN[la.drug];
+    if (!latin) {
+      add("info", "arama", `${la.drug} için latin yazılışı denetlenmiyor`);
+    } else if (!findable(latin, "drugs", la.drug)) {
+      add("error", "arama", `"${latin}" yazılışı ${la.drug} ilacını bulmuyor`);
+    }
+  }
+
+  // Dermatom seviyeleri aramanın tek sabit uzunluklu grubudur; "C3" iki harf,
+  // eşiğin tam sınırında. Eşik yükseltilirse bu sessizce kaybolur.
+  const { SELECTABLE_LEVELS } = load("block-finder");
+  for (const level of SELECTABLE_LEVELS) {
+    if (level.length < MIN_QUERY_LENGTH) {
+      add("error", "arama", `${level} seviyesi arama eşiğinden kısa, hiç aranamaz`);
+    } else if (!findable(level, "levels", level)) {
+      add("error", "arama", `${level} seviyesi aranınca bulunmuyor`);
     }
   }
 

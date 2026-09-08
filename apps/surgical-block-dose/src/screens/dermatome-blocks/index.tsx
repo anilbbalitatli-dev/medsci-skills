@@ -163,11 +163,15 @@ function PairCard({ pair }: { pair: PairMatch }) {
   );
 }
 
-export function DermatomeBlocks() {
+export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } = {}) {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
-  const [selected, setSelected] = useState<string[]>([]);
+  // Aramadan gelen seviyeler yalnızca başlangıç durumudur: ekran açıldıktan
+  // sonra seçim kullanıcınındır, bağlantı onu geri almaz.
+  const [selected, setSelected] = useState<string[]>(() =>
+    sortLevels((initialLevels ?? []).filter((l) => SELECTABLE_LEVELS.includes(l)))
+  );
 
   const toggle = (level: string) =>
     setSelected((cur) =>

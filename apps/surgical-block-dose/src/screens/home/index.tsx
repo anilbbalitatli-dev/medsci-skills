@@ -7,9 +7,10 @@ import { Link } from "expo-router";
 import { Pressable } from "react-native";
 
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
-import { SurgeryCard } from "@/components/surgery-card";
+import { SearchRow, SearchRowView, toSearchRows } from "@/components/search-results";
 import { SurgeryChip } from "@/components/surgery-chip";
-import { SURGERIES, searchSurgeries } from "@/data/surgeries";
+import { MIN_QUERY_LENGTH, searchEverything } from "@/data/search";
+import { SURGERIES } from "@/data/surgeries";
 import { elevation, makeStyles, radius, spacing, type, useColors } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 import { useRecentlyViewed } from "@/utils/recently-viewed";
@@ -20,102 +21,149 @@ function bySurgeryIds(ids: string[]) {
     .filter((s): s is (typeof SURGERIES)[number] => Boolean(s));
 }
 
+/** Arama yokken liste yine cerrahi kataloğudur; satır biçimi ortak. */
+const CATALOG_ROWS: SearchRow[] = SURGERIES.map((surgery) => ({
+  key: `surgery-${surgery.id}`,
+  kind: "result",
+  result: {
+    kind: "surgery",
+    id: surgery.id,
+    title: surgery.name,
+    subtitle: `${surgery.category} — ${surgery.region}`,
+    surgery,
+  },
+}));
+
+/**
+ * Ana ekranın kısayolları.
+ *
+ * Arama sırasında gizlenirler. Kutunun altında bir ekran boyu düğme
+ * dururken ilk sonuç görünmüyordu; aramanın işe yaraması için sonucun
+ * yazdığın yerin hemen altında çıkması gerekiyor.
+ */
+function Shortcuts() {
+  const colors = useColors();
+  const styles = useStyles();
+  return (
+    <>
+      <Link href="/combination-builder" asChild>
+        <Pressable>
+          <View style={styles.builderButton}>
+            <View style={styles.builderIcon}>
+              <Ionicons name="git-merge-outline" size={19} color={colors.onPrimary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
+              <Text style={styles.builderSub}>
+                2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.onPrimary} />
+          </View>
+        </Pressable>
+      </Link>
+      {/* The reverse of the surgery list: start from the territory rather
+          than from the operation. */}
+      <Link href="/dermatome-blocks" asChild>
+        <Pressable>
+          <View style={styles.finderButton}>
+            <Ionicons name="body" size={17} color={colors.onPrimary} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.finderTitle}>Dermatoma Göre Blok</Text>
+              <Text style={styles.finderSub}>
+                Kapsanmasını istediğin segmentleri seç · uygun blokları ve taşmayı gör
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.onPrimary} />
+          </View>
+        </Pressable>
+      </Link>
+      {/* Reachable without building a combination first: the paediatric
+          tables are a lookup people come to the app for on their own. */}
+      <Link href="/pediatric-dosing" asChild>
+        <Pressable>
+          <View style={styles.pedButton}>
+            <Ionicons name="body-outline" size={17} color={colors.primary} />
+            <Text style={styles.pedButtonText}>Pediatrik doz tabloları</Text>
+            <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+          </View>
+        </Pressable>
+      </Link>
+      {/* Antikoagülan sorusu blok seçilmeden önce sorulur; bu yüzden
+          cerrahi listesinden bağımsız bir giriş. */}
+      <Link href="/anticoagulation" asChild>
+        <Pressable>
+          <View style={styles.pedButton}>
+            <Ionicons name="water-outline" size={17} color={colors.primary} />
+            <Text style={styles.pedButtonText}>Antikoagülan alan hastada blok</Text>
+            <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+          </View>
+        </Pressable>
+      </Link>
+      {/* Bir ekstremitenin bloklarının hepsi aynı zincirin farklı yerleri;
+          şema tek başına da aranan bir referans. */}
+      <Link href="/plexus" asChild>
+        <Pressable>
+          <View style={styles.pedButton}>
+            <Ionicons name="git-network-outline" size={17} color={colors.primary} />
+            <Text style={styles.pedButtonText}>Pleksus şemaları (brakiyal · lomber · sakral)</Text>
+            <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+          </View>
+        </Pressable>
+      </Link>
+    </>
+  );
+}
+
 export function Home() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
-  const results = useMemo(() => searchSurgeries(query), [query]);
+  const trimmed = query.trim();
+  const searching = trimmed.length >= MIN_QUERY_LENGTH;
+  const results = useMemo(() => searchEverything(query), [query]);
+  const rows = useMemo(
+    () => (searching ? toSearchRows(results) : CATALOG_ROWS),
+    [searching, results]
+  );
   const [favoriteIds] = useFavorites();
   const recentIds = useRecentlyViewed();
 
   const favorites = useMemo(() => bySurgeryIds(favoriteIds), [favoriteIds]);
   const recents = useMemo(() => bySurgeryIds(recentIds), [recentIds]);
-  const showQuickAccess = query.trim().length === 0 && (favorites.length > 0 || recents.length > 0);
+  const showQuickAccess = trimmed.length === 0 && (favorites.length > 0 || recents.length > 0);
 
   return (
     <FlatList
-      data={results}
-      keyExtractor={(item) => item.id}
+      data={rows}
+      keyExtractor={(row) => row.key}
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
       ListHeaderComponent={
         <View style={styles.headerBlock}>
           <DisclaimerBanner />
-          <Link href="/combination-builder" asChild>
-            <Pressable>
-              <View style={styles.builderButton}>
-                <View style={styles.builderIcon}>
-                  <Ionicons name="git-merge-outline" size={19} color={colors.onPrimary} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.builderTitle}>Kombinasyon Oluşturucu</Text>
-                  <Text style={styles.builderSub}>
-                    2–3 blok seç · toplam doz, yaşa göre sınır, birleşik dermatom ve motor etki
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.onPrimary} />
-              </View>
-            </Pressable>
-          </Link>
-          {/* The reverse of the surgery list: start from the territory rather
-              than from the operation. */}
-          <Link href="/dermatome-blocks" asChild>
-            <Pressable>
-              <View style={styles.finderButton}>
-                <Ionicons name="body" size={17} color={colors.onPrimary} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.finderTitle}>Dermatoma Göre Blok</Text>
-                  <Text style={styles.finderSub}>
-                    Kapsanmasını istediğin segmentleri seç · uygun blokları ve taşmayı gör
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={colors.onPrimary} />
-              </View>
-            </Pressable>
-          </Link>
-          {/* Reachable without building a combination first: the paediatric
-              tables are a lookup people come to the app for on their own. */}
-          <Link href="/pediatric-dosing" asChild>
-            <Pressable>
-              <View style={styles.pedButton}>
-                <Ionicons name="body-outline" size={17} color={colors.primary} />
-                <Text style={styles.pedButtonText}>Pediatrik doz tabloları</Text>
-                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
-              </View>
-            </Pressable>
-          </Link>
-          {/* Antikoagülan sorusu blok seçilmeden önce sorulur; bu yüzden
-              cerrahi listesinden bağımsız bir giriş. */}
-          <Link href="/anticoagulation" asChild>
-            <Pressable>
-              <View style={styles.pedButton}>
-                <Ionicons name="water-outline" size={17} color={colors.primary} />
-                <Text style={styles.pedButtonText}>Antikoagülan alan hastada blok</Text>
-                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
-              </View>
-            </Pressable>
-          </Link>
-          {/* Bir ekstremitenin bloklarının hepsi aynı zincirin farklı yerleri;
-              şema tek başına da aranan bir referans. */}
-          <Link href="/plexus" asChild>
-            <Pressable>
-              <View style={styles.pedButton}>
-                <Ionicons name="git-network-outline" size={17} color={colors.primary} />
-                <Text style={styles.pedButtonText}>Pleksus şemaları (brakiyal · lomber · sakral)</Text>
-                <Ionicons name="chevron-forward" size={15} color={colors.primary} />
-              </View>
-            </Pressable>
-          </Link>
+          {/* Arama artık cerrahi adıyla sınırlı değil: blok, sinir, ilaç ve
+              dermatom seviyesi de aynı kutudan bulunur. Kullanıcının aklına
+              gelen ilk kelime çoğu zaman ameliyatın adı olmuyor.
+
+              Kutu kısayol düğmelerinin üstünde duruyor ve arama sırasında
+              düğmeler gizleniyor: aksi hâlde ilk sonucu görmek için bir ekran
+              boyu kaydırmak gerekiyordu, ki bu aramayı işe yaramaz yapar. */}
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Cerrahi ara (ör. diz protezi, sezaryen)"
+            placeholder="Ara: cerrahi, blok, sinir, ilaç, dermatom"
             placeholderTextColor={colors.textMuted}
             style={styles.search}
             autoCorrect={false}
             clearButtonMode="while-editing"
+            accessibilityLabel="Cerrahi, blok, sinir, ilaç veya dermatom seviyesi ara"
           />
+          {trimmed.length > 0 && !searching ? (
+            <Text style={styles.searchHint}>Aramak için en az {MIN_QUERY_LENGTH} harf yazın.</Text>
+          ) : null}
+          {searching ? null : <Shortcuts />}
           {showQuickAccess ? (
             <View style={styles.quickAccess}>
               {favorites.length > 0 ? (
@@ -142,10 +190,16 @@ export function Home() {
           ) : null}
         </View>
       }
-      ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
-      renderItem={({ item }) => <SurgeryCard surgery={item} />}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: searching ? spacing.sm : spacing.md }} />
+      )}
+      renderItem={({ item }) => <SearchRowView row={item} />}
       ListEmptyComponent={
-        <Text style={styles.empty}>Eşleşen cerrahi bulunamadı.</Text>
+        searching ? (
+          <Text style={styles.empty}>
+            “{trimmed}” için cerrahi, blok, sinir, ilaç veya dermatom bulunamadı.
+          </Text>
+        ) : null
       }
       ListFooterComponent={
         <Link href="/legal" asChild>
@@ -235,6 +289,11 @@ const useStyles = makeStyles((colors) => ({
     fontSize: 15,
     color: colors.text,
     ...elevation.card,
+  },
+  searchHint: {
+    ...type.caption,
+    color: colors.textFaint,
+    marginTop: -spacing.sm,
   },
   quickAccess: {
     gap: spacing.sm,
