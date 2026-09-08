@@ -56,7 +56,7 @@ export const CLINICAL_SECTIONS: LegalSection[] = [
       "Ağırlık girdisi gerçek vücut ağırlığı olarak işlenir. Obez hastada ideal veya düzeltilmiş vücut ağırlığı kullanılması gerekir; bu hesap uygulamada yoktur.",
       "Birden çok blok yapıldığında dozlar tek bir tavana doğru toplanır. Uygulama kombinasyonlarda toplamı gösterir, ancak emilim hızının bloktan bloğa değiştiğini (interkostal > kaudal > periferik) hesaba katmaz.",
       "Sinir ve dermatom haritası öğretim amaçlı bir basitleştirmedir. Gerçek innervasyon kişiden kişiye değişir; blok yayılımı hacme, iğne ucu konumuna ve anatomik varyasyona bağlıdır.",
-      "Antikoagülan kullanan hastada nöraksiyel ve derin blok zamanlaması bu uygulamanın kapsamında değildir; ASRA/ESRA antikoagülasyon kılavuzuna bakın.",
+      "Antikoagülan zamanlaması ASRA 5. baskısına göre verilir ama hastanın kendi kanama/tromboz dengesini değerlendirmez; köprüleme kararı, trombosit sayısı ve organ yetmezliği düzeltmeleri kapsam dışıdır.",
       "İlaç etkileşimleri, alerji ve kontrendikasyon kontrolü yapılmaz.",
     ],
   },
@@ -96,6 +96,12 @@ export const DATA_SOURCES: DataSource[] = [
     citation:
       "SFAR / ADARPEF — Recommandations Formalisées d'Experts: Anesthésie loco-régionale en pédiatrie",
     note: "İki kaynağın çeliştiği yerlerde uygulama çelişkiyi gizlemez, ikisini de gösterir.",
+  },
+  {
+    topic: "Antikoagülan alan hastada blok zamanlaması",
+    citation:
+      "Kopp SL, Vandermeulen E, McBane RD, Perlas A, Leffert L, Horlocker T. Regional anesthesia in the patient receiving antithrombotic or thrombolytic therapy: ASRA Pain Medicine Evidence-Based Guidelines (fifth edition). Reg Anesth Pain Med. 2025, doi:10.1136/rapm-2024-105766",
+    note: "Bekleme süreleri olgu olarak alınmış, kılavuz metni kopyalanmadan yeniden yazılmıştır; her satırda kaynak ve öneri derecesi görünür.",
   },
   {
     topic: "Lokal anestezik sistemik toksisitesi (LAST)",
@@ -155,6 +161,9 @@ export const IMAGE_LICENSES: ImageLicense[] = [
 /** Lisans listesinde yeri olmayan görseller bu metni alır. */
 export const OWN_WORK_LICENSE =
   "Bu uygulama için hazırlanmıştır — kısıt taşımaz.";
+
+export const OSS_NOTE =
+  "Uygulama açık kaynak paketler kullanır ve Ionicons yazı tipiyle birlikte dağıtılır. Bu bileşenlerin telif bildirimleri ve lisans metinleri Açık Kaynak Lisansları bölümündedir.";
 
 export const SCHEMATIC_NOTE =
   "Blok kartlarındaki sonoanatomi çizimleri ve dermatom işaretlemeleri bu uygulama için çizilmiştir. Gerçek bir ultrason görüntüsünün yerini tutmaz; hangi yapının nerede aranacağını gösteren şemalardır.";

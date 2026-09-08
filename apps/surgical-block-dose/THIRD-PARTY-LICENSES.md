@@ -133,3 +133,27 @@ veya işaretlerde değişiklik yoktur.
 ---
 
 Atıf, her görselin altında uygulama içinde de gösterilir.
+
+## Yazılım bileşenleri (npm paketleri, Ionicons)
+
+Uygulama 403 açık kaynak npm paketiyle birlikte dağıtılır. Lisans dağılımı:
+MIT, ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, BlueOak-1.0.0, 0BSD,
+Unlicense, CC0-1.0 ve CC-BY-4.0 (yalnızca `caniuse-lite` tarayıcı veritabanı).
+Hiçbiri copyleft değildir; hepsi atıf/bildirim karşılığı ticari kullanıma izin
+verir.
+
+Bu lisansların ortak şartı, telif bildiriminin ve lisans metninin dağıtılan
+kopyaya eşlik etmesidir. Karşılığı uygulama içindeki **Açık Kaynak Lisansları**
+ekranıdır (Yasal Bilgi → Yazılım): paketlerin tamamı sürüm ve telif satırıyla,
+lisans metinleri de tür başına bir kez orada bulunur.
+
+Envanter elle tutulmaz:
+
+```bash
+npm run licenses     # src/data/oss-licenses.ts dosyasını yeniden üretir
+npm run audit        # envanterde eksik bağımlılık veya izin vermeyen lisans varsa hata verir
+```
+
+Ayrıca uygulamayla paketlenen **Ionicons** yazı tipi (MIT, Copyright (c)
+2015-present Ionic) ve Expo/React Native'in kendi arayüz görselleri (MIT) aynı
+ekranda bildirilir.

@@ -31,7 +31,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "audit": "node scripts/audit-data.js",
-    "image:add": "node scripts/add-reference-image.js"
+    "image:add": "node scripts/add-reference-image.js",
+    "licenses": "node scripts/collect-licenses.js"
   },
   "private": true
 }

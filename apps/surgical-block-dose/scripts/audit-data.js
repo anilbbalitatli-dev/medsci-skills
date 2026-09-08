@@ -208,6 +208,34 @@ function main() {
     }
   }
 
+  // ---- Açık kaynak lisans envanteri ----
+  // Envanter üretilmiş bir dosya; bağımlılık eklenip envanter yenilenmezse
+  // uygulama bildirimsiz paket dağıtır. Bu kontrol o sessiz sapmayı keser.
+  {
+    const inventory = path.join(APP, "src/data/oss-licenses.ts");
+    if (!fs.existsSync(inventory)) {
+      add("error", "lisans envanteri", "src/data/oss-licenses.ts yok — node scripts/collect-licenses.js");
+    } else {
+      const src = fs.readFileSync(inventory, "utf8");
+      const listed = new Set([...src.matchAll(/"name": "([^"]+)"/g)].map((m) => m[1]));
+      const pkg = JSON.parse(fs.readFileSync(path.join(APP, "package.json"), "utf8"));
+      const direct = Object.keys(pkg.dependencies ?? {});
+      const absent = direct.filter((d) => !listed.has(d));
+      if (absent.length > 0) {
+        add(
+          "error",
+          "lisans envanteri",
+          `envanterde olmayan bağımlılık: ${absent.join(", ")} — node scripts/collect-licenses.js`
+        );
+      }
+      const unlicensed = [...src.matchAll(/"license": "([^"]+)"/g)].map((m) => m[1]);
+      const flagged = unlicensed.filter((l) => l === "BELİRTİLMEMİŞ" || /GPL|AGPL|LGPL|CC-BY-NC/i.test(l));
+      for (const l of new Set(flagged)) {
+        add("error", "lisans envanteri", `izin vermeyen ya da belirsiz lisans: ${l}`);
+      }
+    }
+  }
+
   // ---- Antikoagülasyon ----
   for (const id of Object.keys(BLEEDING_RISK)) {
     if (!techIds.has(id)) add("error", "kanama riski", `'${id}' diye bir teknik yok`);

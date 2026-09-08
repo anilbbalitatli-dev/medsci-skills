@@ -1,4 +1,7 @@
 import Constants from "expo-constants";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from "expo-router";
+import { Pressable } from "react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,6 +12,7 @@ import {
   IMAGE_LICENSES,
   LEGAL_REVISED,
   LegalSection,
+  OSS_NOTE,
   OWN_WORK_LICENSE,
   PRIVACY_SECTION,
   SCHEMATIC_NOTE,
@@ -88,6 +92,19 @@ export function Legal() {
           </View>
         ))}
       </View>
+
+      <Text style={styles.groupTitle}>Yazılım</Text>
+      <Link href="/oss-licenses" asChild>
+        <Pressable style={({ pressed }) => pressed && { opacity: 0.6 }}>
+          <View style={styles.card}>
+            <View style={styles.licenseHeader}>
+              <Text style={styles.cardTitle}>Açık kaynak lisansları</Text>
+              <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+            </View>
+            <Text style={styles.body}>{OSS_NOTE}</Text>
+          </View>
+        </Pressable>
+      </Link>
 
       <Text style={styles.groupTitle}>Görseller</Text>
       <View style={styles.card}>
