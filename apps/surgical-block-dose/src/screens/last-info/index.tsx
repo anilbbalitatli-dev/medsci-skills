@@ -1,6 +1,9 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { LastDoseCalculator } from "@/components/last-dose-calculator";
+import { PatientBar } from "@/components/patient-bar";
+import { ABSORPTION_ORDER, ABSORPTION_TIERS } from "@/data/complications";
 import {
   LAST_EARLY_SYMPTOMS,
   LAST_LATE_SYMPTOMS,
@@ -43,6 +46,9 @@ export function LastInfo() {
         ))}
       </View>
 
+      <PatientBar />
+      <LastDoseCalculator />
+
       <Text style={styles.sectionTitle}>Yönetim</Text>
       <View style={styles.steps}>
         {LAST_MANAGEMENT.map((step) => (
@@ -51,6 +57,22 @@ export function LastInfo() {
             <Text style={styles.stepDetail}>{step.detail}</Text>
           </View>
         ))}
+      </View>
+
+      {/* Aynı mg, enjekte edildiği yere göre farklı bir plazma tepesi yapar;
+          doz tavanı bunu söylemez. */}
+      <Text style={styles.sectionTitle}>Emilim hızına göre risk</Text>
+      <View style={styles.list}>
+        {ABSORPTION_ORDER.map((row) => (
+          <View key={row.tier} style={styles.absorptionRow}>
+            <Text style={styles.absorptionTier}>{ABSORPTION_TIERS[row.tier].label}</Text>
+            <Text style={styles.absorptionExamples}>{row.examples}</Text>
+          </View>
+        ))}
+        <Text style={styles.absorptionNote}>
+          Sıralama yukarıdan aşağıya azalır. Tavanın altında kalmak, hızlı emilen bir bölgede tek
+          başına güvence değildir.
+        </Text>
       </View>
 
       <Text style={styles.source}>{LAST_SOURCE_NOTE}</Text>
@@ -121,6 +143,10 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     lineHeight: 19,
   },
+  absorptionRow: { gap: 1 },
+  absorptionTier: { fontSize: 12.5, fontWeight: "700", color: colors.text },
+  absorptionExamples: { fontSize: 12, color: colors.textMuted, lineHeight: 17 },
+  absorptionNote: { fontSize: 11, color: colors.textFaint, fontStyle: "italic", lineHeight: 15, marginTop: 2 },
   source: {
     fontSize: 11.5,
     color: colors.textMuted,

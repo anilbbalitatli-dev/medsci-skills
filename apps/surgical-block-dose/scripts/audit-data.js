@@ -33,6 +33,7 @@ function compile() {
     "src/data/block-finder.ts",
     "src/data/block-technique.ts",
     "src/data/plexus-diagrams.ts",
+    "src/data/complications.ts",
   ];
   execFileSync(
     "npx",
@@ -72,6 +73,7 @@ function main() {
   const { NERVES } = load("nerves");
   const { SURGERIES } = load("surgeries");
   const { PLEXUS_DIAGRAMS, PLEXUS_ORDER } = load("plexus-diagrams");
+  const { COMPLICATIONS, ABSORPTION } = load("complications");
   const { USG } = load("reference-images");
   const sono = load("sono-anatomy");
 
@@ -165,6 +167,20 @@ function main() {
         add("info", "pleksus şeması", `${plexusId}/${a.techniqueId} şemada işaretlenmiyor (yalnızca açıklama)`);
       }
     }
+  }
+
+  // ---- Komplikasyon ve emilim tabloları ----
+  for (const id of Object.keys(COMPLICATIONS)) {
+    if (!techIds.has(id)) add("error", "komplikasyon", `'${id}' diye bir teknik yok`);
+  }
+  for (const id of Object.keys(ABSORPTION)) {
+    if (!techIds.has(id)) add("error", "emilim", `'${id}' diye bir teknik yok`);
+  }
+  for (const t of TECHNIQUES) {
+    // Emilim basamağı doz güvenliğinin parçası: tavanın altında kalmak hızlı
+    // emilen bir bölgede tek başına güvence değil. Eksik kalan teknik, blok
+    // kartında bu uyarıyı hiç göstermez.
+    if (!ABSORPTION[t.id]) add("warn", "emilim", `${t.id} için emilim basamağı yok`);
   }
 
   // ---- Category ids must be real techniques ----

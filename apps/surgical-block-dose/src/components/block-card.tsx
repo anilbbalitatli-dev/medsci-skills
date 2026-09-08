@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { BlockDoseTable } from "@/components/block-dose-table";
+import { ComplicationPanel } from "@/components/complication-panel";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
 import { ScoreBadges } from "@/components/score-badges";
@@ -49,6 +50,10 @@ export function BlockCard({ block }: { block: BlockOption }) {
             pictures below, because it explains the first and stands in for the
             second wherever there is no ultrasound view to draw. */}
         {techniqueId ? <TechniqueNervesPanel techniqueId={techniqueId} /> : null}
+
+        {/* Riskler sinir dökümünden sonra: önce ne bloklanıyor, sonra neye
+            hazırlıklı olunmalı. */}
+        {techniqueId ? <ComplicationPanel techniqueId={techniqueId} /> : null}
 
         <ReferenceImageList images={images} />
 
