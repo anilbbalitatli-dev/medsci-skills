@@ -1,0 +1,38 @@
+[
+ {
+  "model": "Logistic L2 (46 \u00f6zellik)",
+  "apparent": 0.9529964747356052,
+  "cv": 0.5533333333333332,
+  "optimism": 0.399663141402272
+ },
+ {
+  "model": "LASSO L1 (46 \u00f6zellik)",
+  "apparent": 0.9083431257344301,
+  "cv": 0.5919444444444445,
+  "optimism": 0.3163986812899856
+ },
+ {
+  "model": "Random forest",
+  "apparent": 0.9894242068155112,
+  "cv": 0.5993055555555555,
+  "optimism": 0.3901186512599557
+ },
+ {
+  "model": "Gradient boosting",
+  "apparent": 0.9582843713278497,
+  "cv": 0.5654861111111111,
+  "optimism": 0.3927982602167386
+ },
+ {
+  "model": "Lojistik P0.1+NIF (makale)",
+  "apparent": 0.8213866039952996,
+  "cv": 0.8273611111111111,
+  "optimism": -0.005974507115811489
+ },
+ {
+  "model": "MP/NIF indeksi tek ba\u015f\u0131na",
+  "apparent": 0.7403055229142186,
+  "cv": 0.7403055229142186,
+  "optimism": 0.0
+ }
+]
