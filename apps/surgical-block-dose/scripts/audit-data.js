@@ -38,6 +38,8 @@ function compile() {
     "src/data/anticoagulation.ts",
     "src/data/mixture.ts",
     "src/data/search.ts",
+    "src/data/body-weight.ts",
+    "src/data/last-dosing.ts",
   ];
   execFileSync(
     "npx",
@@ -435,6 +437,123 @@ function main() {
     } else if (!findable(level, "levels", level)) {
       add("error", "arama", `${level} seviyesi aranınca bulunmuyor`);
     }
+  }
+
+  // ---- Body-weight formulas ----
+  //
+  // Pure arithmetic that silently changes every mg on screen, so it is pinned
+  // against hand-worked values rather than left to be noticed clinically. The
+  // expected numbers below come from the published formulas, not from this
+  // implementation — recomputing them from the code would only prove the code
+  // agrees with itself.
+  const bw = load("body-weight");
+
+  const near = (actual, expected, tolerance, what) => {
+    if (!Number.isFinite(actual) || Math.abs(actual - expected) > tolerance) {
+      add(
+        "error",
+        "vücut ağırlığı",
+        `${what}: ${Number(actual).toFixed(2)} bekleniyordu ${expected} (±${tolerance})`
+      );
+    }
+  };
+
+  // Devine: 5 ft tam taban; inç başına 2.3 kg.
+  near(bw.idealBodyWeight(152.4, "male"), 50, 0.01, "Devine erkek 152.4 cm");
+  near(bw.idealBodyWeight(152.4, "female"), 45.5, 0.01, "Devine kadın 152.4 cm");
+  near(bw.idealBodyWeight(177.8, "male"), 73, 0.05, "Devine erkek 177.8 cm (5'10\")");
+  near(bw.idealBodyWeight(162.56, "female"), 54.7, 0.05, "Devine kadın 162.56 cm (5'4\")");
+
+  // Janmahasatian, elle çözülmüş:
+  //   erkek 100 kg / 180 cm → BMI 30.864, 9270·100 / (6680 + 216·30.864) = 69.46
+  //   kadın 100 kg / 165 cm → BMI 36.731, 9270·100 / (8780 + 244·36.731) = 52.25
+  near(bw.bmi(100, 180), 30.864, 0.005, "BMI 100 kg / 180 cm");
+  near(bw.leanBodyWeight(100, 180, "male"), 69.456, 0.02, "LBW erkek 100 kg / 180 cm");
+  near(bw.leanBodyWeight(100, 165, "female"), 52.248, 0.02, "LBW kadın 100 kg / 165 cm");
+
+  // Düzeltilmiş = ideal + 0.4 × (gerçek − ideal).
+  const ibw180 = bw.idealBodyWeight(180, "male");
+  near(
+    bw.adjustedBodyWeight(100, 180, "male"),
+    ibw180 + 0.4 * (100 - ibw180),
+    0.01,
+    "ABW tanımı"
+  );
+
+  // Bir "düzeltme" dozu asla yükseltmemeli: zayıf, uzun bir hastada Devine
+  // ideal ağırlığı gerçek ağırlığın üstüne çıkarır.
+  const thin = bw.weightSet(55, 185, "male");
+  if (thin.ideal <= thin.total) {
+    add(
+      "info",
+      "vücut ağırlığı",
+      "55 kg / 185 cm testi artık idealin gerçek ağırlığı aştığı durumu kapsamıyor — sınır kontrolü boşa dönüyor"
+    );
+  }
+  for (const basis of ["ideal", "lean", "adjusted"]) {
+    const kg = bw.dosingWeight(thin, basis);
+    if (kg > thin.total) {
+      add(
+        "error",
+        "vücut ağırlığı",
+        `${basis} dayanağı 55 kg/185 cm hastada dozu ${kg.toFixed(1)} kg'a yükseltiyor — düzeltme dozu artıramaz`
+      );
+    }
+  }
+
+  // Her dayanağın bir açıklaması ve arayüzde yeri olmalı.
+  for (const b of bw.WEIGHT_BASES) {
+    if (!b.short || !b.label || !b.useFor) {
+      add("error", "vücut ağırlığı", `${b.id} dayanağının etiketi ya da açıklaması eksik`);
+    }
+    if (bw.basisInfo(b.id).id !== b.id) {
+      add("error", "vücut ağırlığı", `basisInfo('${b.id}') yanlış kaydı döndürüyor`);
+    }
+  }
+
+  // Öneri yalnızca obezitede çıkar ve yalnızca toplam ağırlık seçiliyken.
+  const obese = bw.weightSet(120, 170, "female");
+  if (!bw.basisSuggestion(obese, "total")) {
+    add("error", "vücut ağırlığı", "BMI 41'de toplam ağırlık için uyarı çıkmıyor");
+  }
+  if (bw.basisSuggestion(obese, "lean")) {
+    add("error", "vücut ağırlığı", "yağsız ağırlık seçiliyken obez hastada gereksiz uyarı çıkıyor");
+  }
+  const lean = bw.weightSet(60, 170, "female");
+  if (bw.basisSuggestion(lean, "total")) {
+    add("error", "vücut ağırlığı", "BMI 21'de toplam ağırlık için gereksiz uyarı çıkıyor");
+  }
+
+  // ---- LAST: hangi ağırlık nereye girer ----
+  //
+  // Lipid planı iki ağırlık alır ve ikisinin rolü farklıdır: mL/kg çarpımı
+  // yağsız ağırlıkla, 70 kg eşiği gerçek kiloyla okunur. Birleştirildiğinde
+  // 120 kilo bir hasta "70 kg altı" koluna düşüyordu — veriye bakarak fark
+  // edilmeyecek, yalnızca krizde yanlış ekran olarak görünecek bir hata.
+  const last = load("last-dosing");
+  const obeseLean = 57;
+  const obeseTotal = 120;
+  const obesePlan = last.lipidPlan(obeseLean, obeseTotal);
+  if (obesePlan.rule !== "fixed") {
+    add(
+      "error",
+      "LAST",
+      `${obeseTotal} kg hasta (yağsız ${obeseLean} kg) sabit hacim kolunda olmalı, '${obesePlan.rule}' çıktı`
+    );
+  }
+  near(
+    obesePlan.ceilingMl,
+    last.MAX_ML_PER_KG * obeseLean,
+    0.01,
+    "LAST 30 dk tavanı yağsız ağırlıktan hesaplanmalı"
+  );
+  const smallPlan = last.lipidPlan(50, 50);
+  if (smallPlan.rule !== "perKg") {
+    add("error", "LAST", `50 kg hasta mL/kg kolunda olmalı, '${smallPlan.rule}' çıktı`);
+  }
+  // Tek argümanla çağrı eski davranışı korumalı (eşik = doz ağırlığı).
+  if (last.lipidPlan(80).rule !== "fixed" || last.lipidPlan(60).rule !== "perKg") {
+    add("error", "LAST", "lipidPlan tek argümanla çağrıldığında eşik doz ağırlığından okunmuyor");
   }
 
   // ---- Report ----

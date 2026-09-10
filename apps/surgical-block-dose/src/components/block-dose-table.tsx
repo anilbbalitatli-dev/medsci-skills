@@ -8,7 +8,7 @@ import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { Technique } from "@/data/techniques";
 import { LocalAnestheticChoice } from "@/data/types";
 import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
-import { usePatient } from "@/utils/patient";
+import { usePatient, weightLabel } from "@/utils/patient";
 
 /**
  * Doses for every agent the block can be done with, scaled to the patient.
@@ -81,7 +81,13 @@ export function BlockDoseTable({
       <View style={styles.headRow}>
         <Text style={styles.headDrug}>Lokal anestezik</Text>
         <Text style={styles.headCol}>Tipik</Text>
-        <Text style={styles.headCol}>{patient.hasWeight ? `Tavan (${patient.weightInput} kg)` : "Tavan"}</Text>
+        {/* Başlıkta hangi ağırlığın kullanıldığı yazar. Düzeltme seçildiğinde
+            sütundaki mg değerleri girilen kilodan değil o ağırlıktan gelir;
+            başlık "104 kg" derken hesabın 72 kg ile yapılması, sayıya bakan
+            kişiyi yanıltırdı. */}
+        <Text style={styles.headCol}>
+          {patient.hasWeight ? `Tavan (${weightLabel(patient)})` : "Tavan"}
+        </Text>
       </View>
 
       {choices.map(({ la, concentrationPercent, caution }) => {

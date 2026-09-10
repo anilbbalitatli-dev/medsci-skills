@@ -22,7 +22,7 @@ import {
 } from "@/data/mixture";
 import { findMaxDose } from "@/data/max-doses";
 import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
-import { usePatient } from "@/utils/patient";
+import { usePatient, weightLabel } from "@/utils/patient";
 
 /**
  * What is in the syringe, once the stock solutions are mixed.
@@ -275,7 +275,7 @@ export function MixtureCalculator() {
                     {ceiling !== undefined ? (
                       <Text style={over ? styles.overText : styles.okText}>
                         {"  ·  tavan "}
-                        {Math.round(ceiling)} mg ({patient.weightInput} kg)
+                        {Math.round(ceiling)} mg ({weightLabel(patient)})
                       </Text>
                     ) : null}
                   </Text>

@@ -53,7 +53,7 @@ export const CLINICAL_SECTIONS: LegalSection[] = [
     ],
     bullets: [
       "Doz tavanları sağlıklı erişkin ve çocuk için yayımlanmış değerlerdir. Karaciğer ve böbrek yetmezliği, kalp yetmezliği, gebelik, ileri yaş, kaşeksi ve asidoz tavanı düşürür; uygulama bu düzeltmeleri yapmaz.",
-      "Ağırlık girdisi gerçek vücut ağırlığı olarak işlenir. Obez hastada ideal veya düzeltilmiş vücut ağırlığı kullanılması gerekir; bu hesap uygulamada yoktur.",
+      "Boy girildiğinde ideal (Devine), yağsız (Janmahasatian) ve düzeltilmiş vücut ağırlığı hesaplanır ve dozların hangisiyle çarpılacağı seçilebilir. Formüller erişkin formülleridir; çocukta geçerli olmadıkları için pediatrik yaş bantlarında sunulmaz ve pediatrik dozlar gerçek ağırlıkla hesaplanır. Hangi ağırlığın kullanılacağı kararı klinisyene aittir — uygulama yalnızca BMI 30'un üstünde bir hatırlatma gösterir.",
       "Birden çok blok yapıldığında dozlar tek bir tavana doğru toplanır. Uygulama kombinasyonlarda toplamı gösterir, ancak emilim hızının bloktan bloğa değiştiğini (interkostal > kaudal > periferik) hesaba katmaz.",
       "Sinir ve dermatom haritası öğretim amaçlı bir basitleştirmedir. Gerçek innervasyon kişiden kişiye değişir; blok yayılımı hacme, iğne ucu konumuna ve anatomik varyasyona bağlıdır.",
       "Antikoagülan zamanlaması ASRA 5. baskısına göre verilir ama hastanın kendi kanama/tromboz dengesini değerlendirmez; köprüleme kararı, trombosit sayısı ve organ yetmezliği düzeltmeleri kapsam dışıdır.",
@@ -102,6 +102,12 @@ export const DATA_SOURCES: DataSource[] = [
     citation:
       "Kopp SL, Vandermeulen E, McBane RD, Perlas A, Leffert L, Horlocker T. Regional anesthesia in the patient receiving antithrombotic or thrombolytic therapy: ASRA Pain Medicine Evidence-Based Guidelines (fifth edition). Reg Anesth Pain Med. 2025, doi:10.1136/rapm-2024-105766",
     note: "Bekleme süreleri olgu olarak alınmış, kılavuz metni kopyalanmadan yeniden yazılmıştır; her satırda kaynak ve öneri derecesi görünür.",
+  },
+  {
+    topic: "Vücut ağırlığı formülleri",
+    citation:
+      "Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm. 1974;8:650-655 (ideal ağırlık) · Janmahasatian S ve ark. Quantification of lean bodyweight. Clin Pharmacokinet. 2005;44(10):1051-1065 (yağsız ağırlık)",
+    note: "Düzeltilmiş ağırlık, ideal ağırlığa yağ kütlesinin %40'ının eklenmesiyle bulunan yerleşik hesaptır. Üçü de erişkin formülleridir.",
   },
   {
     topic: "Lokal anestezik sistemik toksisitesi (LAST)",

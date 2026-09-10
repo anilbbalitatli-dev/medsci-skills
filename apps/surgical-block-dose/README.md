@@ -59,6 +59,36 @@ Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
 
+### Hangi ağırlıkla dozlanır
+
+`src/data/body-weight.ts` — boy girildiğinde ideal (Devine), yağsız
+(Janmahasatian) ve düzeltilmiş vücut ağırlığı hesaplanır; hasta çubuğundan
+dozların hangisiyle çarpılacağı seçilir. `patient.weightKg` seçilen ağırlığı
+döndürür, `patient.totalWeightKg` girilen kiloyu; tavan gösteren her yer
+`weightLabel(patient)` ile hangisini kullandığını yazar.
+
+Üç kural bu dosyanın şeklini belirledi:
+
+- **Varsayılan değişmedi.** Toplam ağırlık seçili gelir; kullanıcı bilerek
+  seçmeden hiçbir doz değişmez. BMI 30'un üstünde bir hatırlatma çıkar, karar
+  yine klinisyenindir.
+- **Düzeltme dozu asla yükseltmez.** Kısa boylu, zayıf hastada Devine ideal
+  ağırlığı gerçek ağırlığın üstüne çıkarabilir; `dosingWeight()` bu yüzden
+  toplam ağırlıkla sınırlar.
+- **Çocukta hiç sunulmaz.** Ne Devine ne Janmahasatian pediatrik popülasyonda
+  geçerlidir; büyüme eğrisi olmadan pediatrik ideal ağırlık hesaplanamaz. Yaş
+  bandı pediatrikse seçim kaldırılır ve dozlar gerçek ağırlıkla hesaplanır.
+
+LAST ekranı bu seçimi dinlemez: kontrol listesi lipid dozunu yağsız ağırlıktan
+ister, yani orada ağırlık tercih değil şarttır. `lipidPlan()` bu yüzden iki
+ağırlık alır — mL/kg çarpımının ağırlığı (yağsız) ve 70 kg eşiğinin okunduğu
+ağırlık (gerçek kilo). İkisini birleştirmek 120 kiloluk bir hastayı "70 kg
+altı" koluna düşürüyordu.
+
+Formüller `npm run audit` içinde elle çözülmüş değerlere karşı sabitlenmiştir;
+beklenen sayılar yayımlanmış denklemlerden gelir, koddan yeniden
+hesaplanmaz — öyle olsa denetim kodun kendisiyle uyumlu olduğunu kanıtlardı.
+
 ### Genel arama
 
 `src/data/search.ts` — ana ekrandaki kutu cerrahi, blok, sinir, lokal

@@ -21,7 +21,24 @@ export function LastDoseCalculator() {
   const colors = useColors();
   const styles = useStyles();
   const [patient] = usePatient();
-  const plan = patient.hasWeight ? lipidPlan(patient.weightKg) : undefined;
+
+  /**
+   * Lipid dozu yağsız ağırlıkla hesaplanır — hasta çubuğundaki seçimden
+   * bağımsız olarak.
+   *
+   * Kontrol listesi bu hesap için ağırlığı kendisi belirtir; hangi ağırlığın
+   * kullanılacağı burada kullanıcının tercihi değil, kılavuzun şartıdır. Boy
+   * girilmediyse yağsız ağırlık bilinemez ve girilen kilo kullanılır; bu
+   * durumda obez hastada hesaplanan hacim gerçekte gerekenden yüksektir ve
+   * ekran bunu söyler.
+   */
+  const lean = patient.weights?.lean;
+  const lipidWeightKg = lean ?? patient.totalWeightKg;
+  // 70 kg eşiği hastanın gerçek kilosundan okunur; yağsız ağırlık yalnızca
+  // mL/kg çarpımına girer.
+  const plan = patient.hasWeight
+    ? lipidPlan(lipidWeightKg, patient.totalWeightKg)
+    : undefined;
 
   return (
     <View style={styles.card}>
@@ -29,7 +46,9 @@ export function LastDoseCalculator() {
         <Ionicons name="water-outline" size={15} color={colors.danger} />
         <Text style={styles.title}>%20 Lipid Emülsiyonu</Text>
         {patient.hasWeight ? (
-          <Text style={styles.weight}>{patient.weightInput} kg</Text>
+          <Text style={styles.weight}>
+            {lean ? `yağsız ${lean.toFixed(0)} kg` : `${patient.weightInput} kg`}
+          </Text>
         ) : null}
       </View>
 
@@ -59,6 +78,11 @@ export function LastDoseCalculator() {
             {plan.rule === "fixed"
               ? `${FIXED_DOSE_THRESHOLD_KG} kg ve üzerinde kontrol listesi sabit hacim verir; bölünmüş hesap yapılmaz.`
               : `${FIXED_DOSE_THRESHOLD_KG} kg altında dozlar mL/kg üzerinden hesaplanır.`}
+          </Text>
+          <Text style={lean ? styles.rule : styles.leanWarn}>
+            {lean
+              ? `Hesap yağsız vücut ağırlığıyla (${lean.toFixed(0)} kg) yapıldı; kontrol listesi lipid dozu için bunu şart koşar. Girilen gerçek ağırlık ${patient.weightInput} kg.`
+              : "Kontrol listesi lipid dozunu yağsız vücut ağırlığından ister. Hasta çubuğuna boy girilirse yağsız ağırlık hesaplanır; şu an girilen gerçek ağırlık kullanılıyor ve obez hastada bu, gerekenden yüksek bir hacim gösterir."}
           </Text>
         </>
       ) : (
@@ -92,8 +116,10 @@ export function LastDoseCalculator() {
                 {note.title}
               </Text>
               <Text style={styles.noteDetail}>
+                {/* Resüsitasyon ilaçları gerçek ağırlıkla dozlanır; yağsız
+                    ağırlık yalnızca lipid hesabına aittir. */}
                 {patient.hasWeight && note.weightAware
-                  ? note.weightAware(patient.weightKg)
+                  ? note.weightAware(patient.totalWeightKg)
                   : note.detail}
               </Text>
             </View>
@@ -134,7 +160,8 @@ const useStyles = makeStyles((colors) => ({
   stepDetail: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
   ceiling: { ...type.bodySm, color: colors.text },
   ceilingValue: { ...numeric, fontWeight: "700", color: colors.danger },
-  rule: { ...type.caption, color: colors.textFaint, fontStyle: "italic" },
+  rule: { ...type.caption, color: colors.textFaint, fontStyle: "italic", lineHeight: 16 },
+  leanWarn: { ...type.caption, color: colors.warning, lineHeight: 16 },
   empty: { ...type.bodySm, color: colors.textMuted, lineHeight: 19 },
   bold: { fontWeight: "700", color: colors.text },
   rules: { gap: 3, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm },
