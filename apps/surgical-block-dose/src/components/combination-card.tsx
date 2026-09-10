@@ -1,0 +1,55 @@
+import { StyleSheet, Text, View } from "react-native";
+
+import { CoverageInfo } from "@/components/coverage-info";
+import { ScoreBadges } from "@/components/score-badges";
+import { BlockCombination, BlockOption } from "@/data/types";
+import { makeStyles, spacing, useColors } from "@/theme";
+
+export function CombinationCard({ combination, blocks }: { combination: BlockCombination; blocks: BlockOption[] }) {
+  const styles = useStyles();
+  const blockNames = combination.blockIds
+    .map((id) => blocks.find((b) => b.id === id)?.name)
+    .filter((n): n is string => Boolean(n));
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.name}>{combination.name}</Text>
+      {blockNames.length > 0 ? <Text style={styles.blocks}>{blockNames.join(" + ")}</Text> : null}
+      <Text style={styles.summary}>{combination.summary}</Text>
+      <CoverageInfo coverage={combination.coverage} />
+      <ScoreBadges score={combination.score} />
+      {combination.doseWarning ? <Text style={styles.warning}>⚠ {combination.doseWarning}</Text> : null}
+    </View>
+  );
+}
+
+const useStyles = makeStyles((colors) => ({
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.primaryMuted,
+    padding: spacing.lg,
+    gap: 4,
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  blocks: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.primary,
+  },
+  summary: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 19,
+  },
+  warning: {
+    fontSize: 12,
+    color: colors.warning,
+    marginTop: spacing.xs,
+  },
+}));

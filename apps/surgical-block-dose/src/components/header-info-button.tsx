@@ -1,0 +1,81 @@
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { ThemeToggle } from "@/components/theme-toggle";
+import { makeStyles, spacing, useColors } from "@/theme";
+
+export function HeaderInfoButton() {
+  const styles = useStyles();
+  return (
+    <View style={styles.row}>
+      <ThemeToggle />
+      <Link href="/dermatome-map" asChild>
+        {/* Görünen kelime hedefi tam söylemiyor: "Harita" tek başına neyin
+            haritası olduğunu belirtmiyor. */}
+        <Pressable hitSlop={8} accessibilityRole="link" accessibilityLabel="Dermatom haritası">
+          <View style={[styles.button, styles.mapButton]}>
+            <Text style={[styles.text, styles.mapText]}>Harita</Text>
+          </View>
+        </Pressable>
+      </Link>
+      {/* The mixture calculator lives in the header rather than on a card
+          because it is needed at the moment the syringe is being drawn up,
+          whichever screen happens to be open. */}
+      <Link href="/mixture" asChild>
+        <Pressable hitSlop={8} accessibilityRole="link" accessibilityLabel="Karışım hesaplayıcı">
+          <View style={[styles.button, styles.mixButton]}>
+            <Text style={[styles.text, styles.mixText]}>Karışım</Text>
+          </View>
+        </Pressable>
+      </Link>
+      <Link href="/last-info" asChild>
+        <Pressable
+          hitSlop={8}
+          accessibilityRole="link"
+          accessibilityLabel="LAST — lokal anestezik sistemik toksisitesi"
+        >
+          <View style={[styles.button, styles.lastButton]}>
+            <Text style={[styles.text, styles.lastText]}>LAST</Text>
+          </View>
+        </Pressable>
+      </Link>
+    </View>
+  );
+}
+
+const useStyles = makeStyles((colors) => ({
+  row: {
+    flexDirection: "row",
+    gap: spacing.xs,
+  },
+  button: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  mapButton: {
+    backgroundColor: colors.primaryMuted,
+  },
+  mixButton: {
+    backgroundColor: colors.surfaceAlt,
+  },
+  lastButton: {
+    backgroundColor: colors.dangerBg,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  text: {
+    fontWeight: "700",
+    fontSize: 11.5,
+  },
+  mapText: {
+    color: colors.primary,
+  },
+  mixText: {
+    color: colors.textMuted,
+  },
+  lastText: {
+    color: colors.danger,
+  },
+}));
