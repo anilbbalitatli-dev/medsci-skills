@@ -54,6 +54,7 @@ export const CLINICAL_SECTIONS: LegalSection[] = [
     bullets: [
       "Doz tavanları sağlıklı erişkin ve çocuk için yayımlanmış değerlerdir. Karaciğer ve böbrek yetmezliği, kalp yetmezliği, gebelik, ileri yaş, kaşeksi ve asidoz tavanı düşürür; uygulama bu düzeltmeleri yapmaz.",
       "Boy girildiğinde ideal (Devine), yağsız (Janmahasatian) ve düzeltilmiş vücut ağırlığı hesaplanır ve dozların hangisiyle çarpılacağı seçilebilir. Formüller erişkin formülleridir; çocukta geçerli olmadıkları için pediatrik yaş bantlarında sunulmaz ve pediatrik dozlar gerçek ağırlıkla hesaplanır. Hangi ağırlığın kullanılacağı kararı klinisyene aittir — uygulama yalnızca BMI 30'un üstünde bir hatırlatma gösterir.",
+      "Kateter rejimleri ve erişkin infüzyon üst sınırları yaygın öğretim değerleridir; sürekli periferik blok için uluslararası kabul görmüş tek bir doz tablosu yoktur. Karaciğer ve böbrek yetmezliğinde birikim nedeniyle sınır düşer; uygulama bu düzeltmeyi yapmaz.",
       "Birden çok blok yapıldığında dozlar tek bir tavana doğru toplanır. Uygulama kombinasyonlarda toplamı gösterir, ancak emilim hızının bloktan bloğa değiştiğini (interkostal > kaudal > periferik) hesaba katmaz.",
       "Sinir ve dermatom haritası öğretim amaçlı bir basitleştirmedir. Gerçek innervasyon kişiden kişiye değişir; blok yayılımı hacme, iğne ucu konumuna ve anatomik varyasyona bağlıdır.",
       "Antikoagülan zamanlaması ASRA 5. baskısına göre verilir ama hastanın kendi kanama/tromboz dengesini değerlendirmez; köprüleme kararı, trombosit sayısı ve organ yetmezliği düzeltmeleri kapsam dışıdır.",
@@ -102,6 +103,11 @@ export const DATA_SOURCES: DataSource[] = [
     citation:
       "Kopp SL, Vandermeulen E, McBane RD, Perlas A, Leffert L, Horlocker T. Regional anesthesia in the patient receiving antithrombotic or thrombolytic therapy: ASRA Pain Medicine Evidence-Based Guidelines (fifth edition). Reg Anesth Pain Med. 2025, doi:10.1136/rapm-2024-105766",
     note: "Bekleme süreleri olgu olarak alınmış, kılavuz metni kopyalanmadan yeniden yazılmıştır; her satırda kaynak ve öneri derecesi görünür.",
+  },
+  {
+    topic: "Kateter rejimleri ve erişkin infüzyon sınırları",
+    citation: "Yaygın rejyonal anestezi öğretim kaynakları ve kurumsal uygulama alışkanlıkları",
+    note: "Sürekli periferik blok için uluslararası kabul görmüş tek bir doz tablosu bulunmadığından bunlar tipik aralıklardır; pediatrik infüzyon sınırları ise kılavuzludur ve ayrı verilmiştir.",
   },
   {
     topic: "Vücut ağırlığı formülleri",

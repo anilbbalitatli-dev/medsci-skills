@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { BlockDoseTable } from "@/components/block-dose-table";
+import { CatheterPanel } from "@/components/catheter-panel";
 import { ComplicationPanel } from "@/components/complication-panel";
 import { CoverageInfo } from "@/components/coverage-info";
 import { ReferenceImageList } from "@/components/reference-image";
@@ -60,6 +61,10 @@ export function BlockCard({ block }: { block: BlockOption }) {
 
         {/* Risklerden sonra: blok beklendiği gibi gitmezse ne eklenir. */}
         {techniqueId ? <RescuePanel techniqueId={techniqueId} /> : null}
+
+        {/* En sonda, çünkü sorusu girişimin kendisi değil sonrası: blok
+            çözülünce ne olacak, kateter konursa hangi hızda gidecek. */}
+        {technique ? <CatheterPanel technique={technique} /> : null}
 
         <ReferenceImageList images={images} />
 

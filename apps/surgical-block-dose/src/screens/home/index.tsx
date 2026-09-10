@@ -100,6 +100,17 @@ function Shortcuts() {
           </View>
         </Pressable>
       </Link>
+      {/* Kateter kararı girişimden önce, elde bir blok adı yokken verilir;
+          bu yüzden blok kartının içinden değil, buradan da açılır. */}
+      <Link href="/catheters" asChild>
+        <Pressable>
+          <View style={styles.pedButton}>
+            <Ionicons name="git-commit-outline" size={17} color={colors.primary} />
+            <Text style={styles.pedButtonText}>Kateter, infüzyon ve çözülme</Text>
+            <Ionicons name="chevron-forward" size={15} color={colors.primary} />
+          </View>
+        </Pressable>
+      </Link>
       {/* Bir ekstremitenin bloklarının hepsi aynı zincirin farklı yerleri;
           şema tek başına da aranan bir referans. */}
       <Link href="/plexus" asChild>

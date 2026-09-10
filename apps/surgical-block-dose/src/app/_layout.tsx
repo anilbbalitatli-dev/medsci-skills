@@ -39,6 +39,10 @@ export default function RootLayout() {
           options={{ title: "Antikoagülan ve Blok", presentation: "modal" }}
         />
         <Stack.Screen
+          name="catheters"
+          options={{ title: "Kateter ve İnfüzyon", presentation: "modal" }}
+        />
+        <Stack.Screen
           name="plexus"
           options={{ title: "Pleksus Şemaları", presentation: "modal" }}
         />

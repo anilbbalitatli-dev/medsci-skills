@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BlockDoseTable } from "@/components/block-dose-table";
+import { CatheterPanel } from "@/components/catheter-panel";
 import { ComplicationPanel } from "@/components/complication-panel";
 import { CoverageInfo } from "@/components/coverage-info";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
@@ -83,6 +84,7 @@ export function TechniqueDetail({ techniqueId }: { techniqueId: string }) {
         <TechniqueNervesPanel techniqueId={technique.id} />
         <ComplicationPanel techniqueId={technique.id} />
         <RescuePanel techniqueId={technique.id} />
+        <CatheterPanel technique={technique} />
 
         <ReferenceImageList images={images} />
         {sonoSpecs.map((spec) => (

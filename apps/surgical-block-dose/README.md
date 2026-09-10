@@ -45,10 +45,12 @@ src/
     index.tsx          # Cerrahi listesi + genel arama
     surgery/[id].tsx    # Cerrahi detay/blok önerisi
     technique/[id].tsx  # Tek bloğun referans sayfası
+    catheters.tsx       # Kateter rejimleri ve infüzyon hesaplayıcı
   screens/             # Ekran gövdeleri
     home/
     surgery-detail/
     technique-detail/
+    catheters/
   components/          # Yeniden kullanılabilir UI (kart, uyarı banner'ı, doz hesaplayıcı)
   data/                # Cerrahi/blok/doz referans veri seti + tipler
   utils/                # Doz hesaplama yardımcıları
@@ -58,6 +60,34 @@ src/
 Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
+
+### Kateter, infüzyon ve çözülme
+
+`src/data/infusion.ts` — kateter rejimleri, erişkin infüzyon üst sınırları ve
+tek atım bloğun çözülme çizelgesi. Blok kartında panel olarak, `/catheters`
+ekranında liste olarak görünür; ikisi ayrı sorulara bakıyor ("bu bloğa kateter
+konur mu" ve "kateter koyacağım, hangi bloğa").
+
+İki ayrım bu dosyanın nedeni:
+
+- **Tek atım tavanı infüzyonu yönetmez.** mg/kg tek doz sınırı bir bolusun
+  tepe plazma düzeyi içindir; infüzyonda soru birikimdir ve sınır mg/kg/saat
+  cinsindendir. Uygulamanın tek atım tavanını infüzyona uygulamak, 24 saatte
+  giden 480 mg ropivakaini "tavanı 2,4 kat aştı" diye kırmızıya boyardı.
+- **Kateteri olmayan blokta "yeniden doz" yoktur.** Karar bloğu yenilemek
+  değil, çözülmeden önce sistemik analjeziye geçmektir. Çizelgedeki üçüncü
+  kutu bu yüzden "tekrarla" değil "hazırlan" diyor ve sürenin alt ucundan bir
+  saat önce başlıyor — istem, ilacın servise ulaşması ve etkisinin başlaması
+  birlikte o kadar sürüyor.
+
+Hesaplayıcı mL/sa ↔ mg/kg/sa çevrimini yapıyor. Klinikte ayarlanan sayı
+mL/sa'tir, sınır ise mg/kg/saat cinsinden yayımlanır; kafadan çevirmek
+gerektiği için sınır pratikte hiç bakılmayan bir şeye dönüşüyor.
+
+`npm run audit` her rejimin tekniğinin var olduğunu, infüzyon
+konsantrasyonunun tek atımı aşmadığını (kateterin amacı motor bloğu sürdürmek
+değil) ve üst bazal hızın 70 kiloluk bir hastada erişkin sınırını aşmadığını
+denetler. Yayımlanan bir rejim, hastada değil tabloda yanlıştır.
 
 ### Hangi ağırlıkla dozlanır
 

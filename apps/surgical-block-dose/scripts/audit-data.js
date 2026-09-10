@@ -40,6 +40,7 @@ function compile() {
     "src/data/search.ts",
     "src/data/body-weight.ts",
     "src/data/last-dosing.ts",
+    "src/data/infusion.ts",
   ];
   execFileSync(
     "npx",
@@ -522,6 +523,83 @@ function main() {
   const lean = bw.weightSet(60, 170, "female");
   if (bw.basisSuggestion(lean, "total")) {
     add("error", "vücut ağırlığı", "BMI 21'de toplam ağırlık için gereksiz uyarı çıkıyor");
+  }
+
+  // ---- Kateter rejimleri ----
+  const inf = load("infusion");
+  const routeIds = new Set(inf.CATHETER_ROUTES.map((r) => r.id));
+  const seenRegimen = new Set();
+  for (const r of inf.CATHETER_REGIMENS) {
+    if (!techIds.has(r.techniqueId)) {
+      add("error", "kateter", `'${r.techniqueId}' diye bir teknik yok`);
+    }
+    if (seenRegimen.has(r.techniqueId)) {
+      add("error", "kateter", `${r.techniqueId} iki kez tanımlanmış`);
+    }
+    seenRegimen.add(r.techniqueId);
+    if (!routeIds.has(r.route)) {
+      add("error", "kateter", `${r.techniqueId} tanımsız yol '${r.route}'`);
+    }
+    const [lo, hi] = r.basalMlPerHour;
+    if (!(lo > 0 && hi >= lo)) {
+      add("error", "kateter", `${r.techniqueId} bazal hız aralığı geçersiz: ${lo}–${hi}`);
+    }
+    // İnfüzyon konsantrasyonu tek atımdan yüksek olamaz: kateterin amacı
+    // analjeziyi sürdürmek, motor bloğu sürdürmek değil.
+    const technique = TECHNIQUES.find((t) => t.id === r.techniqueId);
+    if (technique && r.concentrationPercent > technique.typical.concentrationPercent) {
+      add(
+        "error",
+        "kateter",
+        `${r.techniqueId} infüzyon konsantrasyonu (%${r.concentrationPercent}) tek atımdan (%${technique.typical.concentrationPercent}) yüksek`
+      );
+    }
+    if (!r.note) add("warn", "kateter", `${r.techniqueId} için kateter notu yok`);
+  }
+
+  // Rejimin üst hızı erişkin sınırını 70 kiloluk bir hastada aşmamalı: aşan
+  // bir rejim yayımlanmadan önce yanlıştır, hastada değil.
+  const REFERENCE_KG = 70;
+  for (const r of inf.CATHETER_REGIMENS) {
+    const technique = TECHNIQUES.find((t) => t.id === r.techniqueId);
+    if (!technique) continue;
+    const l = inf.infusionLoad(
+      r.basalMlPerHour[1],
+      r.concentrationPercent,
+      technique.typical.drug,
+      REFERENCE_KG
+    );
+    if (l.fraction !== undefined && l.fraction > 1) {
+      add(
+        "error",
+        "kateter",
+        `${r.techniqueId} üst hızı ${REFERENCE_KG} kg hastada erişkin sınırını aşıyor — oran %${Math.round(l.fraction * 100)}`
+      );
+    } else if (l.fraction !== undefined && l.fraction > 0.75) {
+      add(
+        "info",
+        "kateter",
+        `${r.techniqueId} üst hızı ${REFERENCE_KG} kg hastada erişkin sınırına göre %${Math.round(l.fraction * 100)}`
+      );
+    }
+    if (l.fraction === undefined) {
+      add(
+        "info",
+        "kateter",
+        `${r.techniqueId} tipik ilacı (${technique.typical.drug}) için erişkin infüzyon sınırı tanımlı değil`
+      );
+    }
+  }
+
+  // Çözülme çizelgesi her tekniğin tipik ilacından türetilebilmeli.
+  for (const t of TECHNIQUES) {
+    if (!inf.wearOffFor(t)) {
+      add(
+        "info",
+        "çözülme",
+        `${t.id} tipik ilacı (${t.typical.drug}) lokal anestezik listesinde yok — çözülme çizelgesi çıkmaz`
+      );
+    }
   }
 
   // ---- LAST: hangi ağırlık nereye girer ----
