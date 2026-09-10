@@ -156,7 +156,9 @@ const useStyles = makeStyles((colors) => ({
   subTitle: { ...type.label, color: colors.textFaint },
   block: { gap: 5 },
   regimenRow: { flexDirection: "row", alignItems: "baseline", gap: spacing.sm },
-  regimenLabel: { ...type.caption, color: colors.textMuted, width: 92 },
+  // Sabit genişlik yerine asgari genişlik: hizalama korunur ama sistem yazı
+  // tipi büyütüldüğünde etiket kırpılmak yerine sarar.
+  regimenLabel: { ...type.caption, color: colors.textMuted, minWidth: 92, flexShrink: 1 },
   regimenValue: { ...type.subheading, ...numeric, color: colors.text },
   regimenConc: { ...type.caption, ...numeric, color: colors.textFaint, flex: 1 },
   load: { ...type.caption, ...numeric, color: colors.textMuted, lineHeight: 16 },

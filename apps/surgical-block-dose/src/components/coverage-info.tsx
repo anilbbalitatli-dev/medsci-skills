@@ -45,7 +45,9 @@ const useStyles = makeStyles((colors) => ({
     fontSize: 11.5,
     fontWeight: "700",
     color: colors.textMuted,
-    width: 72,
+    // Sabit genişlik büyütülmüş yazı tipinde etiketi kırpıyordu.
+    minWidth: 72,
+    flexShrink: 1,
   },
   value: {
     fontSize: 12,

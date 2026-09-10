@@ -5,19 +5,20 @@ import { DermatomeFigureCard } from "@/components/dermatome-figure";
 import { ReferenceImageView } from "@/components/reference-image";
 import { getReferenceImage } from "@/data/block-images";
 import { ANATOMY } from "@/data/reference-images";
-import { makeStyles, spacing, useColors } from "@/theme";
+import { makeStyles, spacing, useColors, useContentStyle } from "@/theme";
 
 export function DermatomeMap() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const plates = [ANATOMY.dermatomeAnterior, ANATOMY.dermatomePosterior];
   const hasPlates = plates.some((p) => getReferenceImage(p.key));
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <View style={styles.noteCard}>
         <Text style={styles.noteText}>
@@ -37,7 +38,7 @@ export function DermatomeMap() {
 
       {hasPlates ? (
         <>
-          <Text style={styles.sectionTitle}>Ek Anatomik Plakalar</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">Ek Anatomik Plakalar</Text>
           <View style={styles.plates}>
             {plates.map((plate) => (
               <ReferenceImageView key={plate.key} data={plate} />

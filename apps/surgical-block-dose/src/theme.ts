@@ -1,4 +1,5 @@
-import { StyleSheet, TextStyle, useColorScheme } from "react-native";
+import { StyleSheet, TextStyle, useColorScheme, useWindowDimensions } from "react-native";
+import type { ViewStyle } from "react-native";
 
 import { useStorage } from "@/utils/use-storage";
 
@@ -196,6 +197,68 @@ export const type = {
 
 /** Numerals line up in columns wherever doses are compared. */
 export const numeric: TextStyle = { fontVariant: ["tabular-nums"] };
+
+/**
+ * Genişliğe göre yerleşim.
+ *
+ * Uygulama telefonda tasarlandı ve iPad'de bunun bedeli hemen görünüyor: bir
+ * doz tablosu 1000 piksel genişliğe yayıldığında ilaç adıyla mg değeri arasında
+ * bir avuç boşluk kalıyor ve göz satırı takip edemiyor. Sorun tabletin büyük
+ * olması değil, satırın uzaması.
+ *
+ * Bu yüzden iki ayrı şey yapılıyor: metin ve kart genişliği okunabilir bir üst
+ * sınırda tutuluyor, artan yer ise ikinci bir sütuna veriliyor. İkisini
+ * birbirinin yerine koymak yanlış olurdu — yalnız sınırlamak tabletin yarısını
+ * boş bırakır, yalnız sütuna bölmek satırı kısaltmaz.
+ */
+export const BREAKPOINT = {
+  /** Bu genişlikten sonra iki sütun sığar (iPad dikey ≈ 768 pt). */
+  wide: 700,
+} as const;
+
+/** Tek sütunun okunabilir üst sınırı. */
+export const MAX_COLUMN_WIDTH = 560;
+
+export interface Layout {
+  width: number;
+  isWide: boolean;
+  /** Katalog ızgarasının sütun sayısı. */
+  columns: number;
+  /** Tek sütun okunabilir genişlik. */
+  readingWidth: number;
+  /** Izgaranın kaplayabileceği genişlik. */
+  gridWidth: number;
+}
+
+export function useLayout(): Layout {
+  const { width } = useWindowDimensions();
+  const isWide = width >= BREAKPOINT.wide;
+  return {
+    width,
+    isWide,
+    columns: isWide ? 2 : 1,
+    readingWidth: MAX_COLUMN_WIDTH,
+    gridWidth: isWide ? MAX_COLUMN_WIDTH * 2 + spacing.md : MAX_COLUMN_WIDTH,
+  };
+}
+
+/**
+ * Kaydırılan içeriğin ortalanması ve genişliğinin sınırlanması.
+ *
+ * Her ekranın `contentContainerStyle`'ına eklenir. Dar ekranda hiçbir şey
+ * yapmaz (maxWidth ekrandan büyük), geniş ekranda içeriği ortalar.
+ *
+ * İki genişlik var çünkü iki farklı içerik: **okuma** tek sütun metin ve
+ * tablodur ve 560 pikselde kalır; ızgara genişliğine yayılmış bir doz tablosu
+ * ilaç adıyla mg değeri arasına bir avuç boşluk koyar ve satır takip
+ * edilemez hâle gelir. **Izgara** ise kart listesidir ve iki sütuna açılır.
+ * İkisine aynı sınırı vermek, hangisini seçersen seç birini bozardı.
+ */
+export function useContentStyle(variant: "reading" | "grid" = "reading"): ViewStyle {
+  const layout = useLayout();
+  const maxWidth = variant === "grid" ? layout.gridWidth : layout.readingWidth;
+  return { width: "100%", maxWidth, alignSelf: "center" };
+}
 
 export const elevation = {
   card: {

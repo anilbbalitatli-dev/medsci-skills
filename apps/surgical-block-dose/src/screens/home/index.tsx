@@ -11,7 +11,16 @@ import { SearchRow, SearchRowView, toSearchRows } from "@/components/search-resu
 import { SurgeryChip } from "@/components/surgery-chip";
 import { MIN_QUERY_LENGTH, searchEverything } from "@/data/search";
 import { SURGERIES } from "@/data/surgeries";
-import { elevation, makeStyles, radius, spacing, type, useColors } from "@/theme";
+import {
+  elevation,
+  makeStyles,
+  radius,
+  spacing,
+  type,
+  useColors,
+  useContentStyle,
+  useLayout,
+} from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 import { useRecentlyViewed } from "@/utils/recently-viewed";
 
@@ -130,6 +139,8 @@ export function Home() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle("grid");
+  const layout = useLayout();
   const [query, setQuery] = useState("");
   const trimmed = query.trim();
   const searching = trimmed.length >= MIN_QUERY_LENGTH;
@@ -145,12 +156,29 @@ export function Home() {
   const recents = useMemo(() => bySurgeryIds(recentIds), [recentIds]);
   const showQuickAccess = trimmed.length === 0 && (favorites.length > 0 || recents.length > 0);
 
+  /**
+   * Tablette katalog iki sütun, arama sonuçları tek sütun.
+   *
+   * Arama sonuçları gruplandığı için tek sütunda kalmak zorunda: "Bloklar"
+   * başlığı iki sütuna bölünmüş bir ızgarada hangi kartların altına ait
+   * olduğunu söyleyemez. Katalogda böyle bir başlık yok, dolayısıyla ızgara
+   * anlamı bozmadan iki katı kart gösteriyor.
+   *
+   * FlatList sütun sayısını canlı değiştiremediği için `key` de değişiyor;
+   * liste yeniden kuruluyor ve kaydırma başa dönüyor. Aramaya başlarken zaten
+   * istenen davranış bu.
+   */
+  const columns = searching ? 1 : layout.columns;
+
   return (
     <FlatList
+      key={`cols-${columns}`}
+      numColumns={columns}
+      columnWrapperStyle={columns > 1 ? styles.columnWrapper : undefined}
       data={rows}
       keyExtractor={(row) => row.key}
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
       ListHeaderComponent={
         <View style={styles.headerBlock}>
           <DisclaimerBanner />
@@ -204,7 +232,12 @@ export function Home() {
       ItemSeparatorComponent={() => (
         <View style={{ height: searching ? spacing.sm : spacing.md }} />
       )}
-      renderItem={({ item }) => <SearchRowView row={item} />}
+      renderItem={({ item }) => (
+        // Izgarada hücreler satırı eşit paylaşır; tek sütunda flex gereksiz.
+        <View style={columns > 1 ? styles.cell : undefined}>
+          <SearchRowView row={item} />
+        </View>
+      )}
       ListEmptyComponent={
         searching ? (
           <Text style={styles.empty}>
@@ -301,6 +334,9 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
     ...elevation.card,
   },
+  columnWrapper: { gap: spacing.md },
+  // Izgarada kartlar aynı yüksekliğe gerilmesin diye hizalama üstten.
+  cell: { flex: 1, alignSelf: "flex-start" },
   searchHint: {
     ...type.caption,
     color: colors.textFaint,

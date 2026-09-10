@@ -14,7 +14,7 @@ import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
 import { checkPediatricBlocks } from "@/data/pediatric-dosing";
 import { TECHNIQUE_NERVES } from "@/data/technique-nerves";
 import { TECHNIQUE_REGIONS, TECHNIQUES, Technique } from "@/data/techniques";
-import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 import { usePatient } from "@/utils/patient";
 
 const MAX_SELECTION = 3;
@@ -90,6 +90,7 @@ export function CombinationBuilder() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const [selected, setSelected] = useState<string[]>([]);
   // Weight and age band belong to the session, not to this screen — see
   // utils/patient.ts. The surgery detail screen reads the same values.
@@ -198,7 +199,7 @@ export function CombinationBuilder() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.intro}>
@@ -211,12 +212,12 @@ export function CombinationBuilder() {
       </View>
 
       {/* ---- Hasta ---- */}
-      <Text style={styles.sectionTitle}>1. Hasta</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">1. Hasta</Text>
       <PatientBar />
       <Text style={styles.rationale}>{band.rationale}</Text>
 
       {/* ---- Blok seçimi ---- */}
-      <Text style={styles.sectionTitle}>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
         2. Bloklar ({selected.length}/{MAX_SELECTION})
       </Text>
       {TECHNIQUE_REGIONS.map((region) => (
@@ -253,10 +254,10 @@ export function CombinationBuilder() {
           {/* Verdicts come before the arithmetic: finding out that a block is
               redundant should change the selection, and there is no point
               costing a combination you are about to alter. */}
-          <Text style={styles.sectionTitle}>3. Kombinasyon Değerlendirmesi</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">3. Kombinasyon Değerlendirmesi</Text>
           <CombinationFindings findings={analysis.findings} />
 
-          <Text style={styles.sectionTitle}>4. Toplam Doz</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">4. Toplam Doz</Text>
 
           {!hasWeight ? (
             <View style={styles.card}>
@@ -355,10 +356,10 @@ export function CombinationBuilder() {
           ) : null}
 
           {/* ---- Kapsama ---- */}
-          <Text style={styles.sectionTitle}>5. Sinir Sinir Kapsama</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">5. Sinir Sinir Kapsama</Text>
           <NerveCoverageList coverage={analysis.coverage} />
 
-          <Text style={styles.sectionTitle}>6. Dermatom Kapsaması</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">6. Dermatom Kapsaması</Text>
           {levels.length > 0 ? (
             <>
               <DermatomeFigureCard
@@ -391,7 +392,7 @@ export function CombinationBuilder() {
             </View>
           )}
 
-          <Text style={styles.sectionTitle}>7. Beklenen Motor Etkiler</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">7. Beklenen Motor Etkiler</Text>
           <View style={styles.card}>
             {/* Named motor nerves first — this is the precise answer to "what
                 will stop working". The per-technique prose stays underneath

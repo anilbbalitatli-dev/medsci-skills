@@ -56,7 +56,13 @@ export function toSearchRows(results: SearchResults): SearchRow[] {
 export function SearchRowView({ row }: { row: SearchRow }) {
   const styles = useStyles();
   if (row.kind === "header") {
-    return <Text style={styles.groupTitle}>{row.title}</Text>;
+    // Grup başlıkları ekran okuyucuda gezinme noktası olur; rol verilmezse
+    // sonuçlar tek bir uzun liste gibi okunur.
+    return (
+      <Text style={styles.groupTitle} accessibilityRole="header">
+        {row.title}
+      </Text>
+    );
   }
   const { result } = row;
   switch (result.kind) {
@@ -81,7 +87,10 @@ function TechniqueRow({ result }: { result: TechniqueResult }) {
       href={{ pathname: "/technique/[id]", params: { id: result.technique.id } }}
       asChild
     >
-      <Pressable>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={`${result.title}. ${result.subtitle}.`}
+      >
         <View style={styles.row}>
           <View style={styles.iconBadge}>
             <Ionicons name="medkit-outline" size={15} color={colors.primary} />
@@ -128,7 +137,10 @@ function NerveRow({ result }: { result: NerveResult }) {
             <View style={styles.chipRow}>
               {result.techniques.map((t) => (
                 <Link key={t.id} href={{ pathname: "/technique/[id]", params: { id: t.id } }} asChild>
-                  <Pressable>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel={`${t.name} — ${result.title} için tam blok`}
+                  >
                     <View style={styles.chip}>
                       <Text style={styles.chipText}>{t.name}</Text>
                     </View>
@@ -152,7 +164,10 @@ function LevelRow({ result }: { result: LevelResult }) {
   const styles = useStyles();
   return (
     <Link href={{ pathname: "/dermatome-blocks", params: { levels: result.level } }} asChild>
-      <Pressable>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={`${result.title} segmentini kapsayan blokları göster`}
+      >
         <View style={styles.row}>
           <View style={styles.iconBadge}>
             <Ionicons name="body-outline" size={15} color={colors.primary} />

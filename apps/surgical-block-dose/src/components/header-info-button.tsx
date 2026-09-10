@@ -10,7 +10,9 @@ export function HeaderInfoButton() {
     <View style={styles.row}>
       <ThemeToggle />
       <Link href="/dermatome-map" asChild>
-        <Pressable hitSlop={8}>
+        {/* Görünen kelime hedefi tam söylemiyor: "Harita" tek başına neyin
+            haritası olduğunu belirtmiyor. */}
+        <Pressable hitSlop={8} accessibilityRole="link" accessibilityLabel="Dermatom haritası">
           <View style={[styles.button, styles.mapButton]}>
             <Text style={[styles.text, styles.mapText]}>Harita</Text>
           </View>
@@ -20,14 +22,18 @@ export function HeaderInfoButton() {
           because it is needed at the moment the syringe is being drawn up,
           whichever screen happens to be open. */}
       <Link href="/mixture" asChild>
-        <Pressable hitSlop={8}>
+        <Pressable hitSlop={8} accessibilityRole="link" accessibilityLabel="Karışım hesaplayıcı">
           <View style={[styles.button, styles.mixButton]}>
             <Text style={[styles.text, styles.mixText]}>Karışım</Text>
           </View>
         </Pressable>
       </Link>
       <Link href="/last-info" asChild>
-        <Pressable hitSlop={8}>
+        <Pressable
+          hitSlop={8}
+          accessibilityRole="link"
+          accessibilityLabel="LAST — lokal anestezik sistemik toksisitesi"
+        >
           <View style={[styles.button, styles.lastButton]}>
             <Text style={[styles.text, styles.lastText]}>LAST</Text>
           </View>

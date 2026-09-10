@@ -6,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { BUNDLED_ASSETS, licenseText } from "@/data/license-texts";
 import { OSS_LICENSE_TYPES, OSS_PACKAGES } from "@/data/oss-licenses";
-import { makeStyles, radius, spacing, type, useColors } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * Açık kaynak bildirimleri.
@@ -18,6 +18,7 @@ import { makeStyles, radius, spacing, type, useColors } from "@/theme";
  */
 export function OssLicenses() {
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const colors = useColors();
   const styles = useStyles();
   const [open, setOpen] = useState<string | undefined>();
@@ -35,7 +36,7 @@ export function OssLicenses() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <Text style={styles.intro}>
         Uygulama {OSS_PACKAGES.length} açık kaynak paket kullanır. Hepsi izin veren lisanslarla
@@ -43,7 +44,7 @@ export function OssLicenses() {
         eşlik etsin. Bu ekran o bildirimdir.
       </Text>
 
-      <Text style={styles.sectionTitle}>Uygulamayla gelen diğer varlıklar</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Uygulamayla gelen diğer varlıklar</Text>
       {BUNDLED_ASSETS.map((asset) => (
         <View key={asset.name} style={styles.card}>
           <View style={styles.assetHead}>
@@ -58,7 +59,7 @@ export function OssLicenses() {
         </View>
       ))}
 
-      <Text style={styles.sectionTitle}>npm paketleri</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">npm paketleri</Text>
       {grouped.map((group) => {
         const isOpen = open === group.id;
         return (

@@ -21,7 +21,7 @@ import {
   StockKind,
 } from "@/data/mixture";
 import { findMaxDose } from "@/data/max-doses";
-import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 import { usePatient, weightLabel } from "@/utils/patient";
 
 /**
@@ -55,6 +55,7 @@ export function MixtureCalculator() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const [patient] = usePatient();
   const [items, setItems] = useState<MixtureItem[]>(DEFAULT_ITEMS);
   const [picking, setPicking] = useState(false);
@@ -79,7 +80,7 @@ export function MixtureCalculator() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.intro}>
@@ -112,7 +113,7 @@ export function MixtureCalculator() {
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Karışım</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Karışım</Text>
       <View style={styles.card}>
         {items.map((item, index) => {
           const stock = stockById(item.stockId);
@@ -132,7 +133,12 @@ export function MixtureCalculator() {
                   />
                   <Text style={styles.mlLabel}>mL</Text>
                 </View>
-                <Pressable onPress={() => remove(index)} hitSlop={10}>
+                <Pressable
+                  onPress={() => remove(index)}
+                  hitSlop={10}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${stock.label} bileşenini karışımdan çıkar`}
+                >
                   <Ionicons name="close-circle-outline" size={18} color={colors.textFaint} />
                 </Pressable>
               </View>
@@ -168,7 +174,7 @@ export function MixtureCalculator() {
         ) : null}
       </View>
 
-      <Text style={styles.sectionTitle}>Sonuç</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Sonuç</Text>
       <View style={styles.card}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Toplam hacim</Text>

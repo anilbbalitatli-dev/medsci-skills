@@ -20,7 +20,11 @@ export function SurgeryCard({ surgery }: { surgery: Surgery }) {
       {/* Visual styling lives on this inner View, not on the Pressable:
           expo-router's <Link asChild> drops the style prop it clones onto the
           anchor, so anything styled directly on the Pressable renders bare. */}
-      <Pressable style={styles.pressable}>
+      <Pressable
+        style={styles.pressable}
+        accessibilityRole="link"
+        accessibilityLabel={`${surgery.name}. ${surgery.region}, ${surgery.category}.`}
+      >
         <View style={styles.card}>
           {/* Region colour carries down the edge rather than sitting only in a
               chip, so the list groups visually while scrolling. */}
@@ -35,11 +39,21 @@ export function SurgeryCard({ surgery }: { surgery: Surgery }) {
               {surgery.region}
             </Text>
             <Pressable
-              hitSlop={12}
+              // 19 piksellik ikonu 44 pt'lik dokunma hedefine çıkarır; kart
+              // bağlantısının içine gömülü olduğu için hedef küçük kalırsa
+              // yanlışlıkla cerrahiye gidilir.
+              hitSlop={13}
               onPress={(e) => {
                 e.preventDefault();
                 toggleFavorite(surgery.id);
               }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isFavorite }}
+              accessibilityLabel={
+                isFavorite
+                  ? `${surgery.name} favorilerden çıkar`
+                  : `${surgery.name} favorilere ekle`
+              }
             >
               <Ionicons
                 name={isFavorite ? "heart" : "heart-outline"}

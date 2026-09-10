@@ -12,7 +12,7 @@ import {
   SPINAL_BUPIVACAINE_SOURCE,
   BlockCategory,
 } from "@/data/pediatric-dosing";
-import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * The paediatric guideline tables, reproduced rather than summarised.
@@ -40,11 +40,12 @@ export function PediatricDosing() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <View style={styles.intro}>
         <Text style={styles.introText}>
@@ -56,7 +57,7 @@ export function PediatricDosing() {
       </View>
 
       {/* ---- Tek doz ---- */}
-      <Text style={styles.sectionTitle}>Tek doz (single shot)</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Tek doz (single shot)</Text>
       {CATEGORY_ORDER.map((cat) => {
         const rows = PEDIATRIC_SINGLE_SHOT.filter((l) => l.category === cat);
         if (rows.length === 0) return null;
@@ -100,7 +101,7 @@ export function PediatricDosing() {
       </View>
 
       {/* ---- İnfüzyon ---- */}
-      <Text style={styles.sectionTitle}>Sürekli infüzyon</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Sürekli infüzyon</Text>
       <Text style={styles.sectionNote}>
         Bu uygulamanın kombinasyon hesabı yalnızca tek doz içindir; aşağıdaki değerler hesaba
         katılmaz, referans olarak verilir.
@@ -129,7 +130,7 @@ export function PediatricDosing() {
       </View>
 
       {/* ---- Çelişkiler ---- */}
-      <Text style={styles.sectionTitle}>İki kılavuzun ayrıldığı noktalar</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">İki kılavuzun ayrıldığı noktalar</Text>
       <View style={styles.card}>
         <Text style={styles.sectionNote}>
           Bunlar çözülmeden gösterilir. Birini sessizce seçmek, açık olan bir soruyu kapalı
@@ -151,7 +152,7 @@ export function PediatricDosing() {
       </View>
 
       {/* ---- Boşluklar ---- */}
-      <Text style={styles.sectionTitle}>Kılavuzların cevaplamadığı sorular</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Kılavuzların cevaplamadığı sorular</Text>
       {GAPS.map((g) => (
         <View key={g.topic} style={styles.gapCard}>
           <Text style={styles.gapTopic}>{g.topic}</Text>
@@ -160,7 +161,7 @@ export function PediatricDosing() {
       ))}
 
       {/* ---- Kaynaklar ---- */}
-      <Text style={styles.sectionTitle}>Kaynaklar</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Kaynaklar</Text>
       <View style={styles.card}>
         <Text style={styles.ref}>
           <Text style={styles.bold}>ESRA/ASRA 2018.</Text> Suresh S, Ecoffey C, Bosenberg A, Lonnqvist

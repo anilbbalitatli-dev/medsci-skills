@@ -206,7 +206,16 @@ const useStyles = makeStyles((colors) => ({
     gap: spacing.sm,
   },
   headDrug: { ...type.label, fontSize: 9, color: colors.textMuted, flex: 1 },
-  headCol: { ...type.label, fontSize: 9, color: colors.textMuted, width: 74, textAlign: "right" },
+  // Sütunlar sabit değil asgari genişlikte: sayılar hizalı kalır ama sistem
+  // yazı tipi büyütüldüğünde "120.0 mL" kırpılmak yerine sütunu genişletir ve
+  // ilaç adı sütunu daralır.
+  headCol: {
+    ...type.label,
+    fontSize: 9,
+    color: colors.textMuted,
+    minWidth: 74,
+    textAlign: "right",
+  },
   row: {
     backgroundColor: colors.surfaceAlt,
     paddingHorizontal: spacing.md,
@@ -220,7 +229,7 @@ const useStyles = makeStyles((colors) => ({
   drug: { ...type.subheading, color: colors.text },
   conc: { ...numeric, color: colors.textMuted, fontWeight: "700" },
   timing: { fontSize: 10, color: colors.textFaint },
-  col: { width: 74, alignItems: "flex-end", gap: 1 },
+  col: { minWidth: 74, alignItems: "flex-end", gap: 1 },
   volume: { ...type.subheading, ...numeric, color: colors.text },
   ceilingText: { color: colors.primary },
   overText: { color: colors.danger },

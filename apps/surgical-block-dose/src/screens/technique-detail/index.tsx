@@ -18,7 +18,7 @@ import { imagesForTechnique } from "@/data/reference-images";
 import { sonoSpecFor } from "@/data/sono-anatomy";
 import { SURGERIES } from "@/data/surgeries";
 import { techniqueById } from "@/data/techniques";
-import { makeStyles, radius, spacing, type, useColors } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * Tek bir bloğun referans sayfası.
@@ -33,6 +33,7 @@ import { makeStyles, radius, spacing, type, useColors } from "@/theme";
  */
 export function TechniqueDetail({ techniqueId }: { techniqueId: string }) {
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const colors = useColors();
   const styles = useStyles();
 
@@ -59,7 +60,7 @@ export function TechniqueDetail({ techniqueId }: { techniqueId: string }) {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <DisclaimerBanner />
 
@@ -94,7 +95,7 @@ export function TechniqueDetail({ techniqueId }: { techniqueId: string }) {
 
       {surgeries.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>Bu blok şu cerrahilerde listeleniyor</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">Bu blok şu cerrahilerde listeleniyor</Text>
           <View style={styles.card}>
             {surgeries.map((s) => (
               <Link key={s.id} href={`/surgery/${s.id}`} asChild>

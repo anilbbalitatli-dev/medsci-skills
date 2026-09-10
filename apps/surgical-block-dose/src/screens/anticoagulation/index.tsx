@@ -14,7 +14,7 @@ import {
   hasIntervals,
 } from "@/data/anticoagulation";
 import { techniqueById } from "@/data/techniques";
-import { Palette, makeStyles, radius, spacing, type, useColors } from "@/theme";
+import { Palette, makeStyles, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 const TIER_ORDER: BleedingRiskTier[] = ["high", "intermediate", "low"];
 function tierColors(colors: Palette): Record<BleedingRiskTier, { text: string; bg: string }> {
@@ -47,6 +47,7 @@ export function Anticoagulation() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const filled = hasIntervals();
   const TIER_COLOR = tierColors(colors);
 
@@ -62,7 +63,7 @@ export function Anticoagulation() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <Text style={styles.intro}>
         Antikoagülan alan hastada soru iki katmanlıdır: <Text style={styles.bold}>bu blok</Text> ne
@@ -71,7 +72,7 @@ export function Anticoagulation() {
         kılavuz tablosudur.
       </Text>
 
-      <Text style={styles.sectionTitle}>Blokların kanama riski</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Blokların kanama riski</Text>
       {byTier.map(({ tier, info, techniques }) => (
         <View key={tier} style={styles.card}>
           <View style={[styles.tierBadge, { backgroundColor: TIER_COLOR[tier].bg }]}>
@@ -91,7 +92,7 @@ export function Anticoagulation() {
         </View>
       ))}
 
-      <Text style={styles.sectionTitle}>İlaç bekleme süreleri</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">İlaç bekleme süreleri</Text>
       {filled ? <Text style={styles.sourceNote}>{INTERVALS_SOURCE_NOTE}</Text> : null}
 
       {!filled ? (

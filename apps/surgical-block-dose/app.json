@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "description": "Cerrahi tipine göre rejyonal anestezi bloklarını, sinir ve dermatom kapsamlarını, yaşa ve kiloya göre doz sınırlarını gösteren eğitim/referans uygulaması. Klinik karar aracı değildir.",
     "primaryColor": "#0F7A5F",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

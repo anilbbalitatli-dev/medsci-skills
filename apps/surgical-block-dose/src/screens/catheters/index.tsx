@@ -17,7 +17,7 @@ import {
   infusionLoad,
 } from "@/data/infusion";
 import { techniqueById } from "@/data/techniques";
-import { makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
+import { makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 import { usePatient, weightLabel } from "@/utils/patient";
 
 /**
@@ -37,12 +37,13 @@ export function Catheters() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const [patient] = usePatient();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <DisclaimerBanner />
 
@@ -59,7 +60,7 @@ export function Catheters() {
         if (rows.length === 0) return null;
         return (
           <View key={route.id} style={styles.section}>
-            <Text style={styles.sectionTitle}>{route.label}</Text>
+            <Text style={styles.sectionTitle} accessibilityRole="header">{route.label}</Text>
             {rows.map((r) => (
               <RegimenCard key={r.techniqueId} regimen={r} />
             ))}
@@ -67,7 +68,7 @@ export function Catheters() {
         );
       })}
 
-      <Text style={styles.sectionTitle}>İnfüzyon hızı hesaplayıcı</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">İnfüzyon hızı hesaplayıcı</Text>
       <InfusionCalculator />
 
       <View style={styles.limitCard}>

@@ -58,7 +58,8 @@ const useStyles = makeStyles((colors) => ({
   meterLabel: {
     ...type.label,
     color: colors.textMuted,
-    width: 62,
+    minWidth: 62,
+    flexShrink: 1,
   },
   track: {
     flexDirection: "row",
@@ -73,7 +74,7 @@ const useStyles = makeStyles((colors) => ({
   value: {
     ...type.subheading,
     ...numeric,
-    width: 34,
+    minWidth: 34,
     textAlign: "right",
   },
   outOf: {

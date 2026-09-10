@@ -9,13 +9,14 @@ import { MaxDoseCalculator } from "@/components/max-dose-calculator";
 import { PatientBar } from "@/components/patient-bar";
 import { getRegionStyle } from "@/data/region-icons";
 import { Surgery } from "@/data/types";
-import { makeStyles, spacing, useColors } from "@/theme";
+import { makeStyles, spacing, useColors, useContentStyle } from "@/theme";
 import { useFavorites } from "@/utils/favorites";
 
 export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const regionStyle = getRegionStyle(surgery.region);
   const [favoriteIds, toggleFavorite] = useFavorites();
   const isFavorite = favoriteIds.includes(surgery.id);
@@ -23,7 +24,7 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <View style={styles.titleRow}>
         <View style={{ flex: 1 }}>
@@ -34,7 +35,15 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
           <Text style={styles.name}>{surgery.name}</Text>
           <Text style={styles.category}>{surgery.category}</Text>
         </View>
-        <Pressable hitSlop={10} onPress={() => toggleFavorite(surgery.id)}>
+        {/* İkondan başka içeriği olmayan düğme, etiketsiz kaldığında ekran
+            okuyucuda yalnızca bir glif olarak duyurulur. */}
+        <Pressable
+          hitSlop={10}
+          onPress={() => toggleFavorite(surgery.id)}
+          accessibilityRole="button"
+          accessibilityState={{ selected: isFavorite }}
+          accessibilityLabel={isFavorite ? "Favorilerden çıkar" : "Favorilere ekle"}
+        >
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={26}
@@ -55,7 +64,7 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
         </View>
       ) : null}
 
-      <Text style={styles.sectionTitle}>Olası Bloklar (Tekil)</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Olası Bloklar (Tekil)</Text>
       <View style={styles.blockList}>
         {surgery.blocks.map((block) => (
           <BlockCard key={block.id} block={block} />
@@ -64,7 +73,7 @@ export function SurgeryDetail({ surgery }: { surgery: Surgery }) {
 
       {surgery.combinations && surgery.combinations.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>Kombinasyon Seçenekleri</Text>
+          <Text style={styles.sectionTitle} accessibilityRole="header">Kombinasyon Seçenekleri</Text>
           <View style={styles.blockList}>
             {surgery.combinations.map((combo) => (
               <CombinationCard key={combo.id} combination={combo} blocks={surgery.blocks} />

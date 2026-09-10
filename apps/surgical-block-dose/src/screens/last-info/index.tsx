@@ -10,17 +10,18 @@ import {
   LAST_MANAGEMENT,
   LAST_SOURCE_NOTE,
 } from "@/data/last";
-import { makeStyles, spacing, useColors } from "@/theme";
+import { makeStyles, spacing, useColors, useContentStyle } from "@/theme";
 
 export function LastInfo() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <View style={styles.alertCard}>
         <Text style={styles.alertTitle}>LAST (Lokal Anestezik Sistemik Toksisitesi)</Text>
@@ -30,7 +31,7 @@ export function LastInfo() {
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Erken Belirtiler</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Erken Belirtiler</Text>
       <View style={styles.list}>
         {LAST_EARLY_SYMPTOMS.map((s) => (
           <Text key={s} style={styles.listItem}>
@@ -39,7 +40,7 @@ export function LastInfo() {
         ))}
       </View>
 
-      <Text style={styles.sectionTitle}>Geç / Ağır Belirtiler</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Geç / Ağır Belirtiler</Text>
       <View style={styles.list}>
         {LAST_LATE_SYMPTOMS.map((s) => (
           <Text key={s} style={styles.listItem}>
@@ -51,7 +52,7 @@ export function LastInfo() {
       <PatientBar />
       <LastDoseCalculator />
 
-      <Text style={styles.sectionTitle}>Yönetim</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Yönetim</Text>
       <View style={styles.steps}>
         {LAST_MANAGEMENT.map((step) => (
           <View key={step.title} style={styles.stepCard}>
@@ -63,7 +64,7 @@ export function LastInfo() {
 
       {/* Aynı mg, enjekte edildiği yere göre farklı bir plazma tepesi yapar;
           doz tavanı bunu söylemez. */}
-      <Text style={styles.sectionTitle}>Emilim hızına göre risk</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Emilim hızına göre risk</Text>
       <View style={styles.list}>
         {ABSORPTION_ORDER.map((row) => (
           <View key={row.tier} style={styles.absorptionRow}>

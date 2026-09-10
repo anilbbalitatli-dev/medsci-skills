@@ -61,6 +61,30 @@ Yeni bir cerrahi/blok eklemek için `src/data/surgeries.ts` dosyasına bir
 `Surgery` girdisi eklemek yeterli; yeni bir ilaç için maksimum doz sınırı
 eklemek isterseniz `src/data/max-doses.ts` dosyasını güncelleyin.
 
+### Tablet düzeni ve erişilebilirlik
+
+`useLayout()` / `useContentStyle()` (`src/theme.ts`) — genişlik 700 pikseli
+aştığında iki şey birden yapılır ve ikisi ayrı:
+
+- **Okuma genişliği 560 pikselde sabitlenir.** iPad'in sorunu büyük olması
+  değil, satırın uzaması: ızgara genişliğine yayılmış bir doz tablosunda ilaç
+  adıyla mg değeri arasında bir avuç boşluk kalır ve göz satırı takip edemez.
+- **Katalog iki sütuna açılır.** Artan yer, satırı uzatmak yerine ikinci bir
+  sütuna gider. Arama sonuçları tek sütunda kalır, çünkü gruplandırılmışlar:
+  "Bloklar" başlığı iki sütunlu bir ızgarada hangi kartların ona ait olduğunu
+  söyleyemez.
+
+`orientation` artık `default`; `supportsTablet` açıkken `portrait` bırakmak
+iPad'i döndürülemez hâlde tutuyordu.
+
+Erişilebilirlik tarafında: yalnız ikondan oluşan düğmeler (favori, karışımdan
+çıkar) etiketlendi, başlık çubuğundaki kısayollara ne oldukları yazıldı
+("Harita" tek başına neyin haritası olduğunu söylemiyor), bölüm başlıkları
+`accessibilityRole="header"` aldı ki ekran okuyucuda gezinme noktası olsunlar,
+favori düğmesinin dokunma hedefi 44 pt'ye çıkarıldı. Metin taşıyan sabit
+genişlikli kutular (`width`) asgari genişliğe çevrildi: sistem yazı tipi
+büyütüldüğünde kırpmak yerine sarsınlar.
+
 ### Kateter, infüzyon ve çözülme
 
 `src/data/infusion.ts` — kateter rejimleri, erişkin infüzyon üst sınırları ve

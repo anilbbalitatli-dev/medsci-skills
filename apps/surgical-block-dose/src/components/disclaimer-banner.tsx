@@ -17,7 +17,11 @@ export function DisclaimerBanner() {
   const styles = useStyles();
   return (
     <Link href="/legal" asChild>
-      <Pressable style={({ pressed }) => pressed && styles.pressed}>
+      <Pressable
+        style={({ pressed }) => pressed && styles.pressed}
+        accessibilityRole="link"
+        accessibilityLabel="Yalnızca eğitim ve referans amaçlıdır. Kullanım koşulları, sınırlar, kaynaklar ve gizlilik için dokunun."
+      >
         <View style={styles.container}>
           <View style={styles.textBlock}>
             <Text style={styles.title}>Yalnızca eğitim/referans amaçlıdır</Text>

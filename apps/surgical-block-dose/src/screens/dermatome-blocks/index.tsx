@@ -14,7 +14,7 @@ import {
   sortLevels,
 } from "@/data/block-finder";
 import { DermatomeLevel, PosteriorLevel } from "@/data/dermatome-figure";
-import { elevation, makeStyles, numeric, radius, spacing, type, useColors } from "@/theme";
+import { elevation, makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * The app's other direction: pick the territory, get the blocks.
@@ -167,6 +167,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   // Aramadan gelen seviyeler yalnızca başlangıç durumudur: ekran açıldıktan
   // sonra seçim kullanıcınındır, bağlantı onu geri almaz.
   const [selected, setSelected] = useState<string[]>(() =>
@@ -207,7 +208,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <View style={styles.intro}>
         <Text style={styles.introText}>
@@ -217,7 +218,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Hazır bölgeler</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Hazır bölgeler</Text>
       <View style={styles.chipWrap}>
         {LEVEL_PRESETS.map((p) => {
           const on =
@@ -232,7 +233,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
         })}
       </View>
 
-      <Text style={styles.sectionTitle}>Segmentler</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">Segmentler</Text>
       <DermatomeFigureCard
         levels={selected as (DermatomeLevel | PosteriorLevel)[]}
         height={300}
@@ -268,7 +269,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
 
       {selected.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
             Tam kapsayan bloklar {complete.length > 0 ? `(${complete.length})` : ""}
           </Text>
           {complete.length > 0 ? (
@@ -284,7 +285,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
 
           {showPairs ? (
             <>
-              <Text style={styles.sectionTitle}>İkili kombinasyonlar</Text>
+              <Text style={styles.sectionTitle} accessibilityRole="header">İkili kombinasyonlar</Text>
               <Text style={styles.sectionNote}>
                 Gereksiz tekrar veya sakıncalı olarak işaretlenen çiftler bu listeye alınmaz.
               </Text>
@@ -296,7 +297,7 @@ export function DermatomeBlocks({ initialLevels }: { initialLevels?: string[] } 
 
           {partial.length > 0 ? (
             <>
-              <Text style={styles.sectionTitle}>Kısmen kapsayan bloklar</Text>
+              <Text style={styles.sectionTitle} accessibilityRole="header">Kısmen kapsayan bloklar</Text>
               {partial.slice(0, 8).map((m) => (
                 <MatchCard key={m.technique.id} match={m} />
               ))}

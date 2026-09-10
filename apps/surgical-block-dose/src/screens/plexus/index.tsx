@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PlexusDiagramView } from "@/components/plexus-diagram";
 import { PLEXUS_DIAGRAMS, PlexusId, diagramForTechnique } from "@/data/plexus-diagrams";
-import { makeStyles, radius, spacing, type, useColors } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * Yaklaşımları yan yana koyan ekran.
@@ -18,6 +18,7 @@ export function Plexus({ techniqueId }: { techniqueId?: string }) {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   // Ders kutusu seçili pleksusla değişir; şema bileşeni kendi seçimini tutuyor,
   // burada yalnızca hangi pleksusun anlatıldığını bilmek yetiyor.
   const [plexusId, setPlexusId] = useState<PlexusId>(
@@ -28,7 +29,7 @@ export function Plexus({ techniqueId }: { techniqueId?: string }) {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       <Text style={styles.intro}>
         Bir pleksus, kökten uca doğru hep aynı sırayı izler. Blokların hepsi bu zincirin bir

@@ -18,7 +18,7 @@ import {
   SCHEMATIC_NOTE,
 } from "@/data/legal";
 import { ANATOMY, CREDIT_PENDING, USG } from "@/data/reference-images";
-import { makeStyles, radius, spacing, type, useColors } from "@/theme";
+import { makeStyles, radius, spacing, type, useColors, useContentStyle } from "@/theme";
 
 /**
  * Hangi görsellerin gerçekten uygulamayla birlikte geldiği, kayıt dosyasından
@@ -65,6 +65,7 @@ export function Legal() {
   const colors = useColors();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const content = useContentStyle();
   const images = shippedImages();
   const uncredited = images.filter((img) => img.credit === CREDIT_PENDING);
   const unlisted = images.filter((img) => !img.licensed && img.credit !== CREDIT_PENDING);
@@ -73,7 +74,7 @@ export function Legal() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
+      contentContainerStyle={[styles.content, content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
       {CLINICAL_SECTIONS.map((section) => (
         <Section key={section.id} section={section} />
