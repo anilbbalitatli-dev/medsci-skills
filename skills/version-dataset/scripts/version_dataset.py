@@ -70,7 +70,12 @@ def _read_str(path: Path):
         df = pd.read_excel(path, dtype=str)
     else:
         return None
-    return df.astype(str)
+    # astype(str) is NOT sufficient: since pandas 2.x it leaves missing values as
+    # float NaN, so a spreadsheet with any empty cell reached column_hashes() with
+    # non-str cells (TypeError on join) and, worse, encoded emptiness differently
+    # from the CSV path above (keep_default_na=False yields ""). Map NA to the same
+    # "" sentinel so every format hashes identical content identically.
+    return df.apply(lambda col: col.map(lambda v: "" if pd.isna(v) else str(v)))
 
 
 def column_hashes(path: Path, ignore_cols: set[str]) -> dict | None:

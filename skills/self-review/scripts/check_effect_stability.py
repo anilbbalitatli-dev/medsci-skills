@@ -74,7 +74,10 @@ INSTABILITY_CAVEAT = re.compile(
 )
 
 # EPV operands.
-EVENTS_RE = re.compile(r"\b([0-9]+)\s+events?\b", re.IGNORECASE)
+# Negative lookbehind on digit/decimal: "11.5 events per variable" is a stated EPV,
+# not an event count of 5. Without it the decimal tail was read as the numerator and
+# an adequately powered model (EPV 11.5) was reported as EPV_LOW 2.5.
+EVENTS_RE = re.compile(r"(?<![0-9.])([0-9]+)\s+events?\b", re.IGNORECASE)
 COVAR_RE = re.compile(
     r"\b([0-9]+)\s+(?:covariates?|predictors?|(?:independent\s+)?variables?|"
     r"degrees?\s+of\s+freedom|parameters?)\b",
