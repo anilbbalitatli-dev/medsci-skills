@@ -54,7 +54,7 @@ export const CLINICAL_SECTIONS: LegalSection[] = [
     bullets: [
       "Doz tavanları sağlıklı erişkin ve çocuk için yayımlanmış değerlerdir. Karaciğer ve böbrek yetmezliği, kalp yetmezliği, gebelik, ileri yaş, kaşeksi ve asidoz tavanı düşürür; uygulama bu düzeltmeleri yapmaz.",
       "Boy girildiğinde ideal (Devine), yağsız (Janmahasatian) ve düzeltilmiş vücut ağırlığı hesaplanır ve dozların hangisiyle çarpılacağı seçilebilir. Formüller erişkin formülleridir; çocukta geçerli olmadıkları için pediatrik yaş bantlarında sunulmaz ve pediatrik dozlar gerçek ağırlıkla hesaplanır. Hangi ağırlığın kullanılacağı kararı klinisyene aittir — uygulama yalnızca BMI 30'un üstünde bir hatırlatma gösterir.",
-      "Kateter rejimleri ve erişkin infüzyon üst sınırları yaygın öğretim değerleridir; sürekli periferik blok için uluslararası kabul görmüş tek bir doz tablosu yoktur. Karaciğer ve böbrek yetmezliğinde birikim nedeniyle sınır düşer; uygulama bu düzeltmeyi yapmaz.",
+      "Kateter rejimleri yalnızca kaynaklandırılabilen bloklar için verilir ve ilgili çalışmanın hasta grubundan gelir; listede olmayan bir bloğa kateter konmayacağı anlamına gelmez. Erişkinde kanıta dayalı bir mg/kg/saat infüzyon tavanı yayımlanmamıştır, uygulama da böyle bir sayı göstermez. Karaciğer ve böbrek yetmezliği ile kalp yetmezliğinde klirens düştüğü için doz azaltılmalıdır; uygulama bu düzeltmeyi hesaplamaz.",
       "Birden çok blok yapıldığında dozlar tek bir tavana doğru toplanır. Uygulama kombinasyonlarda toplamı gösterir, ancak emilim hızının bloktan bloğa değiştiğini (interkostal > kaudal > periferik) hesaba katmaz.",
       "Sinir ve dermatom haritası öğretim amaçlı bir basitleştirmedir. Gerçek innervasyon kişiden kişiye değişir; blok yayılımı hacme, iğne ucu konumuna ve anatomik varyasyona bağlıdır.",
       "Antikoagülan zamanlaması ASRA 5. baskısına göre verilir ama hastanın kendi kanama/tromboz dengesini değerlendirmez; köprüleme kararı, trombosit sayısı ve organ yetmezliği düzeltmeleri kapsam dışıdır.",
@@ -105,9 +105,22 @@ export const DATA_SOURCES: DataSource[] = [
     note: "Bekleme süreleri olgu olarak alınmış, kılavuz metni kopyalanmadan yeniden yazılmıştır; her satırda kaynak ve öneri derecesi görünür.",
   },
   {
-    topic: "Kateter rejimleri ve erişkin infüzyon sınırları",
-    citation: "Yaygın rejyonal anestezi öğretim kaynakları ve kurumsal uygulama alışkanlıkları",
-    note: "Sürekli periferik blok için uluslararası kabul görmüş tek bir doz tablosu bulunmadığından bunlar tipik aralıklardır; pediatrik infüzyon sınırları ise kılavuzludur ve ayrı verilmiştir.",
+    topic: "Kateter rejimleri",
+    citation:
+      "Her rejim kendi randomize çalışmasından alınmıştır; künye ve DOI uygulama içinde ilgili kartın altında görünür (Ilfeld 2003/2004, Le 2008, Jæger 2013, Hanson 2014, Elkassabany 2016, Yoshida 2016, Tuncel 2005, Datchinamourthy 2024)",
+    note: "Kaynağı bulunamayan bloklar tablodan çıkarılmıştır. Rejimler ilgili çalışmanın kendi hasta grubunda kullandığı dozlardır; kurum protokolünün yerine geçmez.",
+  },
+  {
+    topic: "Erişkinde infüzyon doz tavanı",
+    citation:
+      "Rosenberg PH, Veering BT, Urmey WF. Maximum recommended doses of local anesthetics: a multifactorial concept. Reg Anesth Pain Med. 2004;29(6):564-75",
+    note: "Uygulamada bir zamanlar kaynaksız bir «erişkin mg/kg/sa tavanı» tablosu vardı; bu derleme kesin mg/kg sayıları vermenin bilimsel gerekçesi olmadığını belirttiği için tablo kaldırıldı ve yerine bu kaynak kondu.",
+  },
+  {
+    topic: "Uzun infüzyonda birikim",
+    citation:
+      "Corso OH ve ark. Safety of 96-hour incision-site continuous infusion of ropivacaine for postoperative analgesia after bowel cancer resection. Ther Drug Monit. 2007;29(1):57-63",
+    note: "Cerrahi sonrası α1-asit glikoprotein artışı serbest ropivakain fraksiyonunu düşürür; toplam plazma derişimi tek başına yorumlanamaz.",
   },
   {
     topic: "Vücut ağırlığı formülleri",

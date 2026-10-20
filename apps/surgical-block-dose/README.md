@@ -87,31 +87,43 @@ büyütüldüğünde kırpmak yerine sarsınlar.
 
 ### Kateter, infüzyon ve çözülme
 
-`src/data/infusion.ts` — kateter rejimleri, erişkin infüzyon üst sınırları ve
-tek atım bloğun çözülme çizelgesi. Blok kartında panel olarak, `/catheters`
-ekranında liste olarak görünür; ikisi ayrı sorulara bakıyor ("bu bloğa kateter
-konur mu" ve "kateter koyacağım, hangi bloğa").
+`src/data/infusion.ts` — kateter rejimleri ve tek atım bloğun çözülme
+çizelgesi. Blok kartında panel olarak, `/catheters` ekranında liste olarak
+görünür.
 
-İki ayrım bu dosyanın nedeni:
+**Bu dosyanın ilk hâli kaynaksızdı.** Rejimler "yaygın öğretim aralıkları"
+diye sunulmuştu ama arkalarında ne bir kılavuz ne bir çalışma vardı; sayılar
+model bilgisinden yazılmıştı. Şimdi her rejimin `sources` alanı zorunlu ve her
+kaynağın DOI'si var. Kaynağı bulunamayan dokuz blok (supraklaviküler, aksiller
+pleksus, subgluteal siyatik, fasya iliaka, lomber ESP, paravertebral,
+serratus, QL, lomber epidural) tablodan çıkarıldı — uydurulmuş bir sayıyla
+bırakılmadı. Kalan sekiz rejim: interskalen, infraklaviküler, femoral,
+adduktor kanal, popliteal siyatik, torasik ESP, TAP, torasik epidural.
 
-- **Tek atım tavanı infüzyonu yönetmez.** mg/kg tek doz sınırı bir bolusun
-  tepe plazma düzeyi içindir; infüzyonda soru birikimdir ve sınır mg/kg/saat
-  cinsindendir. Uygulamanın tek atım tavanını infüzyona uygulamak, 24 saatte
-  giden 480 mg ropivakaini "tavanı 2,4 kat aştı" diye kırmızıya boyardı.
-- **Kateteri olmayan blokta "yeniden doz" yoktur.** Karar bloğu yenilemek
-  değil, çözülmeden önce sistemik analjeziye geçmektir. Çizelgedeki üçüncü
-  kutu bu yüzden "tekrarla" değil "hazırlan" diyor ve sürenin alt ucundan bir
-  saat önce başlıyor — istem, ilacın servise ulaşması ve etkisinin başlaması
-  birlikte o kadar sürüyor.
+Düzeltme sırasında çıkan iki şey:
 
-Hesaplayıcı mL/sa ↔ mg/kg/sa çevrimini yapıyor. Klinikte ayarlanan sayı
-mL/sa'tir, sınır ise mg/kg/saat cinsinden yayımlanır; kafadan çevirmek
-gerektiği için sınır pratikte hiç bakılmayan bir şeye dönüşüyor.
+- **Erişkinde kanıta dayalı bir mg/kg/saat tavanı yok.** Ekranda "erişkin
+  sürekli infüzyon üst sınırları" diye bir tablo (ropivakain 0,5 /
+  levobupivakain ve bupivakain 0,4 mg/kg/sa) ve ona göre yüzde veren bir
+  hesaplayıcı vardı. Hiçbiri kaynaklı değildi, üstelik maksimum doz
+  literatürünün kendisi kesin mg/kg sayıları vermenin bilimsel gerekçesi
+  olmadığını söylüyor (Rosenberg 2004). Tablo kaldırıldı; hesaplayıcı artık
+  yalnızca mL/sa → mg çevrimi yapıyor, hiçbir sınırla karşılaştırmıyor.
+- **"Fasya planında yüksek hacim daha iyi yayılır" genellemesi yanlıştı.**
+  Kanıt bölgeye göre değişiyor: interskalende düşük konsantrasyon/yüksek hız
+  üstün (Le 2008), popliteal siyatikte konsantrasyon ve hacim fark etmiyor,
+  belirleyici toplam kütle (Madison 2015), torasik ESP'de aralıklı bolus
+  sürekli infüzyona üstün (Datchinamourthy 2024). Üçü de ekranda, tek bir
+  genelleme yerine.
 
-`npm run audit` her rejimin tekniğinin var olduğunu, infüzyon
-konsantrasyonunun tek atımı aşmadığını (kateterin amacı motor bloğu sürdürmek
-değil) ve üst bazal hızın 70 kiloluk bir hastada erişkin sınırını aşmadığını
-denetler. Yayımlanan bir rejim, hastada değil tabloda yanlıştır.
+Çözülme çizelgesindeki "analjeziye geç" saati açıkça uygulamanın kendi pratik
+kuralıdır (sürenin alt ucundan bir saat önce) ve ekranda da öyle yazar —
+yayımlanmış bir eşik değil.
+
+`npm run audit` her rejimin en az bir kaynağı ve geçerli biçimde bir DOI'si
+olduğunu, infüzyon konsantrasyonunun tek atımı aşmadığını, kaldırılan tavan
+tablosunun geri gelmediğini ve `infusionLoad`'un hâlâ hiçbir sınırla
+karşılaştırma yapmadığını denetler.
 
 ### Hangi ağırlıkla dozlanır
 

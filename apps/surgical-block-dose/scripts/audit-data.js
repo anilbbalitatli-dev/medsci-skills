@@ -526,9 +526,31 @@ function main() {
   }
 
   // ---- Kateter rejimleri ----
+  //
+  // Bu tablonun ilk hâli kaynaksızdı: sayılar model bilgisinden yazılmış,
+  // "yaygın öğretim aralığı" diye sunulmuştu. Artık her rejimin bir DOI'si
+  // olmak zorunda ve denetim bunu kontrol ediyor — kaynaksız bir satırın
+  // sessizce geri dönmesi, hatanın tekrarlanması demek olurdu.
   const inf = load("infusion");
   const routeIds = new Set(inf.CATHETER_ROUTES.map((r) => r.id));
   const seenRegimen = new Set();
+  const DOI = /^10\.\d{4,9}\/\S+$/;
+
+  const checkSources = (sources, where) => {
+    if (!Array.isArray(sources) || sources.length === 0) {
+      add("error", "kateter kaynağı", `${where} için kaynak yok`);
+      return;
+    }
+    for (const src of sources) {
+      if (!src.citation || src.citation.length < 20) {
+        add("error", "kateter kaynağı", `${where} kaynağının künyesi eksik`);
+      }
+      if (!src.doi || !DOI.test(src.doi)) {
+        add("error", "kateter kaynağı", `${where} kaynağının DOI'si geçersiz: '${src.doi}'`);
+      }
+    }
+  };
+
   for (const r of inf.CATHETER_REGIMENS) {
     if (!techIds.has(r.techniqueId)) {
       add("error", "kateter", `'${r.techniqueId}' diye bir teknik yok`);
@@ -540,9 +562,17 @@ function main() {
     if (!routeIds.has(r.route)) {
       add("error", "kateter", `${r.techniqueId} tanımsız yol '${r.route}'`);
     }
-    const [lo, hi] = r.basalMlPerHour;
-    if (!(lo > 0 && hi >= lo)) {
-      add("error", "kateter", `${r.techniqueId} bazal hız aralığı geçersiz: ${lo}–${hi}`);
+    checkSources(r.sources, r.techniqueId);
+
+    // Bir rejim ya sürekli bazal hız ya aralıklı bolus tanımlamalı.
+    if (!r.basalMlPerHour && !r.intermittentBolus) {
+      add("error", "kateter", `${r.techniqueId} ne bazal hız ne aralıklı bolus tanımlıyor`);
+    }
+    if (r.basalMlPerHour) {
+      const [lo, hi] = r.basalMlPerHour;
+      if (!(lo > 0 && hi >= lo)) {
+        add("error", "kateter", `${r.techniqueId} bazal hız aralığı geçersiz: ${lo}–${hi}`);
+      }
     }
     // İnfüzyon konsantrasyonu tek atımdan yüksek olamaz: kateterin amacı
     // analjeziyi sürdürmek, motor bloğu sürdürmek değil.
@@ -557,38 +587,32 @@ function main() {
     if (!r.note) add("warn", "kateter", `${r.techniqueId} için kateter notu yok`);
   }
 
-  // Rejimin üst hızı erişkin sınırını 70 kiloluk bir hastada aşmamalı: aşan
-  // bir rejim yayımlanmadan önce yanlıştır, hastada değil.
-  const REFERENCE_KG = 70;
-  for (const r of inf.CATHETER_REGIMENS) {
-    const technique = TECHNIQUES.find((t) => t.id === r.techniqueId);
-    if (!technique) continue;
-    const l = inf.infusionLoad(
-      r.basalMlPerHour[1],
-      r.concentrationPercent,
-      technique.typical.drug,
-      REFERENCE_KG
+  for (const e of inf.CONCENTRATION_EVIDENCE) {
+    checkSources(e.sources, `kanıt: "${e.claim.slice(0, 40)}…"`);
+  }
+  checkSources([inf.NO_ADULT_CEILING_SOURCE], "erişkin tavanı notu");
+  checkSources([inf.ACCUMULATION_SOURCE], "birikim notu");
+
+  // Kaldırılmış olması gereken uydurma tavan tablosu geri gelmesin.
+  if (inf.ADULT_INFUSION_LIMITS || inf.adultInfusionLimit) {
+    add(
+      "error",
+      "kateter kaynağı",
+      "ADULT_INFUSION_LIMITS geri gelmiş — erişkinde kanıta dayalı mg/kg/sa tavanı yayımlanmamıştır (Rosenberg 2004)"
     );
-    if (l.fraction !== undefined && l.fraction > 1) {
-      add(
-        "error",
-        "kateter",
-        `${r.techniqueId} üst hızı ${REFERENCE_KG} kg hastada erişkin sınırını aşıyor — oran %${Math.round(l.fraction * 100)}`
-      );
-    } else if (l.fraction !== undefined && l.fraction > 0.75) {
-      add(
-        "info",
-        "kateter",
-        `${r.techniqueId} üst hızı ${REFERENCE_KG} kg hastada erişkin sınırına göre %${Math.round(l.fraction * 100)}`
-      );
+  }
+  // infusionLoad bir sınırla karşılaştırma yapmamalı; yalnızca birim çevrimi.
+  const sample = inf.infusionLoad(8, 0.2, 70);
+  for (const forbidden of ["limit", "fraction"]) {
+    if (forbidden in sample) {
+      add("error", "kateter kaynağı", `infusionLoad hâlâ '${forbidden}' döndürüyor`);
     }
-    if (l.fraction === undefined) {
-      add(
-        "info",
-        "kateter",
-        `${r.techniqueId} tipik ilacı (${technique.typical.drug}) için erişkin infüzyon sınırı tanımlı değil`
-      );
-    }
+  }
+
+  // Kaynaklar tekrarsız toplanmalı.
+  const srcList = inf.allSources();
+  if (new Set(srcList.map((s) => s.doi)).size !== srcList.length) {
+    add("error", "kateter kaynağı", "allSources() aynı DOI'yi iki kez döndürüyor");
   }
 
   // Çözülme çizelgesi her tekniğin tipik ilacından türetilebilmeli.

@@ -5,6 +5,7 @@ import {
   ADJUVANT_PROLONGS_NOTE,
   NO_CATHETER_NOTE,
   PEDIATRIC_INFUSION_REDIRECT,
+  PREPARE_RULE_NOTE,
   infusionLoad,
   regimenFor,
   wearOffFor,
@@ -32,17 +33,16 @@ export function CatheterPanel({ technique }: { technique: Technique }) {
   const wearOff = wearOffFor(technique);
   if (!regimen && !wearOff) return null;
 
-  // Yük, bazal hızın üst ucundan hesaplanır: sınırı zorlayan uç odur.
-  const load = regimen
-    ? infusionLoad(
-        regimen.basalMlPerHour[1],
-        regimen.concentrationPercent,
-        technique.typical.drug,
-        patient.hasWeight ? patient.weightKg : undefined
-      )
-    : undefined;
-
-  const over = load?.fraction !== undefined && load.fraction > 1;
+  // Yük, çalışmanın bazal hızının üst ucundan hesaplanır. Karşılaştırılacak
+  // bir tavan yok (bkz. NO_ADULT_CEILING_NOTE); bu yalnızca birim çevrimi.
+  const load =
+    regimen && regimen.basalMlPerHour
+      ? infusionLoad(
+          regimen.basalMlPerHour[1],
+          regimen.concentrationPercent,
+          patient.hasWeight ? patient.weightKg : undefined
+        )
+      : undefined;
 
   return (
     <View style={styles.card}>
@@ -53,13 +53,31 @@ export function CatheterPanel({ technique }: { technique: Technique }) {
 
       {regimen ? (
         <View style={styles.block}>
-          <View style={styles.regimenRow}>
-            <Text style={styles.regimenLabel}>Bazal</Text>
-            <Text style={styles.regimenValue}>
-              {regimen.basalMlPerHour[0]}–{regimen.basalMlPerHour[1]} mL/sa
-            </Text>
-            <Text style={styles.regimenConc}>%{regimen.concentrationPercent}</Text>
-          </View>
+          {regimen.basalMlPerHour ? (
+            <View style={styles.regimenRow}>
+              <Text style={styles.regimenLabel}>Bazal</Text>
+              <Text style={styles.regimenValue}>
+                {regimen.basalMlPerHour[0] === regimen.basalMlPerHour[1]
+                  ? `${regimen.basalMlPerHour[0]} mL/sa`
+                  : `${regimen.basalMlPerHour[0]}–${regimen.basalMlPerHour[1]} mL/sa`}
+                {regimen.perSide ? " (taraf başına)" : ""}
+              </Text>
+              <Text style={styles.regimenConc}>%{regimen.concentrationPercent}</Text>
+            </View>
+          ) : null}
+          {/* Aralıklı bolus ayrı satır: ESP'de sürekli infüzyona üstün
+              bulunduğu için gizlenmemeli. */}
+          {regimen.intermittentBolus ? (
+            <View style={styles.regimenRow}>
+              <Text style={styles.regimenLabel}>Aralıklı bolus</Text>
+              <Text style={styles.regimenValue}>
+                {regimen.intermittentBolus.ml} mL
+              </Text>
+              <Text style={styles.regimenConc}>
+                {regimen.intermittentBolus.everyHours} saatte bir
+              </Text>
+            </View>
+          ) : null}
           {regimen.bolusMl !== undefined ? (
             <View style={styles.regimenRow}>
               <Text style={styles.regimenLabel}>Hasta bolusu</Text>
@@ -74,14 +92,11 @@ export function CatheterPanel({ technique }: { technique: Technique }) {
               ekranda yapmak konsantrasyon değiştirmenin ne demek olduğunu
               görünür kılıyor. */}
           {load ? (
-            <Text style={[styles.load, over && styles.loadOver]}>
-              Üst hızda {Math.round(load.mgPerHour)} mg/sa · 24 saatte{" "}
+            <Text style={styles.load}>
+              {Math.round(load.mgPerHour)} mg/sa · 24 saatte{" "}
               {Math.round(load.mgPer24h)} mg
               {load.mgPerKgPerHour !== undefined
                 ? ` · ${load.mgPerKgPerHour.toFixed(2)} mg/kg/sa`
-                : ""}
-              {load.limit && load.fraction !== undefined
-                ? ` — erişkin sınırı ${load.limit.mgPerKgPerHour} mg/kg/sa, kullanılan oran %${Math.round(load.fraction * 100)}`
                 : ""}
             </Text>
           ) : null}
@@ -90,6 +105,13 @@ export function CatheterPanel({ technique }: { technique: Technique }) {
           ) : null}
 
           <Text style={styles.note}>{regimen.note}</Text>
+          {/* Kaynak satırı rejimin yanından ayrılmaz: bu sayılar bir
+              çalışmadan geliyor ve hangisinden geldiği görünmeli. */}
+          {regimen.sources.map((src) => (
+            <Text key={src.doi} style={styles.source}>
+              {src.citation} · doi:{src.doi}
+            </Text>
+          ))}
         </View>
       ) : (
         <Text style={styles.note}>{NO_CATHETER_NOTE}</Text>
@@ -118,6 +140,7 @@ export function CatheterPanel({ technique }: { technique: Technique }) {
             ulaşması ve etkisinin başlaması birlikte bir saati bulur. Hastanın ağrıyla
             uyanması, kateteri olmayan blokta en sık görülen kusurdur.
           </Text>
+          <Text style={styles.fine}>{PREPARE_RULE_NOTE}</Text>
           <Text style={styles.fine}>{ADJUVANT_PROLONGS_NOTE}</Text>
         </View>
       ) : null}
@@ -162,7 +185,7 @@ const useStyles = makeStyles((colors) => ({
   regimenValue: { ...type.subheading, ...numeric, color: colors.text },
   regimenConc: { ...type.caption, ...numeric, color: colors.textFaint, flex: 1 },
   load: { ...type.caption, ...numeric, color: colors.textMuted, lineHeight: 16 },
-  loadOver: { color: colors.danger, fontWeight: "700" },
+  source: { fontSize: 9.5, color: colors.textFaint, lineHeight: 13 },
   warn: { ...type.caption, color: colors.warning, lineHeight: 16 },
   note: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
   fine: { fontSize: 10, color: colors.textFaint, lineHeight: 14, fontStyle: "italic" },

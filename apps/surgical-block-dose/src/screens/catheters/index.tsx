@@ -7,31 +7,36 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { PatientBar } from "@/components/patient-bar";
 import {
-  ADULT_INFUSION_LIMITS,
+  ACCUMULATION_NOTE,
+  ACCUMULATION_SOURCE,
   CATHETER_REGIMENS,
   CATHETER_ROUTES,
   CatheterRegimen,
-  INFUSION_ACCUMULATION_NOTE,
+  CONCENTRATION_EVIDENCE,
+  DOSE_REDUCTION_NOTE,
   INFUSION_CONCENTRATION_RATIONALE,
+  NO_ADULT_CEILING_NOTE,
+  NO_ADULT_CEILING_SOURCE,
   PEDIATRIC_INFUSION_REDIRECT,
+  Source,
+  allSources,
   infusionLoad,
 } from "@/data/infusion";
 import { techniqueById } from "@/data/techniques";
 import { makeStyles, numeric, radius, spacing, type, useColors, useContentStyle } from "@/theme";
-import { usePatient, weightLabel } from "@/utils/patient";
+import { usePatient } from "@/utils/patient";
 
 /**
  * Kateterler tek ekranda.
  *
  * Blok kartındaki panel "bu bloğa kateter konur mu" sorusunu yanıtlıyor;
- * burada sorulan tersi: "kateter koyacağım, hangi bloğa?". Karar çoğu zaman
- * girişimden önce, hasta henüz ameliyathaneye girmeden verilir ve o anda
- * elde bir blok adı yoktur.
+ * burada sorulan tersi: "kateter koyacağım, hangi bloğa?".
  *
- * Ekranın altındaki hesaplayıcı, mL/sa ile mg/kg/sa arasındaki çevrimi
- * yapıyor. Klinikte ayarlanan sayı mL/sa'tir, sınır ise mg/kg/saat cinsinden
- * yayımlanır; ikisini kafadan çevirmek gerektiği için sınırın nerede olduğu
- * pratikte hiç bakılmayan bir şeye dönüşüyor.
+ * Ekranın bir önceki hâlinde "erişkin sürekli infüzyon üst sınırları" diye
+ * kaynaksız bir tablo ve ona göre yüzde veren bir hesaplayıcı vardı. İkisi de
+ * kaldırıldı: maksimum doz literatürü, kesin mg/kg sayıları vermenin bilimsel
+ * gerekçesi olmadığını söylüyor. Hesaplayıcı artık yalnızca mL/sa'i mg'a
+ * çeviriyor — bu aritmetiktir, iddia değil.
  */
 export function Catheters() {
   const colors = useColors();
@@ -48,8 +53,10 @@ export function Catheters() {
       <DisclaimerBanner />
 
       <Text style={styles.intro}>
-        Sürekli kateter için yaygın rejimler. Uluslararası kabul görmüş tek bir doz tablosu
-        yoktur; aşağıdakiler yaygın öğretim aralıklarıdır ve kurumdan kuruma değişir.
+        Aşağıdaki rejimlerin her biri yayımlanmış bir çalışmadan gelir ve kaynağı kartın
+        altında yazar. Kaynağı bulunamayan bloklar bu listeden çıkarıldı; bir blok burada
+        yoksa ona kateter konmaz demek değil, gösterebileceğimiz yayımlanmış bir rejim yok
+        demektir.
       </Text>
       <Text style={styles.rationale}>{INFUSION_CONCENTRATION_RATIONALE}</Text>
 
@@ -60,7 +67,9 @@ export function Catheters() {
         if (rows.length === 0) return null;
         return (
           <View key={route.id} style={styles.section}>
-            <Text style={styles.sectionTitle} accessibilityRole="header">{route.label}</Text>
+            <Text style={styles.sectionTitle} accessibilityRole="header">
+              {route.label}
+            </Text>
             {rows.map((r) => (
               <RegimenCard key={r.techniqueId} regimen={r} />
             ))}
@@ -68,22 +77,34 @@ export function Catheters() {
         );
       })}
 
-      <Text style={styles.sectionTitle} accessibilityRole="header">İnfüzyon hızı hesaplayıcı</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        İnfüzyon hızı → mg
+      </Text>
       <InfusionCalculator />
 
-      <View style={styles.limitCard}>
-        <Text style={styles.limitTitle}>Erişkin sürekli infüzyon üst sınırları</Text>
-        {ADULT_INFUSION_LIMITS.map((l) => (
-          <View key={l.drug} style={styles.limitRow}>
-            <Text style={styles.limitDrug}>{l.drug}</Text>
-            <Text style={styles.limitValue}>{l.mgPerKgPerHour} mg/kg/sa</Text>
-            <Text style={styles.limitNote}>{l.note}</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        Konsantrasyon mu, hacim mi, toplam doz mu?
+      </Text>
+      <View style={styles.evidenceCard}>
+        {CONCENTRATION_EVIDENCE.map((e) => (
+          <View key={e.claim} style={styles.evidenceRow}>
+            <Text style={styles.evidenceClaim}>{e.claim}</Text>
+            {e.sources.map((s) => (
+              <SourceLine key={s.doi} source={s} />
+            ))}
           </View>
         ))}
-        <Text style={styles.limitFine}>
-          Tek atım mg/kg tavanı bir bolusun tepe düzeyi içindir ve infüzyonu yönetmez; bu iki sayı
-          birbirinin yerine kullanılamaz.
-        </Text>
+      </View>
+
+      {/* Uydurma tavan tablosunun yerini, tavanın neden olmadığını söyleyen
+          kaynak aldı. Boş bırakmak, kullanıcının başka yerden bir sayı
+          uydurmasına davetiye olurdu. */}
+      <View style={styles.limitCard}>
+        <Text style={styles.limitTitle}>Erişkinde mg/kg/saat tavanı</Text>
+        <Text style={styles.limitBody}>{NO_ADULT_CEILING_NOTE}</Text>
+        <SourceLine source={NO_ADULT_CEILING_SOURCE} />
+        <Text style={styles.limitBody}>{DOSE_REDUCTION_NOTE}</Text>
+        <SourceLine source={NO_ADULT_CEILING_SOURCE} />
         {patient.band.pediatric ? (
           <View style={styles.pedRedirect}>
             <Ionicons name="alert-circle-outline" size={14} color={colors.warning} />
@@ -92,8 +113,45 @@ export function Catheters() {
         ) : null}
       </View>
 
-      <Text style={styles.accumulation}>{INFUSION_ACCUMULATION_NOTE}</Text>
+      <View style={styles.limitCard}>
+        <Text style={styles.limitTitle}>Birikim</Text>
+        <Text style={styles.limitBody}>{ACCUMULATION_NOTE}</Text>
+        <SourceLine source={ACCUMULATION_SOURCE} />
+      </View>
+
+      <SourceList />
     </ScrollView>
+  );
+}
+
+function SourceLine({ source }: { source: Source }) {
+  const styles = useStyles();
+  return (
+    <Text style={styles.source}>
+      {source.citation} · doi:{source.doi}
+    </Text>
+  );
+}
+
+/** Ekrandaki bütün kaynaklar tek yerde; PubMed üzerinden doğrulanmıştır. */
+function SourceList() {
+  const styles = useStyles();
+  const sources = useMemo(() => allSources(), []);
+  return (
+    <View style={styles.sourceCard}>
+      <Text style={styles.sourceTitle} accessibilityRole="header">
+        Bu ekrandaki kaynaklar ({sources.length})
+      </Text>
+      {sources.map((s, i) => (
+        <Text key={s.doi} style={styles.sourceItem}>
+          {i + 1}. {s.citation} · doi:{s.doi}
+        </Text>
+      ))}
+      <Text style={styles.sourceFine}>
+        Künyeler PubMed kayıtlarından alınmıştır. Rejimler ilgili çalışmaların kendi hasta
+        gruplarında kullandığı dozlardır; kurumunuzun protokolünün yerine geçmez.
+      </Text>
+    </View>
   );
 }
 
@@ -103,31 +161,46 @@ function RegimenCard({ regimen }: { regimen: CatheterRegimen }) {
   const technique = techniqueById(regimen.techniqueId);
   if (!technique) return null;
 
+  const basal = regimen.basalMlPerHour;
+
   return (
-    <Link
-      href={{ pathname: "/technique/[id]", params: { id: technique.id } }}
-      asChild
-    >
-      <Pressable>
-        <View style={styles.card}>
+    <View style={styles.card}>
+      <Link href={{ pathname: "/technique/[id]", params: { id: technique.id } }} asChild>
+        <Pressable accessibilityRole="link" accessibilityLabel={`${technique.name} sayfası`}>
           <View style={styles.cardHead}>
             <Text style={styles.cardName}>{technique.name}</Text>
             <Ionicons name="chevron-forward" size={14} color={colors.textFaint} />
           </View>
-          <View style={styles.figures}>
-            <Figure label="Bazal" value={`${regimen.basalMlPerHour[0]}–${regimen.basalMlPerHour[1]}`} unit="mL/sa" />
-            <Figure label="Konsantrasyon" value={`%${regimen.concentrationPercent}`} unit="" />
-            {regimen.bolusMl !== undefined ? (
-              <Figure label="Bolus" value={`${regimen.bolusMl}`} unit="mL" />
-            ) : null}
-            {regimen.lockoutMin !== undefined ? (
-              <Figure label="Kilit" value={`${regimen.lockoutMin}`} unit="dk" />
-            ) : null}
-          </View>
-          <Text style={styles.cardNote}>{regimen.note}</Text>
-        </View>
-      </Pressable>
-    </Link>
+        </Pressable>
+      </Link>
+      <View style={styles.figures}>
+        {basal ? (
+          <Figure
+            label={regimen.perSide ? "Bazal / taraf" : "Bazal"}
+            value={basal[0] === basal[1] ? `${basal[0]}` : `${basal[0]}–${basal[1]}`}
+            unit="mL/sa"
+          />
+        ) : null}
+        <Figure label="Konsantrasyon" value={`%${regimen.concentrationPercent}`} unit="" />
+        {regimen.intermittentBolus ? (
+          <Figure
+            label="Aralıklı bolus"
+            value={`${regimen.intermittentBolus.ml}`}
+            unit={`mL / ${regimen.intermittentBolus.everyHours} sa`}
+          />
+        ) : null}
+        {regimen.bolusMl !== undefined ? (
+          <Figure label="Hasta bolusu" value={`${regimen.bolusMl}`} unit="mL" />
+        ) : null}
+        {regimen.lockoutMin !== undefined ? (
+          <Figure label="Kilit" value={`${regimen.lockoutMin}`} unit="dk" />
+        ) : null}
+      </View>
+      <Text style={styles.cardNote}>{regimen.note}</Text>
+      {regimen.sources.map((s) => (
+        <SourceLine key={s.doi} source={s} />
+      ))}
+    </View>
   );
 }
 
@@ -150,22 +223,24 @@ const DEFAULT_CONC = "0.2";
 /**
  * mL/sa → mg/sa → mg/kg/sa.
  *
- * Hız ve konsantrasyon ayrı ayrı girilir, çünkü klinikte değiştirilen de bu
- * ikisidir: aynı mg yükü hem "%0.2 ile 8 mL/sa" hem de "%0.1 ile 16 mL/sa"
- * ile elde edilir ve fasya planı bloklarında ikincisi daha iyi yayılır.
+ * Hiçbir sınırla karşılaştırmıyor, çünkü karşılaştırılacak yayımlanmış bir
+ * sınır yok. Yaptığı tek şey, klinikte ayarlanan sayıyı (mL/sa) toksisiteyi
+ * belirleyen birime (mg) çevirmek — böylece konsantrasyonu iki katına
+ * çıkarmanın ne demek olduğu görünür oluyor.
  */
 function InfusionCalculator() {
-  const colors = useColors();
   const styles = useStyles();
   const [patient] = usePatient();
   const [rate, setRate] = useState(DEFAULT_RATE);
   const [conc, setConc] = useState(DEFAULT_CONC);
-  const [drug, setDrug] = useState(ADULT_INFUSION_LIMITS[0].drug);
 
   const mlPerHour = Number(rate.replace(",", "."));
   const concentration = Number(conc.replace(",", "."));
   const valid =
-    Number.isFinite(mlPerHour) && mlPerHour > 0 && Number.isFinite(concentration) && concentration > 0;
+    Number.isFinite(mlPerHour) &&
+    mlPerHour > 0 &&
+    Number.isFinite(concentration) &&
+    concentration > 0;
 
   const load = useMemo(
     () =>
@@ -173,15 +248,11 @@ function InfusionCalculator() {
         ? infusionLoad(
             mlPerHour,
             concentration,
-            drug,
             patient.hasWeight ? patient.weightKg : undefined
           )
         : undefined,
-    [valid, mlPerHour, concentration, drug, patient.hasWeight, patient.weightKg]
+    [valid, mlPerHour, concentration, patient.hasWeight, patient.weightKg]
   );
-
-  const over = load?.fraction !== undefined && load.fraction > 1;
-  const near = load?.fraction !== undefined && load.fraction > 0.75 && !over;
 
   return (
     <View style={styles.calc}>
@@ -210,24 +281,6 @@ function InfusionCalculator() {
         </View>
       </View>
 
-      <View style={styles.drugRow}>
-        {ADULT_INFUSION_LIMITS.map((l) => {
-          const on = l.drug === drug;
-          return (
-            <Pressable
-              key={l.drug}
-              onPress={() => setDrug(l.drug)}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: on }}
-            >
-              <View style={[styles.drugChip, on && styles.drugChipOn]}>
-                <Text style={[styles.drugChipText, on && styles.drugChipTextOn]}>{l.drug}</Text>
-              </View>
-            </Pressable>
-          );
-        })}
-      </View>
-
       {load ? (
         <>
           <View style={styles.resultRow}>
@@ -240,22 +293,12 @@ function InfusionCalculator() {
                   ? load.mgPerKgPerHour.toFixed(2)
                   : "kilo girin"
               }
-              tone={over ? "over" : near ? "near" : undefined}
             />
           </View>
-          {load.fraction !== undefined && load.limit ? (
-            <Text style={[styles.verdict, over && styles.verdictOver, near && styles.verdictNear]}>
-              {over
-                ? `Erişkin sınırı ${load.limit.mgPerKgPerHour} mg/kg/sa aşılıyor — kullanılan oran %${Math.round(load.fraction * 100)}. Hızı düşürün ya da daha seyreltik solüsyon kullanın.`
-                : near
-                  ? `Erişkin sınırına göre %${Math.round(load.fraction * 100)}. Karaciğer/böbrek yetmezliği ya da 48 saati aşan infüzyon planlanıyorsa daha aşağıda kalın.`
-                  : `Erişkin sınırına göre %${Math.round(load.fraction * 100)} — ${weightLabel(patient)} üzerinden.`}
-            </Text>
-          ) : (
-            <Text style={styles.verdict}>
-              mg/kg karşılığı için hasta ağırlığı gerekir; yukarıdaki hasta çubuğundan girin.
-            </Text>
-          )}
+          <Text style={styles.verdict}>
+            Bu sayılar yalnızca birim çevrimidir. Karşılaştırılacak yayımlanmış bir
+            erişkin mg/kg/saat tavanı yoktur — aşağıya bakın.
+          </Text>
         </>
       ) : (
         <Text style={styles.verdict}>Hız ve konsantrasyon girin.</Text>
@@ -268,28 +311,12 @@ function InfusionCalculator() {
   );
 }
 
-function Result({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: "over" | "near";
-}) {
+function Result({ label, value }: { label: string; value: string }) {
   const styles = useStyles();
   return (
     <View style={styles.result}>
       <Text style={styles.resultLabel}>{label}</Text>
-      <Text
-        style={[
-          styles.resultValue,
-          tone === "over" && styles.resultOver,
-          tone === "near" && styles.resultNear,
-        ]}
-      >
-        {value}
-      </Text>
+      <Text style={styles.resultValue}>{value}</Text>
     </View>
   );
 }
@@ -322,6 +349,7 @@ const useStyles = makeStyles((colors) => ({
   figureValue: { ...type.subheading, ...numeric, color: colors.text },
   figureUnit: { ...type.caption, fontWeight: "400", color: colors.textFaint },
   cardNote: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
+  source: { fontSize: 9.5, color: colors.textFaint, lineHeight: 13 },
 
   calc: {
     backgroundColor: colors.surface,
@@ -345,16 +373,6 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
   },
   calcUnit: { ...type.caption, color: colors.textFaint },
-  drugRow: { flexDirection: "row", flexWrap: "wrap", gap: 5 },
-  drugChip: {
-    backgroundColor: colors.chip,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-  },
-  drugChipOn: { backgroundColor: colors.primary },
-  drugChipText: { fontSize: 12, color: colors.text },
-  drugChipTextOn: { color: colors.onPrimary, fontWeight: "700" },
   resultRow: { flexDirection: "row", gap: spacing.sm },
   result: {
     flex: 1,
@@ -366,12 +384,19 @@ const useStyles = makeStyles((colors) => ({
   },
   resultLabel: { fontSize: 9.5, color: colors.textFaint, textTransform: "uppercase" },
   resultValue: { ...type.subheading, ...numeric, color: colors.text },
-  resultOver: { color: colors.danger },
-  resultNear: { color: colors.warning },
   verdict: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
-  verdictNear: { color: colors.warning },
-  verdictOver: { color: colors.danger, fontWeight: "700" },
   calcWarn: { ...type.caption, color: colors.warning, lineHeight: 16 },
+
+  evidenceCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  evidenceRow: { gap: 3 },
+  evidenceClaim: { ...type.caption, color: colors.text, lineHeight: 17 },
 
   limitCard: {
     backgroundColor: colors.surface,
@@ -382,11 +407,7 @@ const useStyles = makeStyles((colors) => ({
     gap: 6,
   },
   limitTitle: { ...type.subheading, color: colors.text },
-  limitRow: { gap: 1, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 6 },
-  limitDrug: { ...type.bodySm, fontWeight: "700", color: colors.text },
-  limitValue: { ...type.subheading, ...numeric, color: colors.primaryStrong },
-  limitNote: { ...type.caption, color: colors.textMuted, lineHeight: 16 },
-  limitFine: { fontSize: 10, color: colors.textFaint, lineHeight: 14, fontStyle: "italic" },
+  limitBody: { ...type.caption, color: colors.textMuted, lineHeight: 17 },
   pedRedirect: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -396,5 +417,21 @@ const useStyles = makeStyles((colors) => ({
     padding: spacing.sm,
   },
   pedRedirectText: { ...type.caption, color: colors.text, lineHeight: 16, flex: 1 },
-  accumulation: { ...type.caption, color: colors.textMuted, lineHeight: 17 },
+
+  sourceCard: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    gap: 5,
+    marginTop: spacing.sm,
+  },
+  sourceTitle: { ...type.label, color: colors.textMuted },
+  sourceItem: { fontSize: 10, color: colors.textMuted, lineHeight: 14 },
+  sourceFine: {
+    fontSize: 10,
+    color: colors.textFaint,
+    lineHeight: 14,
+    fontStyle: "italic",
+    marginTop: 3,
+  },
 }));
