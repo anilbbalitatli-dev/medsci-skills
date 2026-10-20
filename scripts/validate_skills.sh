@@ -426,6 +426,12 @@ while IFS= read -r rel; do
     scripts/validate_skills.sh|scripts/check_precedent.py|scripts/precedent_hashes.txt|scripts/precedent_author_hashes.txt) continue ;;  # self-exempt: blocklist machinery
     tests/test_precedent_hashing.sh) continue ;;           # self-exempt: scanner's own test carries structural fixtures (CK-<n>, ...)
     skills/*) continue ;;                                  # covered by per-skill loop
+    package-lock.json|*/package-lock.json) continue ;;     # npm-generated: carries registry metadata (deprecation notices with
+                                                           # upstream maintainer addresses), not repository prose. The scan
+                                                           # exists to keep *our* contact details off the public surface; a
+                                                           # lockfile has no author to leak. Nothing here is hand-written, so
+                                                           # exempting it cannot hide a real leak — the package.json it is
+                                                           # generated from is still scanned.
   esac
   f="$REPO_ROOT/$rel"
   [ -f "$f" ] || continue

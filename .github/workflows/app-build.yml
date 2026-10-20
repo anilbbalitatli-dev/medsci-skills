@@ -1,0 +1,61 @@
+name: Blok & Doz — uygulama derle
+
+# Elle tetiklenir. Bu depo bir beceri kataloğu; uygulama onun içinde yaşayan
+# ayrı bir proje ve her push'ta build almasının anlamı yok. Asıl amacı, build
+# almak için bir bilgisayara ihtiyaç duymamak: EAS derlemeyi bulutta yapar,
+# bu iş akışı da onu GitHub'ın makinesinden tetikler. Telefondan Actions
+# sekmesine girip "Run workflow" demek yeterlidir.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Hangi platform
+        type: choice
+        options: [ios, android, all]
+        default: ios
+      profile:
+        description: eas.json profili
+        type: choice
+        options: [preview, production]
+        default: preview
+      submit:
+        description: Derleme bitince mağazaya yükle
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    working-directory: apps/surgical-block-dose
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/surgical-block-dose/package-lock.json
+
+      - run: npm ci
+
+      # Bozuk bir derlemeyi EAS kuyruğuna göndermeden önce ucuz kontroller.
+      - name: Tip kontrolü
+        run: npm run typecheck
+
+      - name: Veri denetimi
+        run: npm run audit
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Derle
+        run: eas build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --non-interactive --no-wait
+
+      - name: Mağazaya yükle
+        if: ${{ inputs.submit }}
+        run: eas submit --platform ${{ inputs.platform }} --latest --non-interactive
